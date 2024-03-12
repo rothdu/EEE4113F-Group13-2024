@@ -14,7 +14,22 @@
     {\emph{---Carl Sagan}}
 \vspace{0.5cm}
 % ----------------------------------------------------
-\lipsum[2-4]
+
+\section{Integration of camera traps with the Internet of Things (IOT)}
+
+\subsection{Embedded IOT devices}
+
+In a paper on the use of the Raspberry Pi for biologists, Jolles \cite{Jolles-Broad-scale} argues that "[T]he Raspberry Pi [is] a great reserach tool that can be used for almost anything. This can range from ... video recording of laboratory experiments, to long term field measurement stations". The wide versatility of a device like the Raspberry Pi makes it ideal for implementation of customisable video monitoring solutions. Jolles \cite{Jolles-Broad-scale} also argues that the small footprint of the Rasbperry Pi makes it aids in its used in research, and versatile options for the provision of power allow it to be used with minimal human intervention over long time periods. These benefits align strongly with the needs of the project at hand, further emphasizing the Raspberry Pi as a viable platform around which to base the project.
+
+Cardoso et al. \cite{Cardoso-InternetOf} have demonstrated the use of an ESP32-cam for a computer vision application for pest monitoring. The role of the ESP32 was as an "edge" device, i.e., the device that collects data which is subsequently transmitted to fog and cloud computing resources for further processing. They \cite{Cardoso-InternetOf} argue that "[A]lthough [the device is] low cost, [it] allow[s] the obtaining of images with enough quality to not influence the performance of the CV models." This indicates that the device could be adequate for the provision of data on the "edge".
+
+Camacho et al. \cite{Camacho-DeploymentOf} developed a custom embedded system based on the Arduino Mega 2650 and the ATMEGA2650 chip. A custom board was favoured to allow key device peripherals to be shut down, which otherwise drew unnecessary power on the standard Arduino board. The ATMEGA2650 was identified as standing out for "the number of available pins; I2C, UART and SPI communication buses; and support from Arduino" \cite{Camacho-DeploymentOf}. This work indicates that commonly available prototyping boards should be used with caution owing to limitations such as excess power draw. Additionally, the ATMEGA2650 is identified as a viable chip for use in embedded camera trap applications, owing to its support of commonly available communication buses and support within the Arduino framework.
+
+
+
+
+% \section{Motion detection for camera traps}
+
 
 % ----------------------------------------------------
 \ifstandalone
