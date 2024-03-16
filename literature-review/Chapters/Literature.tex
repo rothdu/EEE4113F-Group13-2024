@@ -15,6 +15,24 @@
 % \vspace{0.5cm}
 % ----------------------------------------------------
 
+\section{Data transmission techniques}
+
+\subsection{Comparison of wired and wireless data transmission}
+
+Despite the improvements of wireless communication capabilities, wired communications have traditionally served as the industrty standard. Huynh’s study on general communication protocols \cite{huynh2010study} sheds light on several key advantages of wired data transmission. These include implementation of parallel data transfer techniques, with the speed can be adjusted by the number of parallel cables, provided the transfer rate per cable is maintained and the cables are shieled to minimise cross talk. \cite{huynh2010study} also made note of differential lines being utilised instead of single-ended lines, to improve data speeds, lower the power consumption and reduce electromagnetic interference, all pertinent to the scope of the design.
+
+Gula et al. suggest that wired solutions may introduce problems such as cable management and animal interference. \cite{gula2010audio} details how different coaxial cable thicknesses are required to transmit different data types over a set length without any additional amplification, resulting in a cluster of cables running between subsystems. \cite{gula2010audio} also noted concerns that animals, such as rats, end up chewing the cables over time. 
+
+Given the challenges associated with wired communications in wildlife research, wireless data transmission becomes a promising alternative. Adsumilli, C et al.  mention that ‘error resilience and error concealment were the most important aspects of current research for successful realization of transmission and reception of image/video signals over bandwidth limited fading wireless networks/channels.’ \cite{adsumilli2002adaptive}. % the quote identifies a problem area for wireless - does it fully back up the topic sentence?
+
+Li et al. \cite{li2010design} suggest that implementing a wireless communication system will present a more cost-effective solution for wildlife research.  \cite{li2010design} further stipulares that deploying a wireless system will reduce the overhead that comes with maintenance when the connections get damaged.
+
+\cite{adsumilli2002adaptive} H.263 and MPEG-4 encoding standards, which were implemented to achieve error control for both reception and transmission of video in error prone environments \cite{adsumilli2002adaptive}.
+
+In exploring alternative wireless connectivity modules for low power IoT devices, Peng, Y. et al. \cite{peng2018plora} put forward a solution that is suitable for long-range transmission of low-rate data, which offers a simplification of camera modules in wildlife research. The study goes into the wireless device designed for batteryless IoT devices (passive devices), that are capable of transmitting data over long distance. While this is unsuitable for video or image transmission, the device will allow for the user to wirelessly obtain logs on the status of the module even when power has run out. \cite{peng2018plora} reported a maximum packet detection range of 50 m, making it a possible solution for smaller data transmission needs. % what is the solution?
+
+Conversations with the researchers for the project at hand \cite{hofmeyer2024private} WiFi-based communication may be hampered by a lack WiFi connectivity at many of the red-winged starling nesting sites.
+
 \section{Integration of camera traps with the Internet of Things (IOT)}
 
 Single-board microcomputers can be a valuable tool for biological research. Jolles argues that "[T]he Raspberry Pi [is] a great reserach tool that can be used for almost anything. This can range from ... video recording of laboratory experiments, to long term field measurement stations" \cite{jolles2021broad-scale}. The wide versatility of a device like the Raspberry Pi makes it ideal for implementation of customisable video monitoring solutions. Jolles \cite{jolles2021broad-scale} also argues that the small footprint of the Rasbperry Pi aids in its use in research, and versatile options for the provision of power allow it to be used with minimal human intervention over long time periods. These benefits align strongly with the needs of the project at hand, further emphasizing the Raspberry Pi as a viable platform around which to base the project.
