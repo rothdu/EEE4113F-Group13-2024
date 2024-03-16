@@ -20,6 +20,18 @@
 % This is what I suggest: This literature delves into previous research articles pertaining to wildlife monitoring and related fields to better understand the approach that needs to be taken to design an effective camera module. This review will look into existing solutions (both the successes and failures). Data acquisition methods were also investigated. Integration of camera traps with IoT, sensing and power supply requirements were researched as well as looking into camera traps being situated in an urban setting with the risk of theft or damage from weather conditions. 
 
 
+\section{Starlings and the need to monitor nest environments}
+
+\subsection{Current monitoring of Red-Winged starlings}
+
+Verstraeten et al. \cite{verstraeten2010webcams} explain that the monitoring of birds has widespread potential in numerous applications in ecology, climatology, and avian related zoonosis/infections such as avian influenza. Researchers from the Fitzpatrick Institute of Ornothology indicated a desire for a remote-monitoring solution for Red-Winged starling nests \cite{hofmeyer2024private}. Their existing solution is a GoPro camera on a pole, which they hold up to the nest to try and view what is happening \cite{hofmeyer2024private}. This allows only limited amounts of data to be gathered, and disturbs the birds \cite{hofmeyer2024private}.
+
+\subsection{Starlings and nesting}
+
+According to Ricklefs \cite{ricklefs1968patterns}, a starling bird can reach full body growth in approximately 20 days and an adult starling can reach a body mass of 79 grams. \cite{ricklefs1968patterns} further details that a newly hatched starling chick can weigh 5.27 grams and can be one of up to 18 chicks in brood in the starling nest. 
+
+
+
 \section{An overview of existing full camera trap systems}
 % I thought it would be nice to first add a small intro to this before diving into the rest
 % This section details a review into existing solutions on camera trap systems in general. There are numerous studies conducted on how effective different solutions are in both wildlife research and related fields that require camera sensing systems. 
@@ -73,7 +85,9 @@ In exploring alternative wireless connectivity modules for low power IoT devices
 
 Conversations with the researchers for the project at hand \cite{hofmeyer2024private} WiFi-based communication may be hampered by a lack WiFi connectivity at many of the red-winged starling nesting sites.
 
-\section{Integration of camera traps with the Internet of Things (IOT)}
+\section{Computing hardware and integration with the Internet of Things (IOT)}
+
+\subsection{Single board computers and micrcontroller hadware}
 
 Single-board microcomputers can be a valuable tool for biological research. Jolles argues that "[T]he Raspberry Pi [is] a great reserach tool that can be used for almost anything. This can range from ... video recording of laboratory experiments, to long term field measurement stations" \cite{jolles2021broad-scale}. The wide versatility of a device like the Raspberry Pi makes it ideal for implementation of customisable video monitoring solutions. Jolles \cite{jolles2021broad-scale} also argues that the small footprint of the Rasbperry Pi aids in its use in research, and versatile options for the provision of power allow it to be used with minimal human intervention over long time periods. These benefits align strongly with the needs of the project at hand, further emphasizing the Raspberry Pi as a viable platform around which to base the project.
 
@@ -87,11 +101,18 @@ Microcontrollers, including options from ST Microelectronics, Espressif, and Atm
 
 Both microcontroller and single-board microcomputers have varying price, typically depending on processing power and available peripherals. Local market prices may make higher-end devices too costly to be viable, and microcontrollers are generally significantly cheaper than microcomputers.
 
-\section{Motion detection for camera traps}
+\subsection{Software for computing hardware}
+
+Raspberry Pi computers allow for "user-friendly programming capabilities" \cite{jolles2021broad-scale}, with an operating system based on debian linux, which allows for python programming \cite{prinz2016a}. This allow for easy control of the Raspberry Pi's GPIO pins. \cite{camacho2017deployment} note their appreciation of the ATMEGA2650's integration with Arduino. ESP32 system can also be coded using the Arduino framework, and options from ST Microelectonics are typically coded in C. While some embedded software frameworks may be easiest to use than others, most available options should not substantially hamper the development of the system.
+
+\section{Sensing hardware}
+
+\subsection{Motion detection}
 
 Meek and Pittet \cite{meek2012user} identify that "Motion detection is of prime importance for any camera trap to be effective". Importantly, Rovero et al. \cite{rovero2013which} discuss that the camera field of view does not correspond directly to the detection zone. Motion detection is often a separate process from video or image recording, and must be thoroughly considered to make for a viable solution.
 
-Meek and Pittet \cite{meek2012user} identify that most commercial camera traps use passive infrared (PIR) sensors to detection motion of wildlife, but are prone to false detections, resulting in images that don't feature any wildlife. The sensitivity of a PIR motion detector "depends on many factors, including the distance of the moving target, the temperature differential, the size of the animal, its speed and background light." Rovero et al. \cite{rovero2013which} add to this by identifying that PIR sensors can be triggered by pockets of hot air or vegetation. Meek et al. \cite{meek2012introduction} support a similar conclustion, indicating that "Where the temperature differential between the background and target is low, some sensors may be incapable of detecting target animals right in front of the camera". The prevalence of PIR based motion detection seems to indicate that it is a workable and useful solution, but evidence shows that there are also difficulties associated with the technology.
+Meek and Pittet \cite{meek2012user} identify that most commercial camera traps use passive infrared (PIR) sensors to detection motion of wildlife, but are prone to false detections, resulting in images that don't feature any wildlife. The sensitivity of a PIR motion detector "depends on many factors, including the distance of the moving target, the temperature differential, the size of the animal, its speed and background light." Rovero et al. \cite{rovero2013which} add to this by identifying that PIR sensors can be triggered by pockets of hot air or vegetation. Meek et al. \cite{meek2012introduction} support a similar conclustion, indicating that "Where the temperature differential between the background and target is low, some sensors may be incapable of detecting target animals right in front of the camera". Yun \cite{yun2014detecting} explains that they work based on the principle of pyroelectricity, where certain materials generate a voltage when exposed to changes in temperature. \cite{amusa2015pyro} details that PIR sensors have found extensive use across diverse fields, particularly in the creation of intelligent settings like healthcare facilities, smart energy systems, and security setups.
+The prevalence of PIR based motion detection seems to indicate that it is a workable and useful solution, but evidence shows that there are also difficulties associated with the technology.
 
 Rico-Guevara and Mickley \cite{rico-guevara2017bring} chose to use PIR motion sensors because they "were cheap and easy to deploy, and successfully detected hummingbirds." Their study found that detection of even the smallest species of hummingbirds was adequate for their application. They chose to combat the issue of false detections by intentionally positioning the sensors away from objects that could trigger unwanted detections, and mitigated the consequently limited scope of an individual sensors by triggering from multiple differently positioned sensors. A separate standalone trigger was also developed which included an adjustable sensistivity, allowing "fine tuning by optimizing the trade-off between increased sensitivity and false positives" \cite{rico-guevara2017bring}.
 
@@ -101,6 +122,9 @@ Rovero et al. \cite{rovero2013which} discuss that older comercial camera traps f
 
 Prinz et al. \cite{prinz2016a} use an alternative technique which detects changes in the pixels from the camera output. This was achieved using the open-source program motion-MMAL. This alternative technique minimises the hardware requirements of the system.
 
+According to Amusa \cite{amusa2015pyro}, there are three technologies are used in practice for motion detection; they are Passive InfraRed (PIR), ultrasonic and audio sensors. Ultrasonic and audio sensors do not appear to be widespread and are thus not thouroughly considered in this investigation.
+
+
 \section{Choices of camera}
 
 \cite{jolles2021broad-scale} notes that the Raspberry Pi Foundation offers two cameras for the Raspberry Pi - the v2 and HQ cameras, both of which connect to the Raspberry Pi via it's Camera Serial Interface. Both cameras deliver the same video performance of 1080p 30fps, though the HQ camera is capable of higher-resolution still image photography, at 4056 × 3040 pixels, as opposed to 3280 × 2464 pixels \cite{jolles2021broad-scale}. Additionally, an version of the v2 board for infrared photography is available, and the HQ board can be used for infrared photography by manually removing it's infrared filter. \cite{jolles2021broad-scale}. Senthilkumar et al. \cite{senthilkumar2014embedded} discuss the use of a similar Raspberry Pi NOIR camera. This is likely the first version of infrared enabled v2 board discussed by \cite{jolles2021broad-scale}. \cite{senthilkumar2014embedded} that the board "[I]s able to deliver clear 5MP resolution image, or 1080p HD video recording at 30fps." \cite{senthilkumar2014embedded}, and further discuss that the sensor's lack of infrared filter makes it ideal for infrared or low light conditions. \cite{prinz2016a} sites \cite{senthilkumar2014embedded} to justify the use of the same camera module in a case of bird nest-monitoring. Camera modules from the Raspberry Pi Foundation appear as enticing options for monitoring of Red-Winged Starling nests, especially if paired with a Raspberry Pi.
@@ -109,30 +133,9 @@ Many third party camera modules for the Raspberry Pi exist, with varying capabil
 
 \cite{rico-guevara2017bring} use a mechanical system to trigger a camera unit that would normally be operated by hand. This allowed the researchers to capture high-speed footage in good quality \cite{rico-guevara2017bring}. However, top-range handheld cameras can be prohibitively expensive and may not be as robust as integrated electronic modules.
 
-% definitely still need to integrate above and below
-
-\section{Sensing}
-
-% could maybe go right at the beginning?
-
-The first step of action is to understand our subject of matter in much more detail so we can accurately gain a better understanding of how motion detection can be integrated into the environment of Starling birds. According to Ricklefs \cite{ricklefs1968patterns}, a starling bird can reach full body growth in approximately 20 days and an adult starling can reach a body mass of 79 grams. \cite{ricklefs1968patterns} further details that a newly hatched starling chick can weigh 5.27 grams and can be one of up to 18 chicks in brood in the starling nest. 
-
-Verstraeten et al. \cite{verstraeten2010webcams} explain that the monitoring of birds has widespread potential in numerous applications in ecology, climatology, and avian related zoonosis/infections such as avian influenza. Hence, it is fundamentally important to make sure that monitoring these Starlings can be done in the most efficient and accurate way possible.
-
-According to Amusa \cite{amusa2015pyro}, there are three technologies are used in practice for motion detection; they are Passive InfraRed (PIR), ultrasonic and audible sensors. In some instances, researchers developed motion detectors for birds, so that they can detect and repel the birds. However, in our case we take interest in just the detection of the birds. Siahaan \cite{siahaan2017design} designed an electronic device for detecting and repelling pests using pyro-electric (PIR) sensors.
-
-\subsection{Existing sensors in bird monitoring setups}
-
-There are various solutions to monitoring birds. These different types are listed and discussed in much greater detail below.
-
-\subsection{Web cameras}
-
-Web cameras are used all around the world, in all sorts of daily activities such as surveillance. According to Pritch \cite{pritch2007webcam}, it is reported that in the UK alone there are 4.2 million security cameras covering city streets. This indicates that web cameras are very useful when it comes to monitoring. However, there are downsides to the web cameras as well. Rateledge \cite{ratledge2005introduction} explains that webcams unedited raw data [6]. This is not good as it will have recordings of the entire day which is a waste of space and makes it tedious finding key events.
-
 \subsection{Pyro-electric (PIR) sensors}
 
-Pyroelectric Infrared (PIR) sensors are devices that detect infrared radiation emitted by objects in their field of view. Yun \cite{yun2014detecting} explains that they work based on the principle of pyroelectricity, where certain materials generate a voltage when exposed to changes in temperature. \cite{amusa2015pyro} details that PIR sensors have found extensive use across diverse fields, particularly in the creation of intelligent settings like healthcare facilities, smart energy systems, and security setups.
-
+Pyroelectric Infrared (PIR) sensors are devices that detect infrared radiation emitted by objects in their field of view. 
 
 \section{Night or low-light visibility}
 
