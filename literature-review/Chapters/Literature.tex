@@ -1,0 +1,59 @@
+% ----------------------------------------------------
+% Literature Review
+% ----------------------------------------------------
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
+\ifstandalone
+\tableofcontents
+\fi
+% ----------------------------------------------------
+\chapter{Literature Review \label{ch:literature}}
+% \epigraph{}%
+    % {\emph{---Carl Sagan}}
+% \vspace{0.5cm}
+% ----------------------------------------------------
+
+\section{Integration of camera traps with the Internet of Things (IOT)}
+
+Single-board microcomputers can be a valuable tool for biological research. Jolles argues that "[T]he Raspberry Pi [is] a great reserach tool that can be used for almost anything. This can range from ... video recording of laboratory experiments, to long term field measurement stations" \cite{jolles2021broad-scale}. The wide versatility of a device like the Raspberry Pi makes it ideal for implementation of customisable video monitoring solutions. Jolles \cite{jolles2021broad-scale} also argues that the small footprint of the Rasbperry Pi aids in its use in research, and versatile options for the provision of power allow it to be used with minimal human intervention over long time periods. These benefits align strongly with the needs of the project at hand, further emphasizing the Raspberry Pi as a viable platform around which to base the project.
+
+Data storage and retrieval has been identified as a key limitation in the application of camera traps to monitor Red-Winged starlings \cite{hofmeyer2024private}. Prinz et al. \cite{prinz2016a} implement a project for video surveillance of Acorn Woodpecker nests. They justify the Raspberry Pi as useful resource owing to its small size and variety of storage and connectivity options. The particular project uses a WiFi connection to upload footage to cloud storage on Google Drive. They further identify that the onboard SD card has sufficient storage for around 3 days worth of footage, but also identify the strength of the Raspberry Pi in its ability to leverage 3G/4G connectivity or external flash drives and hard drives as alternative means of data storage.  The variety of footage collection and/or storage options make it likely that a suitable option can be found in the case of Red-Winged starlings.
+
+\cite{jolles2021broad-scale} acknowledges the existance of other microcomputer systems, argues that the use of these systems is hampered by lack of hardware and software maintanence, alongside generally poorer user support compared to the widespread Raspberry Pi. 
+
+Microcontrollers, including options from ST Microelectronics, Espressif, and Atmel offer an alternative to full microcomputers. Camacho et al. \cite{camacho2017deployment} discuss a custom design based on the ATMEGA2650 microcontroller. They use a customised circuit design to allow for advanced power management, with the goal of limiting power draw. \cite{camacho2017deployment} further describe difficulties with using commonly available prototyping board, which are not necessarily as capable of achieving power draw requirements as custom circuit designs. Cardoso et al. \cite{cardoso2022internet} implement a remote visual surveillance based on an ESP32 microcontroller, demonstrating a successful microcontroller-based implementation under slightly different circumstances to \cite{camacho2017deployment}. \cite{jolles2021broad-scale} also identifies that microcontrollers may have even less stringent power requirements than the Raspberry Pi and argues that simple, repetitive tasks are often better suited to microcontrollers. Microcontroller based solutions may offer more customisability and lower costs compared to microcomputer solutions such as the Raspberry Pi.
+
+ \cite{jolles2021broad-scale} also identifies that microcontrollers and microcomputers can be used in tandem in some instaces. This would allow the benefits of both systems to be realised, such as allowing for exceptionally low power draw the majority of the time, but allowing for the advanced connectivity options of the Raspberry Pi when required.
+
+Both microcontroller and single-board microcomputers have varying price, typically depending on processing power and available peripherals. Local market prices may make higher-end devices too costly to be viable, and microcontrollers are generally significantly cheaper than microcomputers.
+
+\section{Motion detection for camera traps}
+
+Meek and Pittet \cite{meek2012user} identify that "Motion detection is of prime importance for any camera trap to be effective". Importantly, Rovero et al. \cite{rovero2013which} discuss that the camera field of view does not correspond directly to the detection zone. Motion detection is often a separate process from video or image recording, and must be thoroughly considered to make for a viable solution.
+
+Meek and Pittet \cite{meek2012user} identify that most commercial camera traps use passive infrared (PIR) sensors to detection motion of wildlife, but are prone to false detections, resulting in images that don't feature any wildlife. The sensitivity of a PIR motion detector "depends on many factors, including the distance of the moving target, the temperature differential, the size of the animal, its speed and background light." Rovero et al. \cite{rovero2013which} add to this by identifying that PIR sensors can be triggered by pockets of hot air or vegetation. The prevalence of PIR based motion detection seems to indicate that it is a workable and useful solution, but evidence shows that there are also difficulties associated with the technology.
+
+Rico-Guevara and Mickley \cite{rico-guevara2017bring} chose to use PIR motion sensors because they "were cheap and easy to deploy, and successfully detected hummingbirds." Their study found that detection of even the smallest species of hummingbirds was adequate for their application. They chose to combat the issue of false detections by intentionally positioning the sensors away from objects that could trigger unwanted detections, and mitigated the consequently limited scope of an individual sensors by triggering from multiple differently positioned sensors. A separate standalone trigger was also developed which included an adjustable sensistivity, allowing "fine tuning by optimizing the trade-off between increased sensitivity and false positives" \cite{rico-guevara2017bring}.
+
+Welbourne et al \cite{welbourne2016how} identify that the functioning of PIR sensors is often misunderstood, leading to "flawed inferences or expecatations of camera performance." A thourough understanding of PIR sensors would help in the development of a robust and well-functioning solution.
+
+%Meek PD, Ballard G, Fleming P. An introduction to camera trapping for wildlife surveys in Australia. Canberra: Invasive Animals CRC. 2012. - 2.7 degree difference required
+
+Rovero et al. \cite{rovero2013which} discuss that older comercial camera traps from the 1980s were triggered by a break in an infrared beam. However, newer models come in "self-contained package including sensors and camera." % comment on the hobbs solution here
+
+Prinz et al. \cite{prinz2016a} use an alternative technique which detects changes in the pixels from the camera output. This was achieved using the open-source program motion-MMAL. This alternative technique minimises the hardware requirements of the system.
+
+\section{Night or low-light visibility}
+
+Rovero at al. \cite{rovero2013which} discuss the use of infrared or LED flash, to enable camera visibility at night. 
+
+
+% ----------------------------------------------------
+\ifstandalone
+\bibliography{../Bibliography/References.bib}
+\printnoidxglossary[type=\acronymtype,nonumberlist]
+\fi
+\end{document}
+% ----------------------------------------------------
