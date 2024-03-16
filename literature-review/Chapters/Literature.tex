@@ -97,9 +97,17 @@ Rico-Guevara and Mickley \cite{rico-guevara2017bring} chose to use PIR motion se
 
 Welbourne et al \cite{welbourne2016how} identify that the functioning of PIR sensors is often misunderstood, leading to "flawed inferences or expecatations of camera performance." A thourough understanding of PIR sensors would help in the development of a robust and well-functioning solution.
 
-Rovero et al. \cite{rovero2013which} discuss that older comercial camera traps from the 1980s were triggered by a break in an infrared beam. However, newer models come in "self-contained package including sensors and camera." % comment on the hobbs solution here
+Rovero et al. \cite{rovero2013which} discuss that older comercial camera traps from the 1980s were triggered by a break in an infrared beam. However, newer models come in "self-contained package including sensors and camera." Hobbs et al. propose a solution for "amphibians, reptiles, small mammals, and large invertebrates" \cite{hobbs2017an} using similar technology. However, the solution at hand appears to be too large to viably be integrated into a bird nest, and the system requires the animals to walk over a threshold near the beam, which makes it difficult to apply to birds which fly.
 
 Prinz et al. \cite{prinz2016a} use an alternative technique which detects changes in the pixels from the camera output. This was achieved using the open-source program motion-MMAL. This alternative technique minimises the hardware requirements of the system.
+
+\section{Choices of camera}
+
+\cite{jolles2021broad-scale} notes that the Raspberry Pi Foundation offers two cameras for the Raspberry Pi - the v2 and HQ cameras, both of which connect to the Raspberry Pi via it's Camera Serial Interface. Both cameras deliver the same video performance of 1080p 30fps, though the HQ camera is capable of higher-resolution still image photography, at 4056 × 3040 pixels, as opposed to 3280 × 2464 pixels \cite{jolles2021broad-scale}. Additionally, an version of the v2 board for infrared photography is available, and the HQ board can be used for infrared photography by manually removing it's infrared filter. \cite{jolles2021broad-scale}. Senthilkumar et al. \cite{senthilkumar2014embedded} discuss the use of a similar Raspberry Pi NOIR camera. This is likely the first version of infrared enabled v2 board discussed by \cite{jolles2021broad-scale}. \cite{senthilkumar2014embedded} that the board "[I]s able to deliver clear 5MP resolution image, or 1080p HD video recording at 30fps." \cite{senthilkumar2014embedded}, and further discuss that the sensor's lack of infrared filter makes it ideal for infrared or low light conditions. \cite{prinz2016a} sites \cite{senthilkumar2014embedded} to justify the use of the same camera module in a case of bird nest-monitoring. Camera modules from the Raspberry Pi Foundation appear as enticing options for monitoring of Red-Winged Starling nests, especially if paired with a Raspberry Pi.
+
+Many third party camera modules for the Raspberry Pi exist, with varying capabilities \cite{jolles2021broad-scale}. The local market includes numerous options, alongside many options for use with microcontrollers, at varying price points.
+
+\cite{rico-guevara2017bring} use a mechanical system to trigger a camera unit that would normally be operated by hand. This allowed the researchers to capture high-speed footage in good quality \cite{rico-guevara2017bring}. However, top-range handheld cameras can be prohibitively expensive and may not be as robust as integrated electronic modules.
 
 % definitely still need to integrate above and below
 
