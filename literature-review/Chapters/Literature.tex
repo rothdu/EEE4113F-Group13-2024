@@ -111,7 +111,7 @@ Raspberry Pi computers allow for "user-friendly programming capabilities" \cite{
 
 Meek and Pittet \cite{meek2012user} identify that "Motion detection is of prime importance for any camera trap to be effective". Importantly, Rovero et al. \cite{rovero2013which} discuss that the camera field of view does not correspond directly to the detection zone. Motion detection is often a separate process from video or image recording, and must be thoroughly considered to make for a viable solution.
 
-Meek and Pittet \cite{meek2012user} identify that most commercial camera traps use passive infrared (PIR) sensors to detection motion of wildlife, but are prone to false detections, resulting in images that don't feature any wildlife. The sensitivity of a PIR motion detector "depends on many factors, including the distance of the moving target, the temperature differential, the size of the animal, its speed and background light." Rovero et al. \cite{rovero2013which} add to this by identifying that PIR sensors can be triggered by pockets of hot air or vegetation. Meek et al. \cite{meek2012introduction} support a similar conclustion, indicating that "Where the temperature differential between the background and target is low, some sensors may be incapable of detecting target animals right in front of the camera". Yun \cite{yun2014detecting} explains that they work based on the principle of pyroelectricity, where certain materials generate a voltage when exposed to changes in temperature. \cite{amusa2015pyro} details that PIR sensors have found extensive use across diverse fields, particularly in the creation of intelligent settings like healthcare facilities, smart energy systems, and security setups.
+Meek and Pittet \cite{meek2012user} identify that most commercial camera traps use passive infrared (PIR) sensors to detection motion of wildlife, but are prone to false detections, resulting in images that don't feature any wildlife. The sensitivity of a PIR motion detector "depends on many factors, including the distance of the moving target, the temperature differential, the size of the animal, its speed and background light." \cite{meek2012user}. Rovero et al. \cite{rovero2013which} add to this by identifying that PIR sensors can be triggered by pockets of hot air or vegetation. Meek et al. \cite{meek2012introduction} support a similar conclustion, indicating that "Where the temperature differential between the background and target is low, some sensors may be incapable of detecting target animals right in front of the camera". Yun \cite{yun2014detecting} explains that they work based on the principle of pyroelectricity, where certain materials generate a voltage when exposed to changes in temperature. \cite{amusa2015pyro} details that PIR sensors have found extensive use across diverse fields, particularly in the creation of intelligent settings like healthcare facilities, smart energy systems, and security setups.
 The prevalence of PIR based motion detection seems to indicate that it is a workable and useful solution, but evidence shows that there are also difficulties associated with the technology.
 
 Rico-Guevara and Mickley \cite{rico-guevara2017bring} chose to use PIR motion sensors because they "were cheap and easy to deploy, and successfully detected hummingbirds." Their study found that detection of even the smallest species of hummingbirds was adequate for their application. They chose to combat the issue of false detections by intentionally positioning the sensors away from objects that could trigger unwanted detections, and mitigated the consequently limited scope of an individual sensors by triggering from multiple differently positioned sensors. A separate standalone trigger was also developed which included an adjustable sensistivity, allowing "fine tuning by optimizing the trade-off between increased sensitivity and false positives" \cite{rico-guevara2017bring}.
@@ -133,11 +133,7 @@ Many third party camera modules for the Raspberry Pi exist, with varying capabil
 
 \cite{rico-guevara2017bring} use a mechanical system to trigger a camera unit that would normally be operated by hand. This allowed the researchers to capture high-speed footage in good quality \cite{rico-guevara2017bring}. However, top-range handheld cameras can be prohibitively expensive and may not be as robust as integrated electronic modules.
 
-\subsection{Pyro-electric (PIR) sensors}
-
-Pyroelectric Infrared (PIR) sensors are devices that detect infrared radiation emitted by objects in their field of view. 
-
-\section{Night or low-light visibility}
+\subsection{Night or low-light visibility}
 
 Rovero at al. \cite{rovero2013which} stipulate that camera trap modules sometimes infrared or white LED flash, to enable camera visibility at night. Flash technology is not generally needed when daylight can provide the necessary visibility for photography.
 
@@ -148,7 +144,6 @@ Conversations with the researchers working with Red Winged starlings \cite{hofme
 
 
 \section{Power supply}
-
 
 Power plays in integral part, by supplying the entire design with the necessary power to run the device efficiently and adequately. The aim of this research is to determine the best possible approach in order to making the power submodule of the design as optimal as it can be.
 
@@ -174,57 +169,55 @@ Harikrishnan and Sivagami \cite{harikirshnan2017intelligent} go into detail talk
 
 \section{Camera trap deployment in urban settings} 
 
-Camera traps are valuable tools for wildlife monitoring, but vandalism and theft pose significant challenges, resulting in financial losses and compromised data quality. Despite attempts to mitigate these risks by placing camera traps at greater heights, the impact on detection rates remains understudied. Reference?
+Camera traps are valuable tools for wildlife monitoring, but vandalism and theft pose significant challenges, resulting in financial losses, data losses and compromised data quality. Despite attempts to mitigate these risks by placing camera traps at greater heights, the impact on detection rates remains understudied \cite{meek2016higher}, \cite{meek2019camera}.
 
 
-Methods: 
+\subsection{Survey Studies}
 
-Meek et al. \cite{meek2016higher} investigates the effect of camera trap height on predator detection in road-based surveys, monitoring stations were established with cameras positioned at both 0.9 m and 3 m above ground level. Additionally, a pilot trial compared vertical and horizontal camera orientations for medium-sized mammal detection. 
+Meek et al. \cite{meek2016higher} investigated the effect of camera trap height on predator detection in road-based surveys, monitoring stations were established with cameras positioned at both 0.9 m and 3 m above ground level. Additionally, a pilot trial compared vertical and horizontal camera orientations for medium-sized mammal detection. 
 
-Placement of cameras at greater heights significantly reduced detection rates for all species compared to lower placements. False triggers were more common at higher placements, exacerbating data loss. Recommended deployment heights vary widely in existing literature, with limited empirical support and emphasis on the animal size and habitat. Vertical camera placement also showed reduced detection rates, with overhanging limbs causing false triggers. 
+The results found from this study are as follows: Placement of cameras at greater heights significantly reduced detection rates for all species compared to lower placements. False triggers were more common at higher placements, decreasing data quality. Vertical camera placement also showed reduced detection rates, with overhanging limbs causing false triggers. Recommended deployment heights vary widely in existing literature, with limited empirical support and emphasis on the animal size and habitat. \cite{meek2016higher}. 
 
-Although raising camera traps may seem a solution to theft, it compromises data quality and promotes false triggers \cite{meek2016higher}. Optimal camera trap height is critical for maximizing detection rates, aligning with the size and passage of target animals. Further innovation is needed to address theft while preserving data integrity. 
-
- 
-
-Camera Trap Deployment Strategies: 
-
-Roland Kays et al. !!reference?!! discuss the employment of Reconyx RC55 Camera traps known for their resilience in harsh rainforest conditions. Camera traps are strategically placed along trails or near water bodies to maximize animal detections. However, randomized deployments revealed biases in trap rates, with certain species exhibiting preferences for or avoidance of trail-side locations. Furthermore, challenging weather conditions, particularly during the rainy season, impact camera performance, necessitating mitigation strategies such as desiccant packets and preventative maintenance schedules. [2] 
+In summary, raising camera traps may seem a solution to theft, it compromises data quality and promotes false triggers \cite{meek2016higher}. Optimal camera trap height is critical for maximizing detection rates, aligning with the size and passage of target animals. Further innovation is needed to address theft while preserving data integrity. 
 
  
 
-Maintenance Challenges and Solutions: 
+\subsection{Camera Trap Deployment Strategies}
 
-Despite advancements in camera design, maintenance remains a critical aspect of long-term monitoring projects [3] !!reference?!! and data quality !!refence?!!. Common issues include lens blurriness and circuitry failures due to humidity, prompting manufacturers to enhance sealants and coatings. Practices such as drying camera traps with dehumidifiers, inserting silica gel packets, and duct-taping seams minimize moisture infiltration, preventing equipment damage and malfunctions.  Regular inspection and servicing of components such as gaskets, contacts, and wires are essential, particularly in humid environments. Additionally, theft poses a potential threat to camera trap networks, underscoring the importance of discrete placement, visible flash mitigation, and security measures such as cable locks and informational signage.Furthermore, periodic inspections during site visits enable lens cleaning, hardware tightening, and battery replacement, ensuring uninterrupted data collection and equipment functionality. 
+Roland Kays et al. in \cite{monitoring2015} discuss the employment of Reconyx RC55 Camera traps known for their resilience in harsh rainforest conditions. Camera traps are strategically placed along trails or near water bodies to maximize animal detections. However, randomized deployments revealed biases in trap rates, with certain species exhibiting preferences for or avoidance of trail-side locations. Furthermore, challenging weather conditions, particularly during the rainy season, impact camera performance, necessitating mitigation strategies such as desiccant packets and preventative maintenance schedules \cite{monitoring2015}.
+
+ 
+
+\subsection{Maintenance Challenges and Solutions}
+
+Despite advancements in camera design, maintenance remains a critical aspect of long-term monitoring projects and data quality \cite{monitoring2015}. Common issues include lens blurriness and circuitry failures due to humidity, prompting manufacturers to enhance sealants and coatings. Practices such as drying camera traps with dehumidifiers, inserting silica gel packets, and duct-taping seams minimize moisture infiltration, preventing equipment damage and malfunctions \cite{glover2019camera}.  Regular inspection and servicing of components such as gaskets, contacts, and wires are essential, particularly in humid environments. Additionally, theft poses a potential threat to camera trap networks, underscoring the importance of discrete placement, visible flash mitigation, and security measures such as cable locks and informational signage.Furthermore, periodic inspections during site visits enable lens cleaning, hardware tightening, and battery replacement, ensuring uninterrupted data collection and equipment functionality. 
 
  
 
  
 
-Weather Resistance Strategies: 
+\subsection{Weather Resistance Strategies}
 
-Utilizing weather-resistant housings, such as the Pelican 1300 case, shields camera equipment from rain, dust, and moisture, prolonging its lifespan and functionality !!reference?!!. Incorporating natural materials and camouflage fabric helps obscure camera traps, minimizing wildlife disturbance and theft risk. Furthermore, the development of zinc rain covers and the application of black glue for waterproofing offer additional layers of protection against environmental elements. 
-
- 
-
-Theft Prevention Measures: 
-
-!!refence?!! Implementing security measures such as cable locks, padlocks, and GPS trackers like Apple AirTags deters theft and aids in equipment recovery. Discreet placement and camouflage techniques reduce the visibility of camera traps, minimizing the likelihood of detection and tampering. Additionally, strategic positioning of camera traps at elevated heights and on stable mounts mitigates theft risk while optimizing surveillance coverage. 
-
-
-DIY Article 
-
-This article describe DIY camera traps !!refernce?!!, researchers and enthusiasts can construct for wildlife monitoring effectively. By leveraging appropriate equipment, security measures, and maintenance protocols, individuals can capture  
-
-Equipment Selection and Components: 
-
-The DIY systems, is reinforced in this article!!reference?!!, which highlights the importance of selecting suitable equipment for DIY camera traps. Components such as DSLR cameras, wide-angle lenses, waterproof cases (e.g., Pelican 1300), and motion-detection sensors (e.g., Camtraptions V3 PIR sensor) are pivotal for constructing robust setups !!reference?!!. Additionally, battery management systems, durable flash units, and noise-dampening materials contribute to the efficacy and longevity of camera trap systems !!reference?!!, !!reference?!!.
+Utilizing weather-resistant housings, such as the Pelican 1300 case, shields camera equipment from rain, dust, and moisture, prolonging its lifespan and functionality \cite{kays2009camera}. Incorporating natural materials and camouflage fabric helps obscure camera traps, minimizing wildlife disturbance and theft risk. Furthermore, the development of zinc rain covers and the application of black glue for waterproofing offer additional layers of protection against environmental elements \cite{kays2009camera}, \cite{glover2019camera}. 
 
  
 
-Assembly and Setup: 
+\subsection{Theft Prevention Measures} 
 
-The assembly process plays a crucial role in ensuring the functionality and performance of DIY camera traps. Studies emphasize the significance of securely mounting DSLR cameras within protective cases (Article 4). Clear acrylic windows for flash units, strategic positioning of PIR sensors, and rigorous testing procedures are integral steps in the setup process (Article 3; DIY Camera Trap). 
+Implementing security measures such as cable locks, padlocks, and GPS trackers like Apple AirTags deters theft and aids in equipment recovery. Discreet placement and camouflage techniques reduce the visibility of camera traps, minimizing the likelihood of detection and tampering. Additionally, strategic positioning of camera traps at elevated heights and on stable mounts mitigates theft risk while optimizing surveillance coverage \cite{kays2009camera}. 
+
+
+  
+
+\subsection{Equipment Selection and Setup}
+
+The DIY camera trap article \cite{diyarticle2023}, highlights the importance of selecting suitable equipment for DIY camera traps. Components such as DSLR cameras, wide-angle lenses, waterproof cases (Pelican 1300), and motion-detection sensors (Camtraptions V3 PIR sensor) are pivotal for constructing robust setups. Additionally, battery management systems, durable flash units, and noise-dampening materials contribute to the efficacy and longevity of camera trap systems \cite{diyarticle2023}.
+ 
+The assembly process plays a crucial role in ensuring the functionality and performance of DIY camera traps. Studies emphasize the significance of securely mounting DSLR cameras within protective cases. Clear acrylic windows for flash units, strategic positioning of PIR sensors, and rigorous testing procedures are integral steps in the setup process \cite{diyarticle2023}.
+
+
+\subsection{Impact on Parental Behavior}
+Bolton et.al in \cite{bolton2007remote} explores the crucial aspect of camera trap deployment and its potential to influence parental behaviour. Concerns have been raised regarding disturbances caused by camera installation, potentially affecting parental care and nest attendance. However, research findings indicate minimal disturbance to parent birds during camera installation, with installations typically completed within 15 minutes \cite{bolton2007remote}. Furthermore, the use of long, camouflaged cables enables maintenance activities, such as battery and memory card replacement, without necessitating parental departure from nests. This suggests that camera traps can be utilized without significant disruption to parental behaviour, mitigating potential concerns surrounding disturbance \cite{bolton2007remote}.
 
 % ----------------------------------------------------
 \ifstandalone
