@@ -1,0 +1,24 @@
+// How to set up an access point on the Pi Pico W
+#include <WiFi.h>
+
+const char *ssid = "MyPiPicoAP";
+const char *password = "password";
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  // Set WiFi mode to AP
+  WiFi.mode(WIFI_AP);
+
+  // Configure AP
+  WiFi.softAP(ssid, password);
+
+  Serial.println("Access Point started");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.softAPIP());
+}
+
+void loop() {
+  // Nothing to do here
+}
