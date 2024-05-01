@@ -1,0 +1,58 @@
+#include <WiFi.h>
+
+const char* ssid = "MyPiPicoAP";
+const char* password = "password";
+const char* serverIP = "192.168.42.1"; // Pi Pico W's IP address
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Upload file to Pi Pico W
+  uploadFile("/path/to/local/file", "/upload");
+}
+
+void loop() {
+  // Nothing to do here
+}
+
+void uploadFile(const char* filePath, const char* serverEndpoint) {
+  // Open the file
+  File file = SD.open(filePath);
+  if (!file) {
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+
+  // Connect to server
+  WiFiClient client;
+  if (!client.connect(serverIP, 80)) {
+    Serial.println("Failed to connect to server");
+    return;
+  }
+
+  // Send HTTP POST request with file data
+  client.println("POST " + String(serverEndpoint) + " HTTP/1.1");
+  client.println("Host: " + String(serverIP));
+  client.println("Content-Type: application/octet-stream");
+  client.println("Content-Disposition: form-data; name=\"file\"; filename=\"" + String(filePath) + "\"");
+  client.println("Connection: close");
+  client.println("Content-Length: " + String(file.size()));
+  client.println();
+  while (file.available()) {
+    client.write(file.read());
+  }
+  file.close();
+
+  Serial.println("File uploaded successfully");
+}
