@@ -1,0 +1,10 @@
+Device,Environment,Library support,Online support/userbase,Abstraction level
+ESP32,C/C++ with ESP-IDF,Adequate,Moderate (professional),Close to hardware
+,Arduino,Extensive and adequate,Extensive (hobbyist),Somewhat abstracted
+,MicroPython,More limited,Minimal (hobbyist),Very high-level
+,CircuitPython,More limited,Minimal (hobbyist),Very high-level
+Raspberry Pi Pico W,Native C/C++ SDK,Adequate,Moderate (professional),Close to hardware
+,Arduino 1,Adequate,Moderate (hobbyist),Somewhat abstracted
+,Arduino 2,Adequate,Moderate (hobbyist),Somewhat abstracted
+,MicroPython,Extensive and adequate,Extensive (hobbyist),Very high-level
+,CircuitPython,Adequate,Moderate (hobbyist),Very high-level
