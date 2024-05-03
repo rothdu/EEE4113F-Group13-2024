@@ -3,11 +3,13 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import sys
 
-hostName = "localhost"
+hostName = "192.168.1.20"
 serverPort = 8080
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
+        if self.path == '/test':
+            print("test print")
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
@@ -19,7 +21,7 @@ class MyServer(BaseHTTPRequestHandler):
     
     def do_POST(self):
         if self.path == '/upload_image': # check current header
-            if self.headers.get('Content-Type') == 'image/jpeg': # sending a jpeg
+            if self.headers.get('Content-Type') == 'image/jpeg': # receiving a jpeg
                 try:
                     content_len = int(self.headers.get('content-length', 0))
                 except TypeError: # content-length has not been set
@@ -28,10 +30,12 @@ class MyServer(BaseHTTPRequestHandler):
                 imgfile = self.rfile.read(content_len)
 
                 # Save image to file
-                save_name = 'images/received_image.jpg'  # filename to store the data
+                save_name = 'images/received_image2.jpg'  # filename to store the data
                 with open(save_name, 'wb') as f:
                     f.write(imgfile)
                 self.send_response(200)
+            else:
+                print(self.headers.get('Content-Type'))
          
 def main():
     # create webserver
