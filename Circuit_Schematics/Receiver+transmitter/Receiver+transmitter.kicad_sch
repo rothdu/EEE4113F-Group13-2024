@@ -1,0 +1,95 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "2f9dbeb1-22e7-4cdf-9e06-c4708c446459")
+	(paper "A4")
+	(title_block
+		(title "Receiver and Transmitter Schematic Layout")
+		(date "2024-05-01")
+		(rev "1.0.0")
+		(company "University of Cape Town")
+	)
+	(lib_symbols)
+	(sheet
+		(at 41.91 45.72)
+		(size 74.295 57.15)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "a14c02ff-6b1d-444f-ba7a-43e4efc5b5b7")
+		(property "Sheetname" "Receiver"
+			(at 41.91 45.0084 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "receiver.kicad_sch"
+			(at 41.91 103.4546 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Receiver+transmitter"
+				(path "/2f9dbeb1-22e7-4cdf-9e06-c4708c446459"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 161.925 45.085)
+		(size 78.74 57.15)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "d1fe75e9-b813-464a-b446-9191b8dc8848")
+		(property "Sheetname" "Transmitter"
+			(at 161.925 44.3734 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "transmitter.kicad_sch"
+			(at 161.925 102.8196 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Receiver+transmitter"
+				(path "/2f9dbeb1-22e7-4cdf-9e06-c4708c446459"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
