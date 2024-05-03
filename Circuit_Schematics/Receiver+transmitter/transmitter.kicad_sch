@@ -1520,6 +1520,10 @@
 		(uuid "e5d9ff9f-677c-4851-91e3-0e1ba923e853")
 	)
 	(no_connect
+		(at 76.2 91.44)
+		(uuid "1bb0642c-255b-4b6b-8eda-22cb22a3be12")
+	)
+	(no_connect
 		(at 78.74 81.28)
 		(uuid "308db5f8-f92d-4bba-9dd8-f92a18c4d873")
 	)
@@ -1542,6 +1546,10 @@
 	(no_connect
 		(at 116.84 83.82)
 		(uuid "8152ce67-a746-444e-904d-35322b04555f")
+	)
+	(no_connect
+		(at 76.2 93.98)
+		(uuid "e10e5958-a5b5-4902-9ce7-41dc202300b7")
 	)
 	(no_connect
 		(at 78.74 88.9)
@@ -1576,16 +1584,6 @@
 			(type default)
 		)
 		(uuid "0559247f-ea58-4d1b-862f-15a35f38c91b")
-	)
-	(wire
-		(pts
-			(xy 116.84 88.9) (xy 113.03 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "09098a62-f66a-443e-907a-336937d51805")
 	)
 	(wire
 		(pts
@@ -1766,6 +1764,16 @@
 			(type default)
 		)
 		(uuid "352e9f10-03a1-4761-b738-f732dc137502")
+	)
+	(wire
+		(pts
+			(xy 113.03 91.44) (xy 119.38 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "35e7cab2-c0e7-4262-b3be-6e785d65dbe4")
 	)
 	(wire
 		(pts
@@ -2029,16 +2037,6 @@
 	)
 	(wire
 		(pts
-			(xy 125.73 87.63) (xy 116.84 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8561bb96-6dd2-4131-abea-cb9cf932a408")
-	)
-	(wire
-		(pts
 			(xy 116.84 96.52) (xy 116.84 93.98)
 		)
 		(stroke
@@ -2289,16 +2287,6 @@
 	)
 	(wire
 		(pts
-			(xy 116.84 87.63) (xy 116.84 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c63d5909-e57b-4263-a0f5-5901724fff3e")
-	)
-	(wire
-		(pts
 			(xy 76.2 91.44) (xy 82.55 91.44)
 		)
 		(stroke
@@ -2346,16 +2334,6 @@
 			(type default)
 		)
 		(uuid "c8e32afd-ee7f-46f5-8ae7-2241c05f169d")
-	)
-	(wire
-		(pts
-			(xy 116.84 92.71) (xy 116.84 91.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c9db0ac9-525d-4096-9cbb-6474178aec17")
 	)
 	(wire
 		(pts
@@ -2409,16 +2387,6 @@
 	)
 	(wire
 		(pts
-			(xy 125.73 92.71) (xy 116.84 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e869f386-6b7e-40ae-b75d-82a4163c1a34")
-	)
-	(wire
-		(pts
 			(xy 116.84 76.2) (xy 113.03 76.2)
 		)
 		(stroke
@@ -2436,16 +2404,6 @@
 			(type default)
 		)
 		(uuid "efa9e737-7135-4fa5-b9e2-2ce3fc34decb")
-	)
-	(wire
-		(pts
-			(xy 116.84 91.44) (xy 113.03 91.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f1d740b5-2341-4f26-85ae-dbc7b0c9753b")
 	)
 	(wire
 		(pts
@@ -2486,6 +2444,16 @@
 			(type default)
 		)
 		(uuid "fc797dd7-1a83-46d6-84df-ef30c01a4d39")
+	)
+	(wire
+		(pts
+			(xy 113.03 88.9) (xy 119.38 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fce1f620-9550-47c2-9407-d3e412af5e0d")
 	)
 	(text "These are the set of infrared LED's \nto assist with night vision\n"
 		(exclude_from_sim no)
@@ -2558,7 +2526,7 @@
 		(uuid "f2e05bfa-17ec-4018-9980-0c8006efe61c")
 	)
 	(label "LDR Circuit"
-		(at 124.46 81.28 0)
+		(at 119.38 91.44 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2602,70 +2570,26 @@
 		(uuid "9abe1969-3633-4b0a-aa5c-76e363401537")
 	)
 	(label "RF Linker In"
-		(at 76.2 91.44 180)
+		(at 119.38 88.9 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify left bottom)
 		)
 		(uuid "f1c04c72-4c87-456f-807e-ddbe716706f4")
 	)
 	(label "PIR Input"
-		(at 76.2 93.98 180)
+		(at 124.46 81.28 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify left bottom)
 		)
 		(uuid "ff3e5566-c4d2-493d-b006-45fa6406550a")
-	)
-	(global_label "Tx Pin for flashing code"
-		(shape input)
-		(at 125.73 87.63 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "063db913-aa1f-4adb-9349-ad54627a962c")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 152.361 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "Rc Pin for flashing code"
-		(shape input)
-		(at 125.73 92.71 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "df5d2ee3-6855-44d9-bc8f-71db94627a41")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 152.7239 92.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
 	)
 	(global_label "Reset Pin"
 		(shape input)
