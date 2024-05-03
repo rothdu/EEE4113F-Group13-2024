@@ -1,0 +1,213 @@
+% ----------------------------------------------------
+% Literature Review
+% ----------------------------------------------------
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
+\ifstandalone
+\tableofcontents
+\fi
+% ----------------------------------------------------
+\chapter{Literature Review \label{ch:literature}}
+% \epigraph{}%
+    % {\emph{---Carl Sagan}}
+% \vspace{0.5cm}
+% ----------------------------------------------------
+
+\section{Problem statement}
+
+Sally, an academic researching starlings on UCT campus, requires remote visual surveillance of the birds for an extended period of time without human intervention and without risk of damage or theft of hardware.
+
+\section{Introduction}
+
+Researchers from the Fitzpatrick Institute of Ornithology indicated a desire for a remote-monitoring solution for red-winged starling nests \cite{hofmeyer2024private}. This literature review delves into previous research articles about wildlife monitoring and related fields to better understand the approach that needs to be taken to design an effective camera module. Challenges with existing solutions and consumer modules are discussed. Various electronic hardware requirements, including computing, sensing, image/video recording and power are detailed. Finally, the integration of camera trap modules into urban environments is discussed.
+
+\section{Starlings and the need to monitor nest environments}
+
+Verstraeten et al. explain that the "monitoring of birds has widespread potential in numerous applications in ecology, climatology, and avian related zoonosis/infections such as avian influenza." \cite{verstraeten2010webcams}.
+
+\subsection{Current monitoring of red-winged starlings}
+
+The existing solution for red-winged starling is a GoPro camera on a pole, which is held up to the nest to try and view what is happening \cite{hofmeyer2024private}. This allows only limited amounts of data to be gathered, and disturbs the birds \cite{hofmeyer2024private}.
+
+\subsection{Starlings and nesting}
+
+According to Ricklefs \cite{ricklefs1968patterns}, a starling bird can reach full body growth in approximately 20 days and an adult starling can reach a body mass of 79 grams. \cite{ricklefs1968patterns} further details that a newly hatched starling chick can weigh 5.27 grams and can be one of up to 18 chicks in brood in the starling nest. 
+
+
+
+\section{Overview of existing camera trap systems}
+
+There are numerous studies conducted on how effective different solutions are in both wildlife research and related fields that require camera sensing systems. 
+
+\subsection{Requirements and challenges in the field of camera traps}
+
+Swann et al. \cite{swann2011evaluating} argue that while choosing from a selection of camera traps designed for generalised use cases may be complex, it becomes essential to refine a module designed for nest ecology researchers. Meek and Pittet \cite{meek2012user}, emphasise key attributes, such as cost effectiveness, speed, space and weight saving, usability, and versatility, as being critical in developing an efficient wildlife surveillance system.  
+
+Recent studies shed light on the ongoing research to improve camera trap systems used in wildlife research by addressing common problems associated with detection reliability, data recording, and remote communication capabilities, while also revealing challenges in battery longevity, weight, and cost-effectiveness. 
+
+Nazir et al. \cite{nazir2017wiseeye} introduced the “WiseEye” camera trap solutions, which aimed to address the frustrations of existing camera systems. The “WiseEye” system, consisting of a Raspberry Pi and passive infrared sensors, promised and showed an improvement in detection reliability, reduced data cataloguing time, and remote communication capabilities \cite{nazir2017wiseeye}. With this solution came many drawbacks such as lower power efficiency, weight, and cost \cite{nazir2017wiseeye}. This indicates potential areas that can be simplified and optimised to suit nest ecology research.  
+
+Rico-Guevara and Mickley \cite{rico-guevara2017bring} contributed by confirming the importance of having a PIR sensor in their study that involved capturing pictures of hummingbirds. \cite{rico-guevara2017bring} also had issues when it came to power consumption and weight. This is a recurring issue among existing designs. In a study regarding nest predation, Ribeiro-Silva et al. \cite{ribeiro-silva2018testing} again stress the importance of infrared cameras but warn against positioning them too far away from the nest to reduce overexposure of the captured footage.
+
+Green et al. \cite{green2020innovations} explored the integration of artificial intelligence with existing camera trap solutions, in a bid to offer advancements in data processing and analysis. This brought issues such as increased power consumption and greater computational requirements that could only be fixed if the whole system were redesigned \cite{green2020innovations}. 
+
+Wireless data transmission and automation of tasks are emerging as important requirements in modern camera trap solutions, according to Glover-Kapfer et al. \cite{glover2019camera}. However, \cite{glover2019camera} made note of the fact that the availability of good camera traps, i.e., those that are relevant to the researchers’ requirements, is often dictated by the nature of the task at hand, which may limit the available options for studies in nest ecology.  
+
+\subsection{Vonsumer camera traps}
+
+Ahumada et al. \cite{ahumada2020wildlife} suggest that existing camera trap modules may not meet the standards that are expected for scientific research and conservation. \cite{ahumada2020wildlife} stresses the necessity of laying the groundwork to establish hardware standards tailored to each study, challenging the feasibility of adopting off-the-shelf modules for diverse research tasks. 
+
+Addressing operational challenges and efficiency issues in existing solutions is vital when it comes to designing effective wildlife surveillance solutions, as indicated by Ribeiro-Silva  et al. \cite{ribeiro-silva2018testing}, who identify the various shortcomings in existing solutions and proposed strategies to improve them. In the pursuit of effective nest monitoring, \cite{ribeiro-silva2018testing} found that problems like insufficient storage, wind displacement, weather damage, and false detection of animals outside the intended field of view led to poor efficiency, loss of data, and missed predation lists. Suggested improvements from \cite{ribeiro-silva2018testing} include camera positioning, increased storage, regular inspection, and the use of more than one camera to progressively monitor activity around the nest. 
+
+\cite{ribeiro-silva2018testing} found that a Bushnell TrophyCam, which captures both videos and photos, provided intuitive data for distinguishing between different birds within the same species by analysing their behaviour from short video intervals. Challenges experienced involved low detection efficiencies with motion sensors and a need for managing the video lengths to optimise data storage \cite{ribeiro-silva2018testing}. 
+
+Weingarth et al. \cite{weingarth2013evaluation} tested 6 different camera modules to evaluate their usefulness in capture and recapture sampling, and found that no digital camera is perfect for any application. The only camera that suited all the needs of the project was the Bushnell TrailScout 119935, with infrared capabilities and decent imaging capabilities \cite{weingarth2013evaluation}. 
+
+The literature indicates that consumer camera trap modules can have shortcomings that limit their application in research. Any camera must be carefully selected based on the needs of the specific research.
+
+\section{Computing hardware}
+
+Computing hardware is a integral part of a remote camera-trap system, integrating sensor control and data acquistion and storage. A variety of options are available with different capabilities and prices.
+
+\subsection{Single board microcomputers}
+
+Single-board microcomputers can be a valuable tool for biological research. Jolles argues that "[T]he Raspberry Pi [is] a great research tool that can be used for almost anything. This can range from ... video recording of laboratory experiments, to long-term field measurement stations" \cite{jolles2021broad-scale}. The wide versatility of a device like the Raspberry Pi makes it ideal for the implementation of customisable video monitoring solutions. Jolles \cite{jolles2021broad-scale} also argues that the small footprint of the Rasbperry Pi aids in its use in research, and versatile options for the provision of power allow it to be used with minimal human intervention over long periods. These benefits align strongly with the needs of the red-winged starling monitoring project.
+
+Data storage and retrieval have been identified as a key limitation in the application of camera traps to monitor red-winged starlings \cite{hofmeyer2024private}. Prinz et al. \cite{prinz2016a} implemented a project for video surveillance of Acorn Woodpecker nests. \cite{prinz2016a} justifies the Raspberry Pi as a useful resource owing to its small size and variety of storage and connectivity options. \cite{prinz2016a} further notes that the onboard SD card has sufficient storage for around 3 days' worth of footage, but also identifies the strength of the Raspberry Pi in its ability to leverage 3G/4G connectivity or external flash drives and hard drives as alternative means of data storage.  The variety of footage collection and/or storage options makes it likely that a suitable option can be found in the case of red-winged starlings.
+
+\cite{jolles2021broad-scale} acknowledges the existence of other microcomputer systems, and argues that the use of these systems is hampered by a lack of hardware and software maintenence, alongside generally poorer user support compared to the Raspberry Pi. 
+
+\subsection{Microcontrollers}
+
+Microcontrollers, including options from ST Microelectronics, Espressif, and Atmel offer an alternative to full microcomputers. Camacho et al. \cite{camacho2017deployment} discuss a custom design based on the ATMEGA2650 microcontroller. They use a customised circuit design to allow for advanced power management, to limit power draw \cite{camacho2017deployment}. \cite{camacho2017deployment} further describes difficulties with using commonly available prototyping boards, which are not necessarily as capable of achieving power draw requirements as custom circuit designs. Cardoso et al. \cite{cardoso2022internet} implemented a remote visual surveillance based on an ESP32 microcontroller, demonstrating a successful microcontroller-based implementation under slightly different circumstances to \cite{camacho2017deployment}. \cite{jolles2021broad-scale} also identifies that microcontrollers may have even less stringent power requirements than the Raspberry Pi and argues that simple, repetitive tasks are often better suited to microcontrollers. Microcontroller based solutions may offer more customisability and lower costs compared to microcomputer solutions such as the Raspberry Pi.
+
+\subsection{Integration and comparison of microcomputers and microcontrollers}
+
+\cite{jolles2021broad-scale} also identifies that microcontrollers and microcomputers can be used in tandem in some instances. This would allow the benefits of both systems to be realised, such as allowing for exceptionally low power draw the majority of the time, but allowing for the advanced connectivity options of the Raspberry Pi when required.
+
+Both microcontrollers and single-board microcomputers have varying prices, typically depending on processing power and available peripherals. Local market prices may make higher-end devices too costly to be viable, and microcontrollers are generally significantly cheaper than microcomputers.
+
+\subsection{Software for computing hardware}
+
+Raspberry Pi computers allow for "user-friendly programming capabilities" \cite{jolles2021broad-scale}, with an operating system based on Debian Linux, which allows for Python programming \cite{prinz2016a}. This allows for easy control of the Raspberry Pi's GPIO pins. \cite{camacho2017deployment} note their appreciation of the ATMEGA2650's integration with Arduino. ESP32-based systems can also be coded using the Arduino framework, and options from ST Microelectronics are typically coded in C. While some embedded software frameworks may be easier to use than others, most available options should not substantially hamper the development of the system.
+
+\section{Motion detection}
+
+\cite{meek2012user} identifies that "Motion detection is of prime importance for any camera trap to be effective". Importantly, Rovero et al. \cite{rovero2013which} discuss that the camera field of view does not correspond directly to the detection zone. Motion detection is often a separate process from video or image recording, and must be thoroughly considered to develop a viable solution.
+
+\subsection{Pyroelectric/passive infrared (PIR) sensors}
+
+\cite{meek2012user} identifies that most commercial camera traps use PIR sensors to detect the motion of wildlife, but are prone to false detections, resulting in images that do not feature any wildlife. The sensitivity of a PIR motion detector "depends on many factors, including the distance of the moving target, the temperature differential, the size of the animal, its speed and background light." \cite{meek2012user}. \cite{rovero2013which} adds to this by noting that PIR sensors can be triggered by vegetation or hot air. Meek et al. \cite{meek2012introduction} support a similar conclusion, indicating that "Where the temperature differential between the background and target is low, some sensors may be incapable of detecting target animals right in front of the camera". The prevalence of PIR-based motion detection seems to indicate that it is a workable and useful solution, but evidence shows that there are also difficulties associated with the technology.
+
+\cite{rico-guevara2017bring} chose to use PIR motion sensors because they "were cheap and easy to deploy, and successfully detected hummingbirds." They chose to combat the issue of false detections by intentionally positioning the sensors away from objects that could trigger unwanted detections and mitigated the consequently limited scope of individual sensors by triggering from multiple differently positioned sensors \cite{rico-guevara2017bring}. A separate standalone trigger was also developed which included an adjustable sensitivity, allowing "fine tuning by optimizing the trade-off between increased sensitivity and false positives" \cite{rico-guevara2017bring}.
+
+Welbourne et al identify that the functioning of PIR sensors is often misunderstood, leading to "flawed inferences or expectations of camera performance." \cite{welbourne2016how.} A thorough understanding of PIR sensors would help in the development of a robust and well-functioning solution.
+
+\cite{rovero2013which} discusses that older commercial camera traps from the 1980s were triggered by a break in an infrared beam. However, newer models come in a "self-contained package including sensors and camera." \cite{rovero2013which}. Hobbs et al. propose a solution for "amphibians, reptiles, small mammals, and large invertebrates" \cite{hobbs2017an} using similar technology. However, the solution in \cite{hobbs2017an} appears to be too large to viably be integrated into a bird nest, and the system requires the animals to walk over a threshold near the beam, which makes it difficult to apply to birds that fly.
+
+Prinz et al. \cite{prinz2016a} use an alternative technique that detects changes in the pixels from the camera output. This was achieved using the open-source program motion-MMAL \cite{prinz2016a}. This alternative technique minimises the hardware requirements of the system.
+
+
+\section{Image or video capturing hardware}
+
+Image and/or video capturing is the core function of any camera trap, and it follows that the hardware used must meet the requirements of the researchers involved to allow for proper research to be conducted.
+
+\subsection{Choice of camera}
+
+\cite{jolles2021broad-scale} notes that the Raspberry Pi Foundation offers two cameras for the Raspberry Pi -- the v2 and HQ cameras, both of which connect to the Raspberry Pi via its Camera Serial Interface. Additionally, a version of the v2 board for infrared photography is available, and the HQ board can be used for infrared photography by manually removing its infrared filter \cite{jolles2021broad-scale}. Senthilkumar et al. \cite{senthilkumar2014embedded} discuss the use of a similar Raspberry Pi NOIR camera. This is likely the first version of infrared enabled v2 board discussed by \cite{jolles2021broad-scale}. \cite{senthilkumar2014embedded} further discusses that the sensor's lack of an infrared filter makes it ideal for infrared or low-light conditions. \cite{prinz2016a} cites \cite{senthilkumar2014embedded} to justify the use of the same camera module in the case of bird nest monitoring. Camera modules from the Raspberry Pi Foundation appear as an enticing option for monitoring of red-winged Starling nests, especially if paired with a Raspberry Pi.
+
+Many third-party camera modules for the Raspberry Pi exist, with varying capabilities \cite{jolles2021broad-scale}. The local market includes numerous options, alongside many options for use with microcontrollers, at varying price points.
+
+\cite{rico-guevara2017bring} use a mechanical system to trigger a camera unit that would normally be operated by hand. This allowed the researchers to capture high-speed footage in good quality \cite{rico-guevara2017bring}. However, top-range handheld cameras can be prohibitively expensive and a mechanical triggering system may not be as robust as integrated electronic modules.
+
+\subsection{Night or low-light visibility}
+
+Aguiar-Silva et al. \cite{aguiar-silva2017camera} motivate for the use of infrared sensors because of the prevalence of nocturnal predators that attack the nesting areas of birds. A low-light visibility system makes it easier to conduct thorough research on nest activity that may only happen in low-light conditions.
+
+\cite{rovero2013which} stipulates that camera trap modules sometimes have infrared or white LED flash, to enable camera visibility at night. Flash technology is not generally needed when daylight can provide the necessary visibility for photography.
+
+According to \cite{meek2012introduction}, infrared flash tends to be less disruptive to wildlife than incandescent white flash, alongside exhibiting superior power efficiency and faster overall camera trap trigger speeds. However, \cite{meek2012introduction} also explains that infrared flashes are "are often in grey-scale ... or may have a reddish-pink tinge.", whereas white flashes allow for colour images, which is sometimes useful for research. \cite{meek2012introduction} identifies that LED technologies for white flashes can mitigate concerns about power draw and trigger speed. At the time of publication of \cite{meek2012introduction}, only one commercial camera trap module used LED flash, but LED technology has since become much more accessible, making it a much more viable solution than it previously was.
+
+Conversations with the researchers working with red-winged starlings indicated that infrared flash may be useful for night-time visibility of nests, or for enhanced visibility of some nesting sites that are very sheltered from daylight \cite{hofmeyer2024private}.
+
+
+\section{Data transmission techniques}
+
+Data transmission between a system's submodules and between the system and the outside world is key to allowing access to the data produced by camera trap systems.
+
+\subsection{Wired data transmission}
+
+Regardless of the improvements made concerning wireless communication capabilities, wired communications have served as the industry standard for communication. Huynh’s study on general communication protocols \cite{huynh2010study} sheds light on several advantages of wired communication protocols. These include the implementation of parallel data transfer methods, where the speed of transmission can be adjusted by the number of parallel cables, only if the transfer rate per cable is maintained and the cables are shielded to minimise the effect of cross-talk \cite{huynh2010study}. \cite{huynh2010study} also made note of differential lines being used instead of single-ended lines, to improve data transmission speeds, lower the power consumption and reduce the electromagnetic interference, which is all pertinent to the scope of the design.
+
+Gula et al. \cite{gula2010audio} suggest that wired solutions may introduce problems concerning cable management and animal interference. \cite{gula2010audio} details how different coaxial cable thicknesses are required to transmit different data types over a set length without any additional amplification, resulting in a cluster of cables running between subsystems. \cite{gula2010audio} also noted concerns that animals, such as rats, would chew up the cables over time. 
+
+\subsection{Wireless data transmission}
+
+Wireless data transmission has become a promising alternative, given the challenges of wired data transmission. Adsumilli et al. mention that ‘error resilience and error concealment were the most important aspects of current research for successful realization of transmission and reception of image/video signals over bandwidth limited fading wireless networks/channels.’ \cite{adsumilli2002adaptive}. The successful video encoding standards used were H.263 and MPEG-4, which were implemented to achieve error control for both reception and transmission of video in error prone environments \cite{adsumilli2002adaptive}. 
+
+Li et al. \cite{li2010design} suggest that implementing a wireless communication system will present a more cost-effective solution for wildlife research.  \cite{li2010design} further stipulates that deploying a wireless system will reduce the overhead that comes with maintenance when the connections get damaged.
+
+In exploring alternative wireless connectivity solutions for low-powered IoT devices, Peng et al. \cite{peng2018plora} put forward a solution that is suitable for long-range transmission of low-rate data only. The device in the study allows for long range wireless data connectivity without battery power \cite{peng2018plora}. The design consists of a "low-power packet detection circuit with novel blind chirp modulation and harmonic cancellation techniques" \cite{peng2018plora}. While this solution is unsuitable for video or image transmission, the device allows the user to wirelessly obtain logs on the status of the module even when battery power has run out. \cite{peng2018plora} reported a maximum packet detection range of 50 m, making it a possible solution for smaller data transmission needs. 
+
+Conversations with the researchers looking to monitor red-winged starlings indicated that WiFi-based communication may be hampered by a lack of WiFi connectivity at many of the nesting sites \cite{hofmeyer2024private}.
+
+\section{Power supply}
+
+Power plays an integral part, by supplying the entire module with the necessary power to run efficiently and adequately. Various power sources can be used, specifically when it comes to remote sensors for low powered consumption applications. Dewan et al. \cite{dewan2014alternative} explain that one of the main issues with deploying sensors in remote or impractical environments is the life span of these sensors which is largely dependent on the power supply it is connected to. 
+
+\subsection{Battery powered supply}
+
+Polleneli et al. \cite{polonelli2020flexible} describe the success of using batteries to power their motherboard for their drone application. They further iterate that their design included "generating reliable and stable 3.3 V and 5 V DC voltage from two Panasonic 18650 batteries" \cite{polonelli2020flexible}. \cite{polonelli2020flexible} also included fast charging. Camera trapping for red-winged starlings could utilise fast charging to make the power supply system more convenient for the researchers involved. Callebaut et al. \cite{callebaut2021art} outline issues faced with batteries and their lifespans and how to lengthen their life. They further explain the different types of batteries and how the battery type can optimise the battery life. They state, “Lithium Cobalt Oxide (LCO) and Lithium Polymer (LIPO) batteries are currently the most used rechargeable technologies” \cite{callebaut2021art}.
+
+\subsection{Solar-powered supply}
+
+The popularity and extensive use of solar is explained through the statement, “Solar power is used for operating both ground and floating sensors; solar-powered sensors have been deployed in forests, on mountains, in deserts, on ocean surfaces, on islands, and in household and industrial buildings.” \cite{dewan2014alternative}. This supports the possibility of integrating solar power into the design to reduce the number of manual recharges of the battery required. Krejcar and Mahdal further supports the use of solar powered supply for remote sensors and explains that “It is possible to apply the solution from a lower voltage (lower sun intensity)” \cite{krejcar2012optimized}, this indicates that it can be possible to charge the battery and operate on days that are not extremely sunny.
+
+\subsection{Power-saving options}
+
+
+Harikrishnan and Sivagami \cite{harikirshnan2017intelligent} go into detail talking about how PIR sensors can be used to switch a system on and off depending on whether a sensor is giving a reading or not. This can be extremely useful in the remote monitoring of red-winged starlings as it can reduce redundant recordings and save power. Harsha and Kumar \cite{harsha2020home} further support this notion.
+
+
+\section{Camera trap deployment in urban settings} 
+
+Camera traps are valuable tools for wildlife monitoring, but vandalism and theft pose significant challenges, resulting in financial losses, data losses and compromised data quality; despite attempts to mitigate these risks by placing camera traps at greater heights, the impact on detection rates remains understudied \cite{meek2016higher}, \cite{meek2019camera}.
+
+
+\subsection{Theft Prevention Measures} 
+
+Kays et al. \cite{kays2009camera} note that implementing security measures such as cable locks, padlocks, and GPS trackers deters theft and aids in equipment recovery, while discreet placement and camouflage techniques reduce the visibility of camera traps, minimizing the likelihood of detection and tampering. Additionally, strategic positioning of camera traps at elevated heights and on stable mounts mitigates theft risk \cite{kays2009camera}. 
+
+Meek et al. \cite{meek2016higher} investigate the effect of camera trap height on predator detection in road-based surveys. Monitoring stations were established with cameras positioned at both 0.9 m and 3 m above ground level and a pilot trial compared vertical and horizontal camera orientations for medium-sized mammal detection \cite{meek2016higher}. The results showed that placement of cameras at greater heights significantly reduced detection rates for all species compared to lower placements \cite{meek2016higher}. False triggers were more common at higher placements, decreasing data quality \cite{meek2016higher}. Vertical camera placement also showed reduced detection rates, with overhanging limbs causing false triggers \cite{meek2016higher}. Recommended deployment heights vary widely in existing literature, with limited empirical support and emphasis on the animal size and habitat \cite{meek2016higher}. 
+
+In summary, raising camera traps may seem like a solution to theft, but it compromises data quality and promotes false triggers \cite{meek2016higher}. Optimal camera trap height is critical for maximizing detection rates, and aligning with the size and passage of target animals, but further innovation is needed to address theft while preserving data integrity \cite{meek2016higher}. 
+
+\subsection{Maintenance Challenges and Solutions}
+
+Despite advancements in camera design, maintenance remains a critical aspect of long-term monitoring projects and data quality \cite{kays2009camera}. Common issues include lens blurriness and circuitry failures due to humidity, prompting manufacturers to enhance sealants and coatings \cite{kays2009camera}. Practices such as drying camera traps with dehumidifiers, inserting silica gel packets, and duct-taping seams minimize moisture infiltration, preventing equipment damage and malfunctions \cite{glover2019camera}.  Regular inspection and servicing of components such as gaskets, contacts, and wires are essential, particularly in humid environments \cite{glover2019camera}. Furthermore, periodic inspections during site visits enable lens cleaning, hardware tightening, and battery replacement, ensuring uninterrupted data collection and equipment functionality \cite{glover2019camera}. 
+
+ 
+\subsection{Weather Resistance}
+
+\cite{kays2009camera} discusses the employment of Reconyx RC55 Camera traps known for their resilience in harsh rainforest conditions. Camera traps are strategically placed along trails or near water bodies to maximize animal detection \cite{kays2009camera}. However, challenging weather conditions, particularly during the rainy season, impact camera performance, necessitating mitigation strategies such as desiccant packets and preventative maintenance schedules \cite{kays2009camera}.
+
+Utilizing weather-resistant housings, such as the Pelican 1300 case, shields camera equipment from rain, dust, and moisture, prolonging its lifespan and functionality \cite{kays2009camera}. Incorporating natural materials and camouflage fabric helps obscure camera traps, minimizing wildlife disturbance and theft risk, while the development of zinc rain covers and the application of black glue for waterproofing offer additional layers of protection against environmental elements \cite{kays2009camera}, \cite{glover2019camera}. 
+
+
+\subsection{Impact on Parental Behavior}
+
+Bolton et.al \cite{bolton2007remote} raise concerns regarding disturbances caused by camera installation, and potential affects to parental care and nest attendance. However, research findings indicate minimal disturbance to parent birds during camera installation, with installations typically completed within 15 minutes \cite{bolton2007remote}. Furthermore, the use of long, camouflaged cables enables maintenance activities, such as battery and memory card replacement, without necessitating parental departure from nests \cite{bolton2007remote}. This suggests that camera traps can be utilized without significant disruption to parental behaviour, mitigating potential concerns surrounding disturbance.
+
+\section{Conclusion}
+
+In conclusion, the evolution of camera trap technology has significantly enhanced wildlife monitoring practices, providing researchers with versatile tools and methodologies to study animal behavior and ecological dynamics. The comparison between wired and wireless data transmission underscores the efficiency and adaptability of wireless solutions, though wireless solutions are hampered by lack of connectivity or excess power draw. Moreover, advancements in computing hardware, such as single-board computers and microcontrollers, offer customizable platforms for data processing and management. Motion detection ensures accurate wildlife detection. Numerous camera options can offer sufficiently high-resolution imaging capabilities crucial for detailed behavioral analysis. Infrared and LED flash technologies allow for low-light visibility, and efficient power supply solutions like batteries and solar power sustain prolonged deployments even in remote locations. Addressing challenges such as vandalism and theft in urban settings is crucial for uninterrupted data collection and equipment. Overall, camera trap deployment remains pivotal in advancing our understanding of wildlife ecology and informing conservation efforts, highlighting the ongoing innovation and interdisciplinary collaboration driving the field forward.
+
+% ----------------------------------------------------
+\ifstandalone
+\bibliography{../Bibliography/References.bib}
+\printnoidxglossary[type=\acronymtype,nonumberlist]
+\fi
+\end{document}
+% ----------------------------------------------------
