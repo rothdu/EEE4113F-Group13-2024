@@ -55,7 +55,7 @@ const char WIFI_PASSWORD[] = "0823992390";
 
 
 WiFiClient client;
-String serverName = "192.168.1.20";
+String serverName = "192.168.1.34";
 String serverPath = "/upload_image";
 
 const int serverPort = 8080;
