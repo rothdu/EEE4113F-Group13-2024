@@ -271,8 +271,11 @@
       "Net-(Q2-C)": "5V",
       "unconnected-(R6-Pad1)": "5V",
       "unconnected-(U1-5V-Pad8)": "5V",
+      "unconnected-(U10-VCC-Pad1)": "5V",
+      "unconnected-(U11-5V-Pad1)": "5V",
       "unconnected-(U2-VCC-Pad1)": "5V",
-      "unconnected-(U3-VCC-Pad1)": "5V"
+      "unconnected-(U3-VCC-Pad1)": "5V",
+      "unconnected-(U9-5V-Pad1)": "5V"
     },
     "netclass_patterns": []
   },
