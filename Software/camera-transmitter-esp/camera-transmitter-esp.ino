@@ -1,37 +1,81 @@
-/* Key notes
-To create a buffer to open an image - use psram:
-uint8_t* buf = (uint8_t*)ps_malloc(len);
-free(buf);
- */
+// define this to enable debug output on Serial
+#define DEBUG
+
+// define this to run the unit test code rather than the production code
+// #define UNIT_TESTS
 
 
+/* MAIN TASKS */
+typedef enum{
+  WAIT = 0,
+  SEND_METADATA = 1,
+  UPDATE_CONFIG = 2,
+  SEND_PHOTOS = 3, 
+  SAMPLE_PHOTO = 4,
+  EXIT = 5
+  // room to add more if necessary
+} t_instruction;
+t_instruction currentInstruction;
+void triggerCapture();
+void triggerTransmitter();
+void handleInstruction(t_instruction instruction);
 
+/** LIBRARY INCLUDES **/
+//Base library
 #include <Arduino.h>
+// Wifi libraries
 #include <WiFi.h>
 #include <HTTPClient.h>
-
-
-
 // Camera libraries
 #include "esp_camera.h"
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "driver/rtc_io.h"
- 
 // MicroSD Libraries
 #include "FS.h"
 #include "SD_MMC.h"
- 
-// EEPROM Library
-#include "EEPROM.h"
- 
-// Use 1 byte of EEPROM space
-#define EEPROM_SIZE 1
+#include <ArduinoJson.h>
  
 // Counter for picture number
 unsigned int pictureCount = 0;
- 
-// Pin definitions for CAMERA_MODEL_AI_THINKER
+
+/* SD CARD */
+String configDir = "/config";
+String numPhotosPath = "/config/numPhotos.json";
+String newNumPhotosJson = "{\"numPhotos\":0}";
+/* sd-control.ino prototypes */
+bool initMicroSDCard();
+bool setNumPhotos(uint32_t numPhotos);
+uint32_t getNumPhotos();
+bool deleteAndRecreateNumPhotos();
+bool checkAndCreateDir(String dirPath);
+
+
+/* CONFIG FILE */
+String configFilePath = "/config/config.json";
+/* config-file-init.ino prototypes */
+bool loadFromConfig();
+bool networkConfig(JsonObject networkObj);
+bool cameraConfig(JsonObject cameraObj);
+bool cameraTimingConfig(JsonObject cameraTimingObj);
+
+/* NETWORK */
+String ssid = "starling-hub";
+String password = "ilovestarlings";
+String serverAddress = "http://192.168.42.1:8080"; // server IP, can up updated via config
+WiFiClient client; // client for reading stream from server
+HTTPClient http;
+uint8_t numAttempts = 3; // global number of attempts at a web request before giving up and going back to sleep
+/* web-requests.ino prototypes */
+int16_t sendPhoto(String thisPhotoDir, String thisPhotoName, uint32_t photoNum);
+uint32_t sendAllPhotos();
+int16_t updateConfig();
+int16_t requestInstruction();
+bool initWiFi();
+void onWiFiEvent(WiFiEvent_t event);
+
+/* CAM */
+// pin definitions for AI Thinker ESP-CAM
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -48,313 +92,257 @@ unsigned int pictureCount = 0;
 #define VSYNC_GPIO_NUM    25
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
- 
-
-const char WIFI_SSID[] = "sdks";
-const char WIFI_PASSWORD[] = "0823992390";
-
-
-WiFiClient client;
-String serverName = "192.168.1.34";
-String serverPath = "/upload_image";
-
-const int serverPort = 8080;
-
-// function for configuring the camera... will have to go through and choose good config values
-void configESPCamera() {
-  // Configure Camera parameters
- 
-  // Object to store the camera configuration parameters
-  camera_config_t config;
- 
-  config.ledc_channel = LEDC_CHANNEL_0;
-  config.ledc_timer = LEDC_TIMER_0;
-  config.pin_d0 = Y2_GPIO_NUM;
-  config.pin_d1 = Y3_GPIO_NUM;
-  config.pin_d2 = Y4_GPIO_NUM;
-  config.pin_d3 = Y5_GPIO_NUM;
-  config.pin_d4 = Y6_GPIO_NUM;
-  config.pin_d5 = Y7_GPIO_NUM;
-  config.pin_d6 = Y8_GPIO_NUM;
-  config.pin_d7 = Y9_GPIO_NUM;
-  config.pin_xclk = XCLK_GPIO_NUM;
-  config.pin_pclk = PCLK_GPIO_NUM;
-  config.pin_vsync = VSYNC_GPIO_NUM;
-  config.pin_href = HREF_GPIO_NUM;
-  config.pin_sscb_sda = SIOD_GPIO_NUM;
-  config.pin_sscb_scl = SIOC_GPIO_NUM;
-  config.pin_pwdn = PWDN_GPIO_NUM;
-  config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000;
-  config.pixel_format = PIXFORMAT_JPEG; // Choices are YUV422, GRAYSCALE, RGB565, JPEG
- 
-  // Select lower framesize if the camera doesn't support PSRAM
-  if (psramFound()) {
-    config.frame_size = FRAMESIZE_UXGA; // FRAMESIZE_ + QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA
-    config.jpeg_quality = 10; //10-63 lower number means higher quality
-    config.fb_count = 2;
-  } else {
-    config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;
-    config.fb_count = 1;
-  }
- 
-  // Initialize the Camera
-  esp_err_t err = esp_camera_init(&config);
-  if (err != ESP_OK) {
-    Serial.printf("Camera init failed with error 0x%x", err);
-    return;
-  }
- 
-  // Camera quality adjustments
-  sensor_t * s = esp_camera_sensor_get();
- 
-  // BRIGHTNESS (-2 to 2)
-  s->set_brightness(s, 0);
-  // CONTRAST (-2 to 2)
-  s->set_contrast(s, 0);
-  // SATURATION (-2 to 2)
-  s->set_saturation(s, 0);
-  // SPECIAL EFFECTS (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-  s->set_special_effect(s, 0);
-  // WHITE BALANCE (0 = Disable , 1 = Enable)
-  s->set_whitebal(s, 1);
-  // AWB GAIN (0 = Disable , 1 = Enable)
-  s->set_awb_gain(s, 1);
-  // WB MODES (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-  s->set_wb_mode(s, 0);
-  // EXPOSURE CONTROLS (0 = Disable , 1 = Enable)
-  s->set_exposure_ctrl(s, 1);
-  // AEC2 (0 = Disable , 1 = Enable)
-  s->set_aec2(s, 0);
-  // AE LEVELS (-2 to 2)
-  s->set_ae_level(s, 0);
-  // AEC VALUES (0 to 1200)
-  s->set_aec_value(s, 300);
-  // GAIN CONTROLS (0 = Disable , 1 = Enable)
-  s->set_gain_ctrl(s, 1);
-  // AGC GAIN (0 to 30)
-  s->set_agc_gain(s, 0);
-  // GAIN CEILING (0 to 6)
-  s->set_gainceiling(s, (gainceiling_t)0);
-  // BPC (0 = Disable , 1 = Enable)
-  s->set_bpc(s, 0);
-  // WPC (0 = Disable , 1 = Enable)
-  s->set_wpc(s, 1);
-  // RAW GMA (0 = Disable , 1 = Enable)
-  s->set_raw_gma(s, 1);
-  // LENC (0 = Disable , 1 = Enable)
-  s->set_lenc(s, 1);
-  // HORIZ MIRROR (0 = Disable , 1 = Enable)
-  s->set_hmirror(s, 0);
-  // VERT FLIP (0 = Disable , 1 = Enable)
-  s->set_vflip(s, 0);
-  // DCW (0 = Disable , 1 = Enable)
-  s->set_dcw(s, 1);
-  // COLOR BAR PATTERN (0 = Disable , 1 = Enable)
-  s->set_colorbar(s, 0);
- 
-}
+// default camera settings (modifiable from config file)
+int8_t brightness = 0;
+int8_t contrast = 0;
+int8_t saturation = 0;
+uint8_t specialEffects = 0;
+uint8_t whiteBalance = 1;
+uint8_t awbGain = 1;
+uint8_t wbMode = 0;
+uint8_t exposureCtrl = 1;
+uint8_t aec2 = 0;
+int8_t aeLevel = 0;
+uint16_t aecValue = 300;
+uint8_t gainCtrl = 1;
+uint8_t agcGain = 0;
+uint8_t gainCeiling = 0;
+uint8_t bpc = 0;
+uint8_t wpc = 1;
+uint8_t rawGma = 1;
+uint8_t lenc = 1;
+uint8_t hmirror = 0;
+uint8_t vflip = 0;
+uint8_t dcw = 1;
+uint8_t colorbar = 0; 
+// timing config options
+uint16_t timeBetweenTriggers = 60; // in seconds
+uint16_t capturesPerTrigger = 3;
+// device ID
+String deviceID = "cam1";
+// photo information
+String photosDir = "/photos";
+String photoName = "starlingcam"; // start of the name of each photo being saved
+String sampleName = "sample";
+/* camera-control.ino prototypes */
+bool configESPCamera();
+bool takeNewPhoto(String thisPhotoDir, String thisPhotoName);
+bool nextPhoto();
 
 
-// init the SD card
-void initMicroSDCard() {
-  // Start the MicroSD card
- 
-  Serial.println("Mounting MicroSD Card");
-  if (!SD_MMC.begin()) {
-    Serial.println("MicroSD Card Mount Failed");
-    return;
-  }
-  uint8_t cardType = SD_MMC.cardType();
-  if (cardType == CARD_NONE) {
-    Serial.println("No MicroSD Card found");
-    return;
-  }
- 
-}
 
-// for taking a new photo
-void takeNewPhoto(String path) {
-  // Take Picture with Camera
- 
-  // Setup frame buffer
-  camera_fb_t  * fb = esp_camera_fb_get();
- 
-  if (!fb) {
-    Serial.println("Camera capture failed");
-    return;
-  }
- 
-  // Save picture to microSD card
-  fs::FS &fs = SD_MMC;
-  File file = fs.open(path.c_str(), FILE_WRITE);
-  if (!file) {
-    Serial.println("Failed to open file in write mode");
-  }
-  else {
-    file.write(fb->buf, fb->len); // payload (image), payload length
-    Serial.printf("Saved file to path: %s\n", path.c_str());
-  }
-  // Close the file
-  file.close();
- 
-  // Return the frame buffer back to the driver for reuse
-  esp_camera_fb_return(fb);
-}
- 
+/* DEEP SLEEP */
+#define PIR_RF_BITMASK 0b10000000010100 // = GPIO2(RTC12) + GPIO4(RTC10) + GPIO13(RTC14) = 2^1 + 2^3
+#define PIR_BITMASK 0x10100 // GPIO2 + GPIO4
+#define RF_BITMASK 0b10000000000000 // GPIO13
+#define PIR_1_PIN 2 // note - must also change RTC deinit in sleep deinit
+#define PIR_2_PIN 4
+#define RF_PIN 13
+/* sleep.ino prototypes */
+void timerRFSleep(uint16_t time);
+void pirRFSleep();
+uint8_t deepSleepAwakenPin();
+void deinitSleep();
+
+/* START SETUP AND LOOP MAIN */
+#ifndef UNIT_TESTS
 void setup() {
- 
   // Disable brownout detector
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
- 
-  // Start Serial Monitor
-  Serial.begin(115200);
-
-  // start WiFi
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
- 
-  // Initialize the camera
-  // Serial.print("Initializing the camera module...");
-  // configESPCamera();
-  // Serial.println("Camera OK!");
- 
-  // Initialize the MicroSD
-  Serial.print("Initializing the MicroSD card module... ");
-  initMicroSDCard();
-  
-
-  // don't think I'm going to use the EEPROM
-  // initialize EEPROM with predefined size
-  // EEPROM.begin(EEPROM_SIZE);
-  // pictureCount = EEPROM.read(0) + 1;
-  
-  /** USER CODE: OPENING AND COPYING A FILE **/
-  String origpath = "/imageorig.jpg";
-  String copypath = "/imagecopy.jpg";
- 
-  fs::FS &fs = SD_MMC;
-
-  File origfile = fs.open(origpath.c_str());
-  
-  if (origfile) {
-    size_t len = origfile.size();
-
-    uint8_t* buf = (uint8_t*)ps_malloc(len); // allocate buffer in PSRAM
-
-    origfile.read(buf, len);
-    Serial.printf("Read %u bytes", len);
-    origfile.close();
-
-    // Copy file to copyfile location
-    File copyfile = fs.open(copypath.c_str(), FILE_WRITE);
-
-    if (copyfile) {
-      copyfile.write(buf, len);
-
-      Serial.println("Wrote to file");
-    }
-
-    copyfile.close();
-
-
-
-    Serial.println("Connecting...");
-
-    while(WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-    }
-    Serial.print("Connected with IP: ");
-    Serial.println(WiFi.localIP());
-
-    while(1) {
-    if (client.connect(serverName.c_str(), serverPort)) {
-      Serial.println("Connection successful!");    
-      // String head = "--esp32starling\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-      // String tail = "\r\n--esp32starling--\r\n";
-
-      // uint32_t imageLen = len;
-      // uint32_t extraLen = head.length() + tail.length();
-      // uint32_t totalLen = imageLen + extraLen;
-      uint32_t totalLen = len;
-
-      client.println("POST " + serverPath + " HTTP/1.1");
-      client.println("Host: " + serverName);
-      client.println("Content-Length: " + String(totalLen));
-      client.println("Content-Type: image/jpeg");
-      client.println();
-      // client.print(head);
-
-      uint8_t *fbBuf = buf;
-      size_t fbLen = len;
-      for (size_t n=0; n<fbLen; n=n+1024) {
-        if (n+1024 < fbLen) {
-          client.write(fbBuf, 1024);
-          fbBuf += 1024;
-        }
-        else if (fbLen%1024>0) {
-          size_t remainder = fbLen%1024;
-          client.write(fbBuf, remainder);
-        }
-      }   
-      // client.print(tail);
-      
-      
-      // int timoutTimer = 10000;
-      // long startTimer = millis();
-      // boolean state = false;
-      
-      // while ((startTimer + timoutTimer) > millis()) {
-      //   Serial.print(".");
-      //   delay(100);      
-      //   while (client.available()) {
-      //     char c = client.read();
-      //     if (c == '\n') {
-      //       if (getAll.length()==0) { state=true; }
-      //       getAll = "";
-      //     }
-      //     else if (c != '\r') { getAll += String(c); }
-      //     if (state==true) { getBody += String(c); }
-      //     startTimer = millis();
-      //   }
-      //   if (getBody.length()>0) { break; }
-      // }
-      // Serial.println();
-      client.stop();
-
-    }
-    else{
-      Serial.println("Failed to connect to server");
-    }
-
-    delay(10000);
-    }
-    
-  
-  
+  esp_sleep_wakeup_cause_t wakeupReason = esp_sleep_get_wakeup_cause();
+  deinitSleep(); // TODO: Is there a chance this could mess checking the awakening pin?
+  if (wakeupReason == ESP_SLEEP_WAKEUP_TIMER) {
+    pirRFSleep(); // immediately go back to sleep with PIR trigger
   }
+  // Start Serial Monitor
+  #ifdef DEBUG
+  Serial.begin(115200);
+  while (!Serial) {
+    sleep(200);
+  }
+  #endif
 
+  uint8_t awakenPin = deepSleepAwakenPin();
 
-
-
-
-  // Update EEPROM picture number counter
-  // EEPROM.write(0, pictureCount);
-  // EEPROM.commit();
- 
-  // Bind Wakeup to GPIO13 going LOW
-  // esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0);
- 
-  // Serial.println("Entering sleep mode");
-  // delay(1000);
- 
-  // // Enter deep sleep mode
-  // esp_deep_sleep_start();
- 
+  switch(awakenPin) {
+    case PIR_1_PIN:
+    case PIR_2_PIN:
+      triggerCapture();
+      break;
+    case RF_PIN:
+      triggerTransmitter();
+      break;
+  }
 }
- 
+
 void loop() {
- 
+  vTaskDelete(NULL);
+  // actual operation loop is inside the different trigger modes in main-tasks
 }
+#endif
+/* END SETUP AND LOOP MAIN */
+
+/* START UNIT TESTING */
+#ifdef UNIT_TESTS
+// choose the correct define to run the desired test
+// #define CONFIG_TEST // test status - PASSED
+// #define FILE_SENT_TEST // test status - PASSED, possible changes incoming
+// #define READ_NUM_IMAGES_TEST // test status - PASSED
+// #define TAKE_PHOTO_TEST // test status - PASSED
+// #define MANY_PHOTOS_TEST // test status - PASSED
+// #define SEND_ALL_FILES_TEST // test status - PASSED
+// #define UPLOAD_TO_PI_TEST // test status - PASSED
+// #define UPDATE_CONFIG_TEST // test status - PASSED
+
+#ifdef MANY_PHOTOS_TEST
+uint32_t photoNum = 0;
+#endif
+void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  // Start Serial Monitor
+  #ifdef DEBUG
+  Serial.begin(115200);
+  while (!Serial) {
+    delay(200);
+  }
+  #endif
+
+  #ifdef CONFIG_TEST
+  initMicroSDCard();
+  loadFromConfig();
+  #endif
+
+  #ifdef FILE_SENT_TEST
+  initMicroSDCard();
+  loadFromConfig();
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  #ifdef DEBUG
+  Serial.print("Connecting to wifi...");
+  #endif
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(300);
+    #ifdef DEBUG
+    Serial.print(".");
+    #endif
+  }
+  #ifdef DEBUG
+  Serial.println("");
+  #endif
+  String filePath = "/sample.jpeg";
+  #ifdef DEBUG
+  Serial.println(serverAddress);
+  #endif
+  sendAndDeleteImage(filePath);
+  #endif
+
+  #ifdef READ_NUM_IMAGES_TEST
+  initMicroSDCard();
+  #endif
+
+  #ifdef TAKE_PHOTO_TEST
+  initMicroSDCard();
+  configESPCamera();
+  takeNewPhoto(String("/sampleCam.jpeg"));
+  Serial.println("Taken photo...hopefully");
+  #endif
+
+  #ifdef MANY_PHOTOS_TEST
+  initMicroSDCard();
+  configESPCamera();
+  #endif
+
+  #ifdef SEND_ALL_FILES_TEST
+  initMicroSDCard();
+  loadFromConfig();
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  #ifdef DEBUG
+  Serial.println(ssid);
+  Serial.println(password);
+  Serial.print("Connecting to wifi...");
+  #endif
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(300);
+    #ifdef DEBUG
+    Serial.print(".");
+    #endif
+  }
+  uint32_t successNum = sendAllPhotos();
+  #ifdef DEBUG
+  Serial.println(successNum);
+  #endif
+  #endif
+
+  #ifdef UPLOAD_TO_PI_TEST
+  initMicroSDCard();
+  loadFromConfig();
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  #ifdef DEBUG
+  Serial.println(ssid);
+  Serial.println(password);
+  Serial.print("Connecting to wifi...");
+  #endif
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(300);
+    #ifdef DEBUG
+    Serial.print(".");
+    #endif
+  }
+  #endif // end UPLOAD_TO_PI_TEST
+
+  #ifdef UPDATE_CONFIG_TEST
+  initMicroSDCard();
+  loadFromConfig();
+  initWiFi();
+  #ifdef DEBUG
+  Serial.println(updateConfig());
+  // check SD card to see if it contains the updated config file
+  #endif
+  #endif // end UPDATE_CONFIG_TEST
+}
+
+void loop() {
+  #ifdef CONFIG_TEST
+  Serial.println(ssid); // should be changed
+  Serial.println(password); // should be changed
+  Serial.println(brightness); // should be changed
+  Serial.println(contrast); // should be default
+  Serial.println(saturation); // should be default
+  Serial.println(aecValue); // should be default
+  delay(5000);
+  #endif
+
+  #ifdef READ_NUM_IMAGES_TEST
+  Serial.println("Starting test");
+  uint32_t num = getNumPhotos();
+  Serial.println(num);
+  setNumPhotos(num);
+  delay(5000);
+  #endif
+
+  #ifdef MANY_PHOTOS_TEST
+  uint32_t nextPhotoNum = getNumPhotos();
+  if (nextPhoto()) {
+    Serial.println("Next photo taken");
+    Serial.print("Photo num: ");
+    Serial.println(nextPhotoNum);
+  }
+  else{
+    Serial.println("Problem taking next photo");
+  }
+  #endif
+
+  #ifdef UPLOAD_TO_PI_TEST
+  int16_t responseCode = sendPhoto(String("sample.jpeg"));
+  #ifdef DEBUG
+  Serial.print("Response code: ");
+  Serial.println(responseCode);
+  #endif
+  delay(5000);
+  #endif // end UPLOAD_TO_PI_TEST
+}
+#endif
+/* END UNIT TESTING */
