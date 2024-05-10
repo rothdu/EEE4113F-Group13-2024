@@ -53,7 +53,7 @@ uint32_t sendAllPhotos() {
     #endif
     uint8_t a;
     for (a = 0; a < numAttempts; a++) {
-      if (responseCode == HTTP_CODE_OK) {
+      if (responseCode == HTTP_CODE_CREATED) { // receive a 201, file created
         fs.remove(thisPhotoName);
         break;
       }
@@ -97,7 +97,7 @@ int16_t sendPhoto(String thisPhotoDir, String thisPhotoName, uint32_t photoNum) 
 
   // add HTTP headers
   http.addHeader("Content-Type", "image/jpeg");
-  http.addHeader("Content-Length", String(fileLen));
+  // http.addHeader("Content-Length", String(fileLen)); library actually does this for me
   http.addHeader("Photo-Name", thisPhotoName);
   http.addHeader("Device-ID", deviceID);
   http.addHeader("Photo-Number", String(photoNum));
@@ -108,8 +108,8 @@ int16_t sendPhoto(String thisPhotoDir, String thisPhotoName, uint32_t photoNum) 
   file.read(fileBuf, fileLen);
   // close the file
   file.close();
-  // Send file via POST
-  int16_t responseCode = http.POST(fileBuf, fileLen);
+  // Send file via PUT
+  int16_t responseCode = http.PUT(fileBuf, fileLen);
   free(fileBuf);
   http.end();
   return responseCode;
@@ -142,7 +142,7 @@ int16_t sendSample(String thisPhotoDir, String thisPhotoName) {
 
   // add HTTP headers
   http.addHeader("Content-Type", "image/jpeg");
-  http.addHeader("Content-Length", String(fileLen));
+  // http.addHeader("Content-Length", String(fileLen)); // library actually does this for me
   http.addHeader("Photo-Name", thisPhotoName);
   http.addHeader("Device-ID", deviceID);
   // create buffer on PSRAM to store file
@@ -152,8 +152,8 @@ int16_t sendSample(String thisPhotoDir, String thisPhotoName) {
   file.read(fileBuf, fileLen);
   // close the file
   file.close();
-  // Send file via POST
-  int16_t responseCode = http.POST(fileBuf, fileLen);
+  // Send file via PUT
+  int16_t responseCode = http.PUT(fileBuf, fileLen);
   free(fileBuf);
   http.end();
   return responseCode;
@@ -313,6 +313,7 @@ int16_t sendMetadata() {
   }
 
   http.addHeader("Device-ID", deviceID);
+  http.addHeader("Content-Type", "application/json");
   // Create JSON doc and object
 
 
@@ -326,7 +327,7 @@ int16_t sendMetadata() {
   String payload; // should be fairly short so can store in a String
 
   // write JSON doc to payload
-  if (serializeJson(metadataDoc, payload) == 0) {
+  if (serializeJsonPretty(metadataDoc, payload) == 0) {
     #ifdef DEBUG
     Serial.println("Failed to create valid payload for metadata");
     #endif
@@ -334,7 +335,8 @@ int16_t sendMetadata() {
     return 0;
   }
   metadataDoc.clear();
-  int16_t responseCode = http.POST(payload);
+  // http.addHeader("Content-Length", payload.length()); // library actually does this for me
+  int16_t responseCode = http.PUT(payload);
   http.end();
   return responseCode;
 

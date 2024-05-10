@@ -77,7 +77,7 @@ void handleInstruction(t_instruction instruction) {
         break;
       }
       for (uint8_t a = 0; a < numAttempts; a++) {
-        if (sendSample(configDir, sampleName) == 200) {
+        if (sendSample(configDir, sampleName) == HTTP_CODE_CREATED) { // 201, resource created
           break;
         }
       }

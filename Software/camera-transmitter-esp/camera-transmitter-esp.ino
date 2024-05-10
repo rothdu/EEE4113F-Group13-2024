@@ -2,20 +2,19 @@
 #define DEBUG
 
 // define this to run the unit test code rather than the production code
-// #define UNIT_TESTS
-
+#define UNIT_TESTS
 
 /* MAIN TASKS */
 typedef enum{
-  WAIT = 0,
-  SEND_METADATA = 1,
-  UPDATE_CONFIG = 2,
-  SEND_PHOTOS = 3, 
-  SAMPLE_PHOTO = 4,
-  EXIT = 5
+  SEND_METADATA = 0,
+  UPDATE_CONFIG = 1,
+  SEND_PHOTOS = 2, 
+  SAMPLE_PHOTO = 3,
+  EXIT = 4,
+  WAIT = 5
   // room to add more if necessary
 } t_instruction;
-t_instruction currentInstruction;
+t_instruction currentInstruction = WAIT;
 void triggerCapture();
 void triggerTransmitter();
 void handleInstruction(t_instruction instruction);
@@ -193,6 +192,12 @@ void loop() {
 // #define SEND_ALL_FILES_TEST // test status - PASSED
 // #define UPLOAD_TO_PI_TEST // test status - PASSED
 // #define UPDATE_CONFIG_TEST // test status - PASSED
+/* still to run:
+  Each instruction individually
+  trigger capture mode
+  trigger transmitter mode
+  deep sleep things
+*/
 
 #ifdef MANY_PHOTOS_TEST
 uint32_t photoNum = 0;

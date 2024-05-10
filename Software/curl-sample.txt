@@ -1,0 +1,1 @@
+curl -X POST 'http://192.168.42.1:8080/upload_image' -H "Content-Type: image/jpeg" -H "Content-Length: 7144" -H "Device-ID: curl" -H "Photo-Name: sample.jpeg" --data-binary '@sample.jpeg'

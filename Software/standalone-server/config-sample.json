@@ -1,0 +1,13 @@
+{
+    "network": {
+        "ssid": "sdks",
+        "password": "0823992390",
+        "serverIP": "192.168.1.35",
+        "serverPort": 8080
+    },
+    "camera": {
+        "brightness": -2,
+        "contrast": -2,
+        "saturation": -2
+    }
+}
