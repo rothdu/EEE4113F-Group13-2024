@@ -1,6 +1,13 @@
 % ----------------------------------------------------
 % Literature Review
 % ----------------------------------------------------
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
+\ifstandalone
+\tableofcontents
+\fi
 \chapter{Literature Review \label{ch:literature}}
 \section{Problem statement}
 
@@ -90,7 +97,7 @@ Raspberry Pi computers allow for "user-friendly programming capabilities" \cite{
 
 \cite{rico-guevara2017bring} chose to use PIR motion sensors because they "were cheap and easy to deploy, and successfully detected hummingbirds." They chose to combat the issue of false detections by intentionally positioning the sensors away from objects that could trigger unwanted detections and mitigated the consequently limited scope of individual sensors by triggering from multiple differently positioned sensors \cite{rico-guevara2017bring}. A separate standalone trigger was also developed which included an adjustable sensitivity, allowing "fine tuning by optimizing the trade-off between increased sensitivity and false positives" \cite{rico-guevara2017bring}.
 
-Welbourne et al identify that the functioning of PIR sensors is often misunderstood, leading to "flawed inferences or expectations of camera performance." \cite{welbourne2016how.} A thorough understanding of PIR sensors would help in the development of a robust and well-functioning solution.
+Welbourne et al identify that the functioning of PIR sensors is often misunderstood, leading to "flawed inferences or expectations of camera performance." \cite{welbourne2016how} A thorough understanding of PIR sensors would help in the development of a robust and well-functioning solution.
 
 \cite{rovero2013which} discusses that older commercial camera traps from the 1980s were triggered by a break in an infrared beam. However, newer models come in a "self-contained package including sensors and camera." \cite{rovero2013which}. Hobbs et al. propose a solution for "amphibians, reptiles, small mammals, and large invertebrates" \cite{hobbs2017an} using similar technology. However, the solution in \cite{hobbs2017an} appears to be too large to viably be integrated into a bird nest, and the system requires the animals to walk over a threshold near the beam, which makes it difficult to apply to birds that fly.
 

@@ -2,14 +2,13 @@
 % Firmware Submodule
 % ----------------------------------------------------
 \chapter{Firmware development \label{ch:firmware}}
-
 \section{Subsystem introduction}
 
 This subsystem deals with the development of firmware for the microcontrollers in both the camera/transmitter and receiver modules. The fundamental goals of this subsystem are to enable the camera/transmitter module to take photographs of the red-winged starlings, and to transmit this photographs to the receiver module without disturbing the birds' nests. The source code for this subsystem is available in the \href{https://github.com/rothdu/EEE4113F-Group13-2024}{project repository} on GitHub.
 
-Section \ref{s:firmware-requirements} presents a traceability matrix with the subsystem's user requirements, interpretted functional requirements, and the corresponding ATPs. Section \ref{s:firmware-design-decisions} discusses high-level design decisions that informed the subsystem development process. Section \ref{s:firmware-design-process} details the design process and the functionality of the final implementation. Section \ref{s:firmware-unit-tests} shows the unit tests that determined the system's functionality. Finally, section \ref{s:firmware-atps} shows the acceptance test procedures, proving that the user requirements have been adequately met.
+Section \ref{s:firmware-requirements} presents a traceability matrix with the subsystem's user requirements, interpretted functional requirements, and the corresponding ATPs. Section \ref{s:firmware-design-decisions} discusses high-level design decisions that informed the subsystem development process. Section \ref{s:firmware-design-process} details the design process and the functionality of the final implementation. Finally, section \ref{s:firmware-atps} shows the acceptance test procedures, proving that the user requirements have been adequately met.
 
-\section{Requirement analysis \label{s:firmware-requirements}}
+\section{Requirement analysis} \label{s:firmware-requirements}
 User requirements where determined from discussions with the red-winged starling researchers \cite{hofmeyer2024private}. The user requirements were interpretted to form functional requirements for the subsystem, and an acceptance test was developed for each requirement. The traceability matrix displaying the requirements is shown in Table \ref{tab:firmware-requirements}.
 
 \centering
@@ -29,16 +28,13 @@ User requirements where determined from discussions with the red-winged starling
 \raggedright
 
 
-\section{High-level design decisions \label{s:firmware-design-decisions}}
+\section{High-level design decisions } \label{s:firmware-design-decisions}
 
 This section details high-level design decisions that were made prior to any implementation and testing. These decisions determined key aspects of the development process.
 
 \subsection{Development environment}
 
 
-% Please add the following required packages to your document preamble:
-% \usepackage{multirow}
-% \usepackage{graphicx}
 \begin{table}[ht]
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{|l|l|l|l|l|}
@@ -99,14 +95,16 @@ The Arduino framework includes a wide variety of software libraries. These inclu
 Some specific library selections falling outside of this general principle were:
 
 \begin{itemize}
-    \item ArduinoJson \cite{Arduino JSON citation} cites 10\% better speed and memory efficiency than the "standard" library, and has extensive documentation available on its website.
-    \item ScreenUI \cite{Screen UI library here} is a user-implemented library for easy development of menus which display on LCD screen, which was applied to the receiver module.
+    \item ArduinoJson cites 10\% better speed and memory efficiency than the "standard" library, and has extensive documentation available on its website.
+    \item ScreenUI  is a user-implemented library for easy development of menus which display on LCD screen, which was applied to the receiver module.
     \item Reference I2C library here...
 \end{itemize}
 
+% TODO: reference the libraries I've used
 
 
-\section{Submodule design \label{s:firmware-design-process}}
+
+\section{Submodule design} \label{s:firmware-design-process}
 
 \subsection{High level camera/transmitter module firmware flow}
 
@@ -132,7 +130,7 @@ This configuration option has a number of advantages:
 \begin{itemize}
     \item Storing configuration on the microSD card makes it possible to load new configuration options without needing to flash new code onto the ESP32 or access it remotely.
     \item JSON is human-readable format, making easily possible to write new configuration files.
-    \item JSON is a well-supported format, and can easily be read and interpretted on the ESP32 using the ArduinoJson library \ref{arduinoJSON ref here}
+    \item JSON is a well-supported format, and can easily be read and interpretted on the ESP32 using the ArduinoJson library % TODO \ref{arduinoJSON ref here}
 \end{itemize}
 
 \subsection{Camera sensor settings}
@@ -145,8 +143,6 @@ The user requirements specified that video or image capture was acceptable, thou
 
 \subsection{Camera speed testing}
 
-
-\section{Unit testing \label{s:firmware-unit-tests}}
 
 \section{Acceptance Tests \label{s:firmware-atps}}
 
@@ -207,4 +203,3 @@ The user requirements specified that video or image capture was acceptable, thou
 %     \item User interface design
 %     \item Upload mode to cloud storage
 % \end{itemize}
-

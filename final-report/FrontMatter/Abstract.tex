@@ -1,5 +1,14 @@
 
-
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
 % \afterpage{
 % \newgeometry{margin=30mm}
 \chapter*{Abstract}
+
+\ifstandalone
+% \bibliography{../Bibliography/References.bib}
+% \printnoidxglossary[type=\acronymtype,nonumberlist]
+\fi
+\end{document}

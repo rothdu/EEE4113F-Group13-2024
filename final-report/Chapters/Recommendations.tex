@@ -1,4 +1,16 @@
 % ----------------------------------------------------
 % Recommendations
 % ----------------------------------------------------
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
 \chapter{Recommendations \label{ch:recommendations}}
+
+% ----------------------------------------------------
+\ifstandalone
+\bibliography{../Bibliography/References.bib}
+\printnoidxglossary[type=\acronymtype,nonumberlist]
+\fi
+\end{document}
+% ----------------------------------------------------
