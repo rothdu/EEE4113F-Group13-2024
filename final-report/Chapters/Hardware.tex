@@ -1,0 +1,423 @@
+% ----------------------------------------------------
+% Firmware Submodule
+% ----------------------------------------------------
+%\documentclass[class=report,11pt,crop=false]{standalone}
+%\input{../Style/ChapterStyle.tex}
+%\input{../FrontMatter/Glossary.tex}
+%\begin{document}
+%\ifstandalone
+%\tableofcontents
+%\fi
+% ----------------------------------------------------
+\chapter{Camera/Transmitter (CT) \& Receiver (R) Hardware (PLLTHI032)\label{ch:firmware}}
+% \epigraph{}%
+    % {\emph{---Carl Sagan}}
+% \vspace{0.5cm}
+% ----------------------------------------------------
+
+
+\section{Subsystem introduction}
+This section involves the design and implementation of the hardware for the transmitter and receiver module for a Red-winged Starling nest monitoring system. The focus is to design a camera system that is motion activated when there is activity in the nest. This data is then transferred to a handheld receiver operated by the user on the ground. 
+
+\section{Requirements \& Specifications}
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|p{1cm}|}
+\hline
+\textbf{User Requirements} & \textbf{Functional Requirements} & \textbf{Specifications} & \textbf{ATP} \\
+\hline
+Clear images of the birds must be captured and stored onboard. & The CT should be capable of capturing and storing quality images in all lighting conditions. & Camera should have infrared light, automated day/night mode switching, and fast onboard storage. & ATP1, ATP2 \\
+\hline
+The camera should only turn on with motion & The camera should trigger when there is movement. & Equip the CT with PIR sensors for motion detection. & ATP3 \\
+\hline
+The CT should transmit data wirelessly, avoiding cables & The CT should be capable of wireless data transmission. & The CT must be equipped with a working wireless module. & ATP4, ATP5 \\
+\hline
+The CT must be as small as possible. & The CT should not be too big as to disturb the birds. & The CT module must be no bigger than 80mm(W) x 60mm(L) x 60mm(H). & ATP6 \\
+\hline
+The Receiver must have wireless connectivity. & The receiver should be capable of establishing a wireless connection. & The receiver must be equipped with a wireless module. & ATP7 \\
+\hline
+The receiver must have onboard storage to store the retrieved data. & The receiver should be able to store the data onboard to be used later. & The receiver must have a MicroSD card option for storage. & ATP8 \\
+\hline
+The receiver must have a screen and interactive buttons to view the basic information. & The receiver should have buttons for easy navigation through the UI. & The receiver must be equipped with a screen and have 4 pushbuttons connected to pull down resistors. & ATP9, ATP10 \\
+\hline
+\end{tabular}
+\caption{User Requirements, Functional Requirements, Specifications, and ATP}
+\label{tab:my_label}
+\end{table}
+
+
+
+
+
+\section{Design Process}
+
+\subsection{Wired vs. Wireless Communication}
+There are two options for communication: wired and wireless. the table below goes through the aspects of each. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{3.5cm}|p{6cm}|p{6cm}|}
+\hline
+\textbf{Aspect} & \textbf{Wired Communication} & \textbf{Wireless Communication} \\
+\hline
+Medium & Physical cables needed. & No physical cables, just radio signals. \\
+\hline
+Antenna & No need. & Needed for long distance data transfer. \\
+\hline
+Distance & Better for short distance. & Better for long distance. \\
+\hline
+Power Consumption & Lower due to cabling. & Higher due to antenna (active components). \\
+\hline
+Speed & Low latency – ideal for real-time applications. & Suitable for medium to high-speed data transfer. \\
+\hline
+Mobility & Limited with physical cables. & Free range in coverage area. \\
+\hline
+Security & Easy to damage physical cables. & Robust security protocols can be used. \\
+\hline
+Maintenance & High & Low \\
+\hline
+\end{tabular}
+\caption{Comparison of Wired and Wireless Communication}
+\label{tab:communication_comparison}
+\end{table}
+With the nests located high up on buildings, wireless communication offers the user better access despite slightly slower speeds. The disadvantages of using wireless communication does not warrant a change to wired communication. 
+
+\subsection{Wireless Communication Protocols}
+There is no shortage of options when it comes to wireless communication protocols. The table below discusses the criterion upon which the different protocols were assessed on. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{4cm}|p{12cm}|}
+\hline
+\textbf{Criteria} & \textbf{Justification (Pass/Fail)} \\
+\hline
+Range \& Coverage & Can data be transmitted over a range of 10-15 m outdoors with minimal data loss? \\
+\hline
+Data Rate & Can higher data transfer rates be obtained (higher than 10 Mbps)? \\
+\hline
+Power Consumption & Is this protocol optimised to work well with low powered battery systems? \\
+\hline
+Latency & Does the protocol have a latency lower than 100ms? \\
+\hline
+Interference \& Noise & Is the protocol functional in crowded frequency bands? \\
+\hline
+Cost & Is this protocol affordable to design and maintain? \\
+\hline
+Payload & Is the protocol able to handle large data file transmission? \\
+\hline
+Existing Libraries \& Support & Does the protocol have available libraries and examples to use? Is there reliable developer support? \\
+\hline
+\end{tabular}
+\caption{Criteria for Assessing Wireless Protocols}
+\label{tab:wireless_protocol_criteria}
+\end{table}
+
+The criteria above will be used to grade each protocol with a pass or fail. The more passes a protocol has, the more likely it was to be chosen. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+\textbf{Criteria} & \textbf{BLE} & \textbf{Bluetooth Classic} & \textbf{ESP-Now} & \textbf{Wi-Fi} & \textbf{LoRa} & \textbf{RFID} \\
+\hline
+Range \& Coverage & Fail & Fail & Pass & Pass & Pass & Pass \\
+\hline
+Data Rate & Fail & Fail & Fail & Pass & Fail & Fail \\
+\hline
+Power Consumption & Pass & Fail & Pass & Fail & Pass & Pass \\
+\hline
+Latency & Fail & Pass & Pass & Pass & Pass & Pass \\
+\hline
+Interference \& Noise & Pass & Pass & Pass & Pass & Fail & Fail \\
+\hline
+Cost & Pass & Fail & Pass & Pass & Fail & Fail \\
+\hline
+Payload & Pass & Pass & Fail & Pass & Fail & Fail \\
+\hline
+Existing Libraries \& Support & Pass & Pass & Pass & Pass & Pass & Pass \\
+\hline
+\end{tabular}
+\caption{Assessment of Different Wireless Protocols}
+\label{tab:wireless_protocol_assessment}
+\end{table}
+Both WiFi and ESP-NOW emerged as viable options from this evaluations, with the fewest fails of all the options. Looking at the fails of ESP-NOW, it has an very low payload of around 250 bytes, making it capable of sending only messages between boards. The data rate is around 1 Mbps, which is okay, but not as fast as WiFi. 
+WiFi, on the other hand, only has issues with power consumption. With the high speed data transfer and lower latency relative to the other options, this is an acceptable trade off. While yes, there are other options that offer lower power consumption, the data transfer is also slower. Looking at the bigger picture, if the data rate is slower, despite having a lower power consumption, the module will have to stay on for longer till the transfer is complete. This could consume even more power than WiFi, since the module would not have to stay on for that much longer. 
+The user also does not want to wait a very long time to retrieve the data. Their time is important. WiFi is chosen. The next part of the design process looks at the different micro-controller options. 
+
+\subsection{Transmitter Microcontroller}
+
+There are millions of different WiFi microcontrollers to choose from in the market, ranging from Arduino, ESP, NRF Dev boards, Raspberry Pi Pico W, and ST Micron Dev boards. However, the NRF boards are extremely expensive, and only offer BLE communication, not to mention minimal customer support. The Arduino board options, like the nano 33 IOT and UNO Wi-Fi, are expensive and bulky respectively. The ST Micro Dev Boards are also quite costly in their own regard, since all the affordable options have been sold out, like the STM32F401, but one would need to look at external Wi-Fi modules since those are sold separately. This leaves the Raspberry Pi Pico W and ESP boards. The table below will lay out a set of criteria that different boards will be assessed on to see which one would be suitable to fulfill the needs of the transmitter.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Criteria} & \textbf{Justification} \\
+\hline
+Processing Power & Does the microcontroller have enough processing power in terms of the number of cores and clock speed (~240 MHz)? \\
+\hline
+Memory & Is there enough RAM and flash memory to handle tasks related to handling images? \\
+\hline
+Low Power Modes & Does the microcontroller have low power standby modes available? \\
+\hline
+Power Consumption & Is the microcontroller power efficient in active mode? \\
+\hline
+Input/Output (I/O) Pins & Can the microcontroller support external peripherals with available I/O pins? \\
+\hline
+Development Environment & Are there enough tools available to assist with development? \\
+\hline
+Cost & Is the microcontroller affordable? \\
+\hline
+Size & Is the microcontroller small and compact? \\
+\hline
+\end{tabular}
+\label{tab:microcontroller_criteria}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+Existing Libraries \& Support & Does the microcontroller have many libraries available and community support? \\
+\hline
+Operating Voltage & Is the operating voltage of the microcontroller 5V? \\
+\hline
+Camera Support & Does this microcontroller have good support with regards to camera attachments? \\
+\hline
+Weight & Does the microcontroller weigh more than 30 g? \\
+\hline
+MicroSD card holder & Does the microcontroller have a microSD card holder onboard \\
+\hline
+\end{tabular}
+\caption{Criteria for the Transmitter Microcontroller Selection}
+\label{tab:microcontroller_criteria}
+\end{table}
+
+The table below proceeds to assess four potential board which have been chosen for the transmitter submodule against the criterion outlines in Table 1.5.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{3.5cm}|l|l|l|l|l|}
+\hline
+\textbf{Criteria} & \textbf{Pi Pico W} & \textbf{ESP32-CAM} & \textbf{ESP32-CH340} & \textbf{ESP32-C6} & \textbf{ESP32 S3} \\
+\hline
+Processing Power & Fail & Pass & Pass & Fail & Pass \\
+\hline
+Memory & Pass & Pass & Pass & Pass & Pass \\
+\hline
+Low Power Modes & Pass & Pass & Pass & Pass & Pass \\
+\hline
+Power Consumption & Pass & Pass & Fail & Pass & Fail \\
+\hline
+Input/Output (I/O) Pins & Pass & Fail & Pass & Pass & Pass \\
+\hline
+Development Environment & Pass & Pass & Pass & Pass & Pass \\
+\hline
+Cost & Pass & Pass & Pass & Fail & Pass \\
+\hline
+Size & Pass & Pass & Fail & Fail & Pass \\
+\hline
+Existing Libraries \& Support & Pass & Pass & Pass & Pass & Pass \\
+\hline
+Operating Voltage & Pass & Pass & Pass & Pass & Pass \\
+\hline
+Camera Support & Pass & Pass & Pass & Fail & Fail \\
+\hline
+Weight & Pass & Pass & Pass & Pass & Pass \\
+\hline
+MicroSD card holder & Fail & Pass & Fail & Fail & Fail \\
+\hline
+\end{tabular}
+\caption{Assessment of Different Transmitter Microcontrollers}
+\label{tab:microcontroller_assessment}
+\end{table}
+
+The Pi Pico W and ESP32-CH340 have poor processing power and power consumption respectively, with the latter having an additional space constraint. The ESP32-C8 had similar limitations, while also being expensive with poor camera support. The ESP32 S3 lacks camera support and has bad power consumption. 
+
+The ESP32-CAM stands out, offering an onboard MicroSD card holder with quad SPI and camera, with support for external antenna. While there are fewer GPIO pins available for external devices, the trade-offs with the other boards are far worse, since the other options would need an external camera and MicroSD card. This would increase power consumption, cost and reduces the GPIO pins available. The ESP32-CAM avoids these issues, which is why it was chosen. 
+
+
+\subsection{Receiver Microcontroller}
+
+Table 1.1. detailed what the Receiver module should have. The table below lays out a set of criteria to assess different microcontroller options. However, since the microcontroller options have already been assessed in the previous section, just a few of the amended criteria will be looked at
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Criteria} & \textbf{Justification} \\
+\hline
+Processing Power & Does the microcontroller have enough processing power in terms of the number of cores and clock speed (~100 MHz)? \\
+\hline
+Memory & Is there enough RAM and flash memory to handle image transfer? \\
+\hline
+Input/Output (I/O) Pins & Are there enough GPIO pins on the microcontroller to support a screen (I2C) and MicroSD card (SPI)? \\
+\hline
+Cost & Is the microcontroller affordable? \\
+\hline
+Size & Is the microcontroller small and compact? \\
+\hline
+Weight & Does the microcontroller weigh more than 5 g? \\
+\hline
+\end{tabular}
+\caption{Criteria for Receiver Microcontroller Selection}
+\label{tab:microcontroller_criteria}
+\end{table}
+
+Given the information above, the three best microcontrollers from table 1.6. are assessed to see if they meet the demands of this module. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Criteria} & \textbf{Pi Pico W} & \textbf{ESP32-C6} & \textbf{ESP32 S3} \\
+\hline
+Processing Power & Pass & Pass & Pass \\
+\hline
+Memory & Pass & Pass & Pass \\
+\hline
+Input/Output (I/O) Pins & Pass & Pass & Pass \\
+\hline
+Cost & Pass & Fail & Pass \\
+\hline
+Size & Pass & Fail & Pass \\
+\hline
+Weight & Pass & Fail & Fail \\
+\hline
+\end{tabular}
+\caption{Assessment of Different Receiver Microcontrollers}
+\label{tab:microcontroller_assessment}
+\end{table}
+
+This was an easy decision. The Pi Pico W was the smallest, cheapest, and lightest microcontroller option. It had the best price to performance ratio, hence why it is chosen to operate the receiver module. 
+
+\subsection{Miscellaneous Parts}
+\begin{itemize}
+    \item PIR Sensors: It would be power inefficient if the ESP32 CAM were on all the time. To solve this, the Mini PIR Sensor (HC-SR505) was picked since it had a 100 degree detection angle, and low quiescent current (low power consumption). The transmitter module will be equipped with two of these. An OR gate will combine their output that is sent to the microcontroller to reduce the GPIO pins used. details on that circuit in the design section. 
+    \item Infrared Lights: This is needed for the images captured at night to be visible. There are two different wavelengths to choose from; 850 nm and 940 nm. While 850nm deliver exceptional images in lowlight conditions but gives off a bright red glow when on. 940 nm is a more viable option if minimal invasion is required, i.e., the requirements of this product. Despite delivering lower image quality, there is no visible light that may disturb the birds. Therefore, 940 nm IR LEDs were picked for this product. It might be difficult to test if a 940 nm IR LED works since this light is beyond the visible spectrum. Just make sure the voltage drop is 1.1 V and the current draw is around 50 mA. 
+    \item 433MHz RF Link Kit: When the transmitter is in sleep mode, the WiFi module is inactive, so the receiver will not be able to establish a WiFi connection. This component has its own receiver and transmitter. The receiver pulls the GPIO pin that the RF transmitter is connected to high when there is no connection. This pings the RF receiver, which is connected to a pin on the transmitter. Both RF transmitter and receiver are powered with 5V. The data pins (connected to the microcontrollers) output a 3V3 signal when high and 0V when low. 
+    \item MicroSD card (SPI): This is needed for the receiver since the Pi Pico W does not have a built-in MicroSD card. The microcontroller only supports normal SPI, not quad SPI like the ESP32-CAM. A simple module with 6 pins: (1)VCC, (2)GND, (3)CS, (4)CLK, (5)MOSI, and (6)MISO was purchased. The module needs 3V3 power. 
+    \item Display (I2C): The information the user needs can be shown on a 16x2 liquid crystal display. Four pushbuttons are used to interact with the display. Each button is configured with an internal pull-up resistor. The screen connects to the Pi using I2C, and is powered by 3V3. 
+\end{itemize}
+
+\section{Final Design}
+
+\subsection{General Overview}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{Images/Transmitter_layout.png}
+\caption{Final Transmitter Board Layout}
+\label{fig:my_label}
+\end{figure}
+
+The ESP32-CAM, powered by 5VDC. is the main hub that houses the connections for the LDR circuit, IR LED array, PIR sensors, and RF receiver. 
+Given the limited GPIO pins, which become unusable when the WiFi module or MicroSD card are active, the PIR sensors and RF receiver are connected to Real-Time Clock (RTC) pins. These are the only pins that wake up the ESP32-CAM from deep sleep. 
+
+When either of the two PIR sensors detect motion, the ESP32-CAM is activated (through PNP switches), which turns on the LDR circuit (through the VCC pin); if it is dark, the IR LED circuit turns on to light up the area. The OV2640 camera is a 2MP camera with a maximum resolution of 1280x720 at a frame rate of 12.5, but images would be choppy. The frame rate can be adjusted for smoother quality in videos, however the resolution would be reduced. The IR filter present in the lens was challenging to remove. 
+
+The storage is limited to 4GB. The HC MicroSD card must be formatted to FAT32. The RF receiver wakes the ESP32-CAM out of deep sleep mode for data retrieval (since WiFi also becomes inactive). 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{Images/Receiver_layout.png}
+\caption{Final Receiver Board Layout}
+\label{fig:my_label}
+\end{figure}
+
+In the receiver, the Pi Pico W is the main hub connecting various peripherals:
+\begin{itemize}
+    \item Liquid Crystal Display: The module connects to the Pi Pico W with I2C protocol. The GPIO4 and GPIO5 pins are connected to SDA and SCL respectively. The 3V3 pin and GND pins are connected to the VCC and Ground pins of the display. 
+    \item SD Card Reader: The module connects to the Pi Pico W with SPI protocol. 
+    \item Pushbuttons: Allow for the user to interface with the display. These buttons are connected to GPIO10-13. 
+    \item RF Transmitter: The data line connects to GPIO20 on the Pi Pico W. When the WiFi connection cannot be established between the Pi Pico W and the ESP32-CAM, then GPIO20 is set high to turn the ESP32-CAM on remotely. 
+\end{itemize}
+
+
+
+\subsection{Transmitter Support Circuitry and Testing}
+The transmitter had numerous support circuits, as mentioned above. The design and debug process is given below. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.3\textwidth]{Images/Switch_circuit.png}
+\caption{PNP Switch Schematic}
+\label{fig:my_label}
+\end{figure}
+
+Figure 1.3. shows a 2N2907 transistor acting as a switch, serving as a buffer between the sensor inputs and GPIO pins. A current limiting resistor is placed between the input and the emitter to prevent overloading. The collector is connected to the GPIO pin with a resistor connecting to GND. The base is connected to GPIO16 through a 10k resistor. 
+
+When GPIO16 is low, the sensor input is allowed to trigger the GPIO pin. When the sensor input is high, the ESP32-CAM is woken up from deep sleep, and GPIO16 is immediately set to high, to isolate the sensor from the GPIO pin. 
+
+The simulated output was around 3V, which was confirmed in testing when a simulated 3V3 input was applied to the switch, and the base was controlled by a 3V3 voltage. The GPIO pin will still trigger a high since the quoted GPIO range on the ESP datasheet is 2.3V to 3.6V. 
+
+An OR gate circuit that takes both sensor outputs and inputs it to one GPIO pin was designed to use less GPIO pins and combine the inputs of both PIR sensors(sketches in the appendix). In simulations it worked beautifully, but in reality the component values listed on the datasheet were incorrect which led to a distorted output. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.4\textwidth]{Images/LDR_circuit.png}
+\caption{LDR Circuit Schematic}
+\label{fig:my_label}
+\end{figure}
+
+Figure 1.4. shows a basic comparator circuit. The Light Dependent Resistor (LDR) was test under dark conditions, having a resistance of 25k, which dropped in light conditions to 6.5k. The inverting (-) and non-inverting (+) pins are connected to voltage dividers. The (-) pin is connected to 2.5V. The (+) pin is connected to a voltage divider with the LDR. When the surroundings get darker, the resistance increases and the voltage at the (+) increases. Once (V+)>(V-), the output, fed through another voltage divider, will be 3V3. Otherwise the output will be 0V. 
+
+An N-Channel MOSFET is used as a level shift, such that when the 3V3 voltage from the ESP32-CAM is applied to it, the rest of the circuit can then be supplied with 5V, otherwise the circuit is inactive.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.3\textwidth]{Images/IR_LED_Array.png}
+\caption{IR LED Schematic}
+\label{fig:my_label}
+\end{figure}
+
+Figure 1.5. shows a 2N2222 transistor acts as a switch to controll the flow of current to 5 IR LEDs are placed in parallel. The switch is operated by the comparator output, i.e., the output from the LDR circuit. When the base is high (3V3), current flows through the LEDs, otherwise, the switch will be off and no current will flow. 
+
+The datasheet quoted that each 950nm LED required 1.1V and 50mA. The circuit was simulated and built to deliver each LED with rated power. Lab testing confirmed that each LED drew 48mA. The emitting light from these LEDs are invisible to the human eye. For testing purposes, regular LEDs were used temporarily to see if the switch worked, adjusting the collector resistor to avoid overloading. The circuit functioned perfectly. 
+
+During a 10 minute continuous run, the current and voltage across each IR LED remained stable, measured in 1 minute intervals. The IR LEDs became slightly warm, which was normal. 
+
+\section{Testing and Results}
+\subsection{Acceptance Test Procedures}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{1cm}|p{5cm}|p{7cm}|p{2cm}|}
+\hline
+\textbf{Code} & \textbf{Description} & \textbf{Acceptance Criterion} & \textbf{Result} \\
+\hline
+ATP1 & Test that the camera can take clear images and store it onboard. & The pictures that are taken should be clear at 1m. A test script is run that sets up an HTTP server that displays the images the camera takes and stores on the SD card. Wait 5 seconds for the images to display. &  \\
+\hline
+ATP2 & Test the night vision capabilities of the camera module. & The LEDs should turn on when the surroundings are dark to illuminate the images captured. &  \\
+\hline
+ATP3 & Test that the ESP32-CAM wakes up from deep sleep when the PIR picks up motion. & The PIR must pull the GPIO pin it is connected to high when an object is moved in front of it. & Pass \\
+\hline
+ATP4 & Initialise a Wi-Fi hotspot on the ESP32-CAM to test the module. & Run a test script that should display a “connected message” in the system monitor terminal after 5 second since the execution of the code. & Pass \\
+\hline
+ATP5 & Test that the RF receiver pulls the pin on the ESP32-CAM it is connected to high when the RF transmitter is fed a pulse. & The output of the RF receiver is measured when the RF transmitter is fed a 3V3 pulse & Pass \\
+\hline
+ATP6 & Test that the CT module can fit in the space constraint. & An 80mm(W) x 60mm(L) x 60mm(H) box was constructed out of paper to see if the module fits in the space. &  \\
+\hline
+ATP7 & Initialise a Wi-Fi hotspot on the Pi Pico W to test the module. & Run a test script that should display a “connected message” in the system monitor terminal after 5 second since the execution of the code. & Pass \\
+\hline
+ATP8 & Test the MicroSD card module to see if it is readable. & Run a test script that should display the SD card information in the system monitor terminal after 5 second since the execution of the code. & Pass \\
+\hline
+ATP9 & Test if the screen can display text. & Run a test script that should display a “Hello World” message on the screen. & Pass \\
+\hline
+ATP10 & Test if the button actions can be detected by the Pi Pico W. & Run a test script that makes the onboard LED flash when one of the buttons are pressed. &  \\
+\hline
+\end{tabular}
+\caption{Acceptance Test Procedures (ATPs)}
+\label{tab:ATPs}
+\end{table}
+
+
+
+\section{Conclusion}
+
+
+% ----------------------------------------------------
+\ifstandalone
+\bibliography{../Bibliography/References.bib}
+\printnoidxglossary[type=\acronymtype,nonumberlist]
+\fi
+\end{document}
+% ----------------------------------------------------
