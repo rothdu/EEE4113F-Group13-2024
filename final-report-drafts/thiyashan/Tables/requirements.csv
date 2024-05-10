@@ -1,8 +1,0 @@
-"Video footage ideal, otherwise 3 photos in quick succession", "These requirements are fairly loose - the essence is that the user wants as much data as possible. Find an appropriate balance between storage constraints and amount of data captured, using the user specifications as a baseline. Allow soft-configurable capturing modes so that the user can fine-tune the amount of data they gather."
-"Suggested interval of one minute between triggers"
-"Access to the images in real time (daily)", "With automatic data uploads, data must be transferred at least daily"
-"Triggered with movement", "Take input from the PIR sensors to trigger camera activity"
-"Access data without disturbing the nests, possibly with wireless data access", "Utilise the wireless connectivity on the camera/transmitter module to transfer data to the receiver or the web"
-"Keep track of noise levels around the nest"
-
-"Track over the breeding season (7 weeks) without need to change batteries too often", "Utilise power-saving mechanisms wherever possible."
