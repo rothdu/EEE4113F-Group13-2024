@@ -13,6 +13,7 @@ User requirements (UR) where determined from discussions with the red-winged sta
 
 \begin{table}[!ht]
     \centering
+    \begin{scriptsize}
     \begin{tabularx}{\textwidth}{|p{0.13\textwidth} X|}
         
         \hline
@@ -51,6 +52,7 @@ User requirements (UR) where determined from discussions with the red-winged sta
         \textit{SS11} & Receiver module stores a separate folder for data relating to separate deployed modules\\ \hline
 
     \end{tabularx}
+    \end{scriptsize}
     \caption{Requirement and specification analysis for the firmware subsystem}
     \label{tab:firmware-requirements}
 \end{table}
@@ -144,19 +146,19 @@ The HTTP server implemented on the receiver module or a standalone computer must
 
 \subsection{Camera/transmitter module configuration file}
 
-To meet the identified soft-configurability requirement, the ESP32 module will read a customiseable configuration file to determine a number of key settings. The configuration file is stored in plaintext json at "starling-cam/config/config.json" on the microSD card. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid or missing, any missing parameters are loaded as defaults.
+To meet the identified soft-configurability requirement, the ESP32 module will read a customiseable configuration file to determine a number of key settings. The configuration file is stored in plaintext json at "starling-cam/config/config.json" on the SD card. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid or missing, any missing parameters are loaded as defaults.
 
 This configuration option has a number of advantages:
 
 \begin{itemize}
-    \item Storing configuration on the microSD card makes it possible to load new configuration options without needing to flash new code onto the ESP32 or access it remotely.
+    \item Storing configuration on the SD card makes it possible to load new configuration options without needing to flash new code onto the ESP32 or access it remotely.
     \item JSON is human-readable format, making easily possible to write new configuration files.
     \item JSON is a well-supported format, and can easily be read and interpretted on the ESP32 using the ArduinoJson library % TODO \ref{arduinoJSON ref here}
 \end{itemize}
 
 \subsection{Camera sensor settings}
 
-The user requirements specified that video or image capture was acceptable, though for the latter a number of images in quick succession would be preferable. A key limitation in this regard was the microSD card on the camera/transmitter module, which had to be formatted with the FAT32 filesystem in order for the module to interface with it. FAT32 is an older file system which only supports up to 4GB of storage. This storage limitation made still image capture more feasible, especially allowing for the possibility that images would be captured many time each day.
+The user requirements specified that video or image capture was acceptable, though for the latter a number of images in quick succession would be preferable. A key limitation in this regard was the SD card on the camera/transmitter module, which had to be formatted with the FAT32 filesystem in order for the module to interface with it. FAT32 is an older file system which only supports up to 4GB of storage. This storage limitation made still image capture more feasible, especially allowing for the possibility that images would be captured many time each day.
 
 % TODO: Probably some test about file size and a proper analysis of photo vs video
 
@@ -167,60 +169,121 @@ The user requirements specified that video or image capture was acceptable, thou
 
 \section{Acceptance Tests \label{s:firmware-atps}}
 
-% Things that need to be implemented:
-% Receiver:
+The submodule acceptance tests and listed and detailed in Tables \ref{tab:firmware-atps1} and \ref{tab:firmware-atps2}. In all cases, the firmware from the project repository must be flashed to the microcontrollers. In some cases, ATPs use the serial port to display information. The serial port is not used in normal operation as it is not necessary, and conflicts with the switch enable pin for the PIR sensors and RF linker.  In these cases, the ATP specifies to define as specific macro in the code to run the ATP. This, is performed by uncommenting the line in the code titled "\#define ATPx" (where x is the ATP number) prior to flashing the code to the relevant micrcontroller. For ATPs which use the Serial port, the trigger switch (normally connected to GPIO1) be disconnnected from pin 1 and manually pulled high within 5 seconds of triggering the device.
 
-% \begin{itemize}
-%     \item I2C Led display library
-%     \begin{itemize}
-%         \item %https://github.com/T-622/RPI-PICO-I2C-LCD/tree/main
-%         \item %https://github.com/dhylands/python_lcd
-%         \item %https://github.com/peterhinch/micropython-async/tree/master/v3/as_drivers/hd44780
-%     \end{itemize}
-%     \item Pushbutton inputs
-%     \item \begin{itemize}
-%         \item Seems to be fine on pi pico
-%     \end{itemize}
-%     \item Writing to SD card
-%     \begin{itemize}
-%         \item probably just the default arduino SD library
-%     \end{itemize}
-%     \item Web server and data reception
-%     \item RFID transmitter usage
-% \end{itemize}
+The SD card for the camera/transmitter module should be formatted with the FAT32 filesystem; the SD card for the receiver module should be formatted with the exFAT filesystem. Unless otherwise specified, the storage of both SD cards should be empty prior to starting the test.
 
-% Camera:
-% \begin{itemize}
-%     \item Read/write from SD card
-%     \item Read PIR sensors
-%     \item Read from Camera
-%     \item Enable infrared flash
-%     \item Read from RF Receiver
-%     \item Read temperature \& humidity sensor
-%     \item Read mic
-%     \item Connect to web server and transmit data
-%     \item Transmit data via direct wifi connection
-% \end{itemize}
+\begin{table}[!ht]
+    \centering
+    \begin{scriptsize}
+    \begin{tabularx}{\textwidth}{|p{0.17\textwidth} X|}
+        
+        \hline
+        \textbf{UR/FR/SS} & \textbf{Description}\\ \hline
+        \textit{ATP ID} & ATP1\\
+        \textit{Related UR/FR/SS} &\\
+        \textit{Description} & Photo is captured upon trigger from PIR sensor.\\
+        \textit{Procedure} & Standard: Power on the camera/transmitter module. Trigger either PIR sensor once by moving in front of it, or emulate a trigger by manually pulling pins 2 or 4 HIGH. Open the SD card on a computer and observe its contents.\\
+        \textit{Acceptance criteria} & 3 photographs are present in the "photos" directory on the SD card.\\ 
+        \textit{Pass/fail} & PASS \\ \hline
 
-% Leaning towards Arduino for both - puts the whole project under the same umbrella which would theoretically be useful for future development.
-% Might be more limited in bare-metal functionality than ESP-IDF, but should be adequate to get the job done. This is not a time-critical application, so it makes sense to go with an option that makes things easy
+        \textit{ATP ID} & ATP2 \\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & Footage capture is triggered within 1 second.\\
+        \textit{Procedure} & Power on the camera/transmitter module. Prepare a stopwatch and orient the camera to view the stopwatch. Simultaneously start the stopwatch and trigger a photo capture as described in ATP1. Open the SD card on a computer and view the first image.\\
+        \textit{Acceptance criteria} & Repeat procedure 5 times. The time shown on the stopwatch is less than 1 second in all 5 cases.\\ 
+        \textit{Pass/fail} & PASS\\
+        \textit{Notes} & The human error from the requirement to simultaneously start the stopwatch and trigger the camera may introduce some error in the reading; however, this error should be sufficiently small compared to the pass criteria to still gain a valid idea of the camera trigger time. \\ \hline
 
-% %https://github.com/earlephilhower/arduino-pico
-% %https://github.com/arduino/ArduinoCore-mbed
-% The second link appears to be the "official" one
-% Porting of pi pico SDK to arduino libraries
+        \textit{ATP ID} & ATP3\\
+        \textit{Related UR/FR/SS} &\\
+        \textit{Description} & Receiver menu navigation works.\\
+        \textit{Procedure} & Power on the receiver module. Navigate the menu using the up, down, confirm, and cancel buttons.\\
+        \textit{Acceptance criteria} & Up button scrolls the menu upwards. Down button scrolls the menu downwards. Confirm buttton trigger the currently selected action and, after a brief waiting period, displays an information screen relating to the selected operation. Up and down buttons do not work after selecting confirm. Cancel button returns display to the menu.\\ 
+        \textit{Pass/fail} & PASS \\ \hline
 
+        \textit{ATP ID} & ATP4 \\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & Camera/transmitter module awakens in transmission mode. \\
+        \textit{Procedure} &  Enable the ATP4 macro prior on the camera/transmitter module. Power on the module and monitor the serial port. Power on the receiver module. Navigate the menu and select the "WAKE DEVICE" option.\\
+        \textit{Acceptance criteria} & Serial monitor on the camera/transmitter module confirms awoken in transmission mode.\\ 
+        \textit{Pass/fail} & PASS\\ \hline
 
-% Core design decisions:
+        \textit{ATP ID} & ATP5  \\
+        \textit{Related UR/FR/SS} &\\
+        \textit{Description} & Metadata is sent over network.\\
+        \textit{Procedure} & Trigger the footage capture as described in ATP1 at least 5 times. Open the SD card on a computer, and note the number of images present and the percentage of storage currently used. Power on on the receiver module. Navigate the menu and selelct the "WAKE DEVICE" option. Upon confirmation of connection, select the "SEND METADATA" option.\\
+        \textit{Acceptance criteria} & Number of photographs and percentage of storage used displayed on the reciever is the same as the numbers manually observed on the SD card. \\ 
+        \textit{Pass/fail} & PASS\\ \hline
 
-% \begin{itemize}
-%     \item Choice of programming environment {Arduino, python, pi c++, ESP-IDF}
-%     \item Choice of Development environment
-%     \item How to transmit data (WiFi via HTTP? MQTT? Bluetooth?)
-%     \begin{itemize}
-%         \item %https://github.com/adafruit/Adafruit_MQTT_Library
-%     \end{itemize}
-%     \item Library selection
-%     \item User interface design
-%     \item Upload mode to cloud storage
-% \end{itemize}
+        \textit{ATP ID} & ATP6\\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & Sample photo is sent over network.\\
+        \textit{Procedure} & Power on both modules. Navigate the menu and select the "WAKE DEVICE" option. Upon confirmation of connection, select the "SEND SAMPLE" option. Wait for confirmation of completion. Open the receiver SD card on a computer and observe its contents.\\
+        \textit{Acceptance criteria} & A sample image "sample.jpeg" is present in the "cam1" directory on the SD card. \\ 
+        \textit{Pass/fail} & PASS \\ \hline
+
+        \textit{ATP ID} & ATP7 \\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & All captured photos are sent over network.\\
+        \textit{Procedure} & Power on both modules. Trigger the camera/transmitter module as described in ATP1 at least 10 times. Open the camera/transmitter SD card on a computer and observer its contents. Replace the SD card in the camera/transmitter module. Navigate the menu and select the "WAKE DEVICE" option. Upon completion, select the "SEND PHOTOS" option. Wait for confirmation of completion. Open the receiver SD card on a computer and observe their contents.\\
+        \textit{Acceptance criteria} & All images initially present in the "photos" directory of the camera/transmitter module SD card are present in the "cam1" directory of the receiver SD card.\\ 
+        \textit{Pass/fail} & PASS \\ \hline
+        
+
+    \end{tabularx}
+    \end{scriptsize}
+    \caption{ATPs 1-7 for the firmware subsystem}
+    \label{tab:firmware-atps1}
+\end{table}
+
+\begin{table}[!ht]
+    \centering
+    \begin{scriptsize}
+    \begin{tabularx}{\textwidth}{|p{0.17\textwidth} X|}
+        
+        \hline
+        \textbf{UR/FR/SS} & \textbf{Description}\\ \hline
+
+        \textit{ATP ID} & ATP8\\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & Configuration options are loaded from SD card.\\
+        \textit{Procedure} & Enable the ATP8 macro on the camera/transmitter module. Copy the contents of "config-ATP8-1.json" into "config/config.json" on the SD card. Power on the module trigger it in capture mode following the procedure from ATP1. Observe the outputted exposure level, number of captures per trigger, and time between triggers on the serial monitor. Repeat with "config-ATP8-2.json" \\
+        \textit{Acceptance criteria} & First run: outputted values are as specified in the config file. Second run: outputted values are the defaults (1200, 3, 60), since the values from the config file are invalid.\\ 
+        \textit{Pass/fail} & PASS\\ \hline
+        % TODO: Link github config files
+
+        \textit{ATP ID} & ATP9\\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & Update config remotely.\\
+        \textit{Procedure} & Power on both modules. Load the contents of "config-ATP9.json" into "cam1/config.json" on the SD card. Navigate the menu and select the "WAKE DEVICE" option. Upon confirmation, select the "UPDATE CONFIG" option. Wait for confirmation. Open the camera/transmitter SD card on a computer and observe its contents.\\
+        \textit{Acceptance criteria} & The content of "config/config.json" from the SD card is the same as "config-ATP9.json".\\ 
+        \textit{Pass/fail} & PASS \\ \hline
+
+        \textit{ATP ID} & ATP10\\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & Receiver/transmitter utilises deep sleep when not in use.\\
+        \textit{Procedure} & Power on the camera/transmitter module. Connect an ammeter to the power line of the ESP32 and monitor the current draw. \\
+        \textit{Acceptance criteria} & ESP32 current draw is $ < 200 \mu A $ (when not triggered by PIR or RF linker).\\ 
+        \textit{Pass/fail} & PASS\\ \hline
+
+        \textit{ATP ID} & ATP10\\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & Receiver/transmitter utilises deep sleep when idle.\\
+        \textit{Procedure} & Power on the camera/transmitter module. Connect an ammeter to the power line of the ESP32 and monitor the current draw. \\
+        \textit{Acceptance criteria} & ESP32 current draw is $ < 200 \mu A $ (when not triggered by PIR or RF linker).\\ 
+        \textit{Pass/fail} & PASS\\ \hline
+
+        \textit{ATP ID} & ATP11\\
+        \textit{Related UR/FR/SS} & \\
+        \textit{Description} & Receiver module can integrate with multiple devices.\\
+        \textit{Procedure} & Copy the conents of "config-ATP11.json" to "config/config.json" on the receiver/transmitter SD card. Repeat the procedure described for ATP7. \\
+        \textit{Acceptance criteria} & Images are saved to the "cam2" directory rather than the "cam1" directory on the receiver SD card.\\ 
+        \textit{Pass/fail} & PASS\\ \hline
+        
+
+    \end{tabularx}
+    \end{scriptsize}
+    \caption{ATPs 8-11 for the firmware subsystem}
+    \label{tab:firmware-atps2}
+\end{table}
