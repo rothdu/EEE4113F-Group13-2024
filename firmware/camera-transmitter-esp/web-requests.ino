@@ -13,7 +13,7 @@ bool initWiFi() {
   #ifdef DEBUG
   Serial.println();
   #endif
-
+  delay(1000); // 1 sec delay because wifi INIT messe up SD card reads
   return true;
 }
 
@@ -25,6 +25,9 @@ void onWiFiEvent(WiFiEvent_t event) {
       #endif
       // major wifi fail... figure out how to handle this later
       // probably a freeRTOS task which will be killed if WiFi reconnects?
+      if (numWiFiFails == numAttempts) {
+        pirRFSleep();
+      }
       break;
     case SYSTEM_EVENT_STA_GOT_IP:
       #ifdef DEBUG
@@ -42,8 +45,15 @@ uint32_t sendAllPhotos() {
   fs::FS &fs = SD_MMC;
   uint32_t photoNum = getNumPhotos();
   String thisPhotoName;
-  while (photoNum >= 1) { // uint so always >= 0... so test for equality, last image should be the 0th one
+  while (photoNum >= 1) { 
     thisPhotoName = photoName + String(photoNum) + String(".jpeg");
+    if (!fs.exists(photosDir + String("/") + thisPhotoName)) { // photo doesn't exist... skip
+      #ifdef DEBUG
+      Serial.println("Current photo doesn't exist! Skipping...");
+      #endif
+      photoNum--;
+      continue;
+    }
     int16_t responseCode = sendPhoto(photosDir, thisPhotoName, photoNum);
     #ifdef DEBUG
     Serial.print("Code: ");
@@ -54,7 +64,7 @@ uint32_t sendAllPhotos() {
     uint8_t a;
     for (a = 0; a < numAttempts; a++) {
       if (responseCode == HTTP_CODE_CREATED) { // receive a 201, file created
-        fs.remove(thisPhotoName);
+        fs.remove(String("/") + photosDir + String("/") + thisPhotoName);
         break;
       }
     }
@@ -71,6 +81,9 @@ uint32_t sendAllPhotos() {
 /* ACTUAL REQUESTS */
 
 int16_t sendPhoto(String thisPhotoDir, String thisPhotoName, uint32_t photoNum) {
+  #ifdef DEBUG
+  Serial.println("Sending photo");
+  #endif 
 
   String filePath = thisPhotoDir + String("/") + thisPhotoName;
   // double check there are no problems with the file
@@ -143,7 +156,7 @@ int16_t sendSample(String thisPhotoDir, String thisPhotoName) {
   // add HTTP headers
   http.addHeader("Content-Type", "image/jpeg");
   // http.addHeader("Content-Length", String(fileLen)); // library actually does this for me
-  http.addHeader("Photo-Name", thisPhotoName);
+  http.addHeader("Photo-Name", thisPhotoName + ".jpeg");
   http.addHeader("Device-ID", deviceID);
   // create buffer on PSRAM to store file
   uint8_t* fileBuf = (uint8_t*)ps_malloc(fileLen);
@@ -161,6 +174,11 @@ int16_t sendSample(String thisPhotoDir, String thisPhotoName) {
 
 // TODO overwrites the config without checking for validity... could change at some point for robustness
 int16_t updateConfig() {
+
+  #ifdef DEBUG
+  Serial.println("Updating config");
+  #endif
+  
   if (!http.begin(client, serverAddress + "/update_config")) {
     #ifdef DEBUG
     Serial.println("Failed to connect to server");
@@ -241,6 +259,10 @@ int16_t updateConfig() {
 }
 
 int16_t requestInstruction() {
+  #ifdef DEBUG
+  Serial.println("Requesting instruction");
+  #endif
+
   if (!http.begin(client, serverAddress + "/next_instruction")) {
     #ifdef DEBUG
     Serial.println("Failed to connect to server");
@@ -321,8 +343,7 @@ int16_t sendMetadata() {
   // JsonObject numPhotosObj = numPhotosDoc.as<JsonObject>();
 
   metadataDoc["numPhotos"] = getNumPhotos(); // save to JSON
-  metadataDoc["bytesUsed"] = SD_MMC.usedBytes();
-  metadataDoc["bytesTotal"] = SD_MMC.totalBytes();
+  metadataDoc["percentageUsed"] = (double)SD_MMC.usedBytes()/(double)4250e6; // 99% of 4GiB for FAT32... totalBytes() doesn't account for the FAT32 filesystem
 
   String payload; // should be fairly short so can store in a String
 
