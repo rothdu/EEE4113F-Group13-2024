@@ -1,26 +1,23 @@
 % ----------------------------------------------------
 % Firmware Submodule
 % ----------------------------------------------------
-%\documentclass[class=report,11pt,crop=false]{standalone}
-%\input{../Style/ChapterStyle.tex}
-%\input{../FrontMatter/Glossary.tex}
-%\begin{document}
-%\ifstandalone
-%\tableofcontents
-%\fi
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
+\ifstandalone
+\tableofcontents
+\fi
 % ----------------------------------------------------
-\chapter{Camera/Transmitter (CT) \& Receiver (R) Hardware (PLLTHI032)\label{ch:firmware}}
-% \epigraph{}%
-    % {\emph{---Carl Sagan}}
-% \vspace{0.5cm}
-% ----------------------------------------------------
+\chapter{Camera/Transmitter (CT) \& Receiver (R) Hardware (PLLTHI032)\label{ch:hardware}}
+
 
 
 \section{Subsystem introduction}
 This section involves the design and implementation of the hardware for the transmitter and receiver module for a Red-winged Starling nest monitoring system. The focus is to design a camera system that is motion activated when there is activity in the nest. This data is then transferred to a handheld receiver operated by the user on the ground. 
 
 \section{Requirements \& Specifications}
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|p{1cm}|}
 \hline
@@ -42,7 +39,7 @@ The receiver must have a screen and interactive buttons to view the basic inform
 \hline
 \end{tabular}
 \caption{User Requirements, Functional Requirements, Specifications, and ATP}
-\label{tab:my_label}
+\label{tab:my_label1}
 \end{table}
 
 
@@ -54,7 +51,7 @@ The receiver must have a screen and interactive buttons to view the basic inform
 \subsection{Wired vs. Wireless Communication}
 There are two options for communication: wired and wireless. the table below goes through the aspects of each. 
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|p{3.5cm}|p{6cm}|p{6cm}|}
 \hline
@@ -171,10 +168,10 @@ Cost & Is the microcontroller affordable? \\
 Size & Is the microcontroller small and compact? \\
 \hline
 \end{tabular}
-\label{tab:microcontroller_criteria}
+\label{tab:microcontroller_criteria1}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|l|p{10cm}|}
 \hline
@@ -190,12 +187,12 @@ MicroSD card holder & Does the microcontroller have a microSD card holder onboar
 \hline
 \end{tabular}
 \caption{Criteria for the Transmitter Microcontroller Selection}
-\label{tab:microcontroller_criteria}
+\label{tab:microcontroller_criteria2}
 \end{table}
 
 The table below proceeds to assess four potential board which have been chosen for the transmitter submodule against the criterion outlines in Table 1.5.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|p{3.5cm}|l|l|l|l|l|}
 \hline
@@ -229,7 +226,7 @@ MicroSD card holder & Fail & Pass & Fail & Fail & Fail \\
 \hline
 \end{tabular}
 \caption{Assessment of Different Transmitter Microcontrollers}
-\label{tab:microcontroller_assessment}
+\label{tab:microcontroller_assessment1}
 \end{table}
 
 The Pi Pico W and ESP32-CH340 have poor processing power and power consumption respectively, with the latter having an additional space constraint. The ESP32-C8 had similar limitations, while also being expensive with poor camera support. The ESP32 S3 lacks camera support and has bad power consumption. 
@@ -240,7 +237,7 @@ The ESP32-CAM stands out, offering an onboard MicroSD card holder with quad SPI 
 \subsection{Receiver Microcontroller}
 
 Table 1.1. detailed what the Receiver module should have. The table below lays out a set of criteria to assess different microcontroller options. However, since the microcontroller options have already been assessed in the previous section, just a few of the amended criteria will be looked at
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|l|p{10cm}|}
 \hline
@@ -260,12 +257,12 @@ Weight & Does the microcontroller weigh more than 5 g? \\
 \hline
 \end{tabular}
 \caption{Criteria for Receiver Microcontroller Selection}
-\label{tab:microcontroller_criteria}
+\label{tab:microcontroller_criteria3}
 \end{table}
 
 Given the information above, the three best microcontrollers from table 1.6. are assessed to see if they meet the demands of this module. 
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|l|l|l|l|}
 \hline
@@ -285,7 +282,7 @@ Weight & Pass & Fail & Fail \\
 \hline
 \end{tabular}
 \caption{Assessment of Different Receiver Microcontrollers}
-\label{tab:microcontroller_assessment}
+\label{tab:microcontroller_assessment2}
 \end{table}
 
 This was an easy decision. The Pi Pico W was the smallest, cheapest, and lightest microcontroller option. It had the best price to performance ratio, hence why it is chosen to operate the receiver module. 
@@ -302,11 +299,11 @@ This was an easy decision. The Pi Pico W was the smallest, cheapest, and lightes
 \section{Final Design}
 
 \subsection{General Overview}
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.8\textwidth]{Images/Transmitter_layout.png}
 \caption{Final Transmitter Board Layout}
-\label{fig:my_label}
+\label{fig:my_label2}
 \end{figure}
 
 The ESP32-CAM, powered by 5VDC. is the main hub that houses the connections for the LDR circuit, IR LED array, PIR sensors, and RF receiver. 
@@ -316,11 +313,11 @@ When either of the two PIR sensors detect motion, the ESP32-CAM is activated (th
 
 The storage is limited to 4GB. The HC MicroSD card must be formatted to FAT32. The RF receiver wakes the ESP32-CAM out of deep sleep mode for data retrieval (since WiFi also becomes inactive). 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.8\textwidth]{Images/Receiver_layout.png}
 \caption{Final Receiver Board Layout}
-\label{fig:my_label}
+\label{fig:my_label3}
 \end{figure}
 
 In the receiver, the Pi Pico W is the main hub connecting various peripherals:
@@ -336,11 +333,11 @@ In the receiver, the Pi Pico W is the main hub connecting various peripherals:
 \subsection{Transmitter Support Circuitry and Testing}
 The transmitter had numerous support circuits, as mentioned above. The design and debug process is given below. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.3\textwidth]{Images/Switch_circuit.png}
 \caption{PNP Switch Schematic}
-\label{fig:my_label}
+\label{fig:my_label4}
 \end{figure}
 
 Figure 1.3. shows a 2N2907 transistor acting as a switch, serving as a buffer between the sensor inputs and GPIO pins. A current limiting resistor is placed between the input and the emitter to prevent overloading. The collector is connected to the GPIO pin with a resistor connecting to GND. The base is connected to GPIO16 through a 10k resistor. 
@@ -351,22 +348,22 @@ The simulated output was around 3V, which was confirmed in testing when a simula
 
 An OR gate circuit that takes both sensor outputs and inputs it to one GPIO pin was designed to use less GPIO pins and combine the inputs of both PIR sensors(sketches in the appendix). In simulations it worked beautifully, but in reality the component values listed on the datasheet were incorrect which led to a distorted output. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.4\textwidth]{Images/LDR_circuit.png}
 \caption{LDR Circuit Schematic}
-\label{fig:my_label}
+\label{fig:my_label5}
 \end{figure}
 
 Figure 1.4. shows a basic comparator circuit. The Light Dependent Resistor (LDR) was test under dark conditions, having a resistance of 25k, which dropped in light conditions to 6.5k. The inverting (-) and non-inverting (+) pins are connected to voltage dividers. The (-) pin is connected to 2.5V. The (+) pin is connected to a voltage divider with the LDR. When the surroundings get darker, the resistance increases and the voltage at the (+) increases. Once (V+)>(V-), the output, fed through another voltage divider, will be 3V3. Otherwise the output will be 0V. 
 
 An N-Channel MOSFET is used as a level shift, such that when the 3V3 voltage from the ESP32-CAM is applied to it, the rest of the circuit can then be supplied with 5V, otherwise the circuit is inactive.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.3\textwidth]{Images/IR_LED_Array.png}
 \caption{IR LED Schematic}
-\label{fig:my_label}
+\label{fig:my_label6}
 \end{figure}
 
 Figure 1.5. shows a 2N2222 transistor acts as a switch to controll the flow of current to 5 IR LEDs are placed in parallel. The switch is operated by the comparator output, i.e., the output from the LDR circuit. When the base is high (3V3), current flows through the LEDs, otherwise, the switch will be off and no current will flow. 
@@ -378,7 +375,7 @@ During a 10 minute continuous run, the current and voltage across each IR LED re
 \section{Testing and Results}
 \subsection{Acceptance Test Procedures}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|p{1cm}|p{5cm}|p{7cm}|p{2cm}|}
 \hline

@@ -1,4 +1,11 @@
-\chapter{Mechanical Design}
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
+\ifstandalone
+\tableofcontents
+\fi
+\chapter{Mechanical Design (MRBMAT004)}
 
 
 \section{Introduction}
@@ -28,7 +35,7 @@ Second Iteration
 The second iteration resembled a pitched-roof house. This design idea appeared to be perfect until the size constraints were brought forth. Secondly, the pitched roof also limits and reduces the size of the already small dimensions of the specifications given by Sally: 6x6x8cm. 
 This design had ventilation holes and forced cooling using a fan was considered. This fan would require a timer and trigger signal. This design had better airflow management as it promoted natural convection through the ventilation peaks at the peak without the need for additional cooling. The pitched roof enclosures blend seamlessly into outdoor environments, providing camouflage and enhancing the overall aesthetic appeal. However, concerns arose regarding the practicality of this design, particularly regarding size constraints and the need for additional cooling mechanisms as a fan would put added strain on the power supply and increase power losses.
 Material used: Conductivity /insulation of material.
-https://all3dp.com/2/pla-vs-abs-vs-petg-differences-compared/#google_vignette  
+\href{https://all3dp.com/2/pla-vs-abs-vs-petg-differences-compared/#google_vignette}{Material comparisons}  
 PLA, ABS and PETG are some of the most popular and readily available filaments out there. However, they are not equally suitable for every printing job as they have different qualities 
 PLA (Polylactic Acid)
 PLA is a widely used 3D printing material known for its ease of printing and low cost. Derived from renewable sources like corn starch, PLA is considered environmentally friendly, although it's more accurately described as industrially compostable rather than biodegradable. Its benefits include easy printing with no clogging issues, low print temperature, and affordability. However, PLA tends to deform or melt in high heat, making it unsuitable for heat-resistant applications. It's also brittle and less sturdy compared to materials like ABS or PETG, making it better suited for aesthetic uses rather than mechanical ones.
@@ -79,3 +86,10 @@ The receiver module material was chosen to be ABS, since it is durable and can b
 The enclosure was cut out to allow for the display of the LCD output with a clip side that was easily removable. This clip served as a great button access point as buttons to the receiver could be easily accessed without having to disassemble the enclosure. 
 The enclosure also had the removable latch-sliding mechanism which also served as a port access and made for easy battery-changing as the battery would placed at the sliding mechanism side. The opening on the sliding mechanism side was big enough to allow hands to go through the  
 
+% ----------------------------------------------------
+\ifstandalone
+\bibliography{../Bibliography/References.bib}
+\printnoidxglossary[type=\acronymtype,nonumberlist]
+\fi
+\end{document}
+% ----------------------------------------------------

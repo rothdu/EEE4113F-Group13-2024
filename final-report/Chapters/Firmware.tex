@@ -1,7 +1,14 @@
 % ----------------------------------------------------
 % Firmware Submodule
 % ----------------------------------------------------
-\chapter{Firmware development \label{ch:firmware}}
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
+\ifstandalone
+\tableofcontents
+\fi
+\chapter{Firmware (DGMROB001) \label{ch:firmware}}
 \section{Subsystem introduction}
 
 This subsystem deals with the development of firmware for the microcontrollers in both the camera/transmitter and receiver modules. The fundamental goals of this subsystem are to enable the camera/transmitter module to take photographs of the red-winged starlings, and to transmit this photographs to the receiver module without disturbing the birds' nests. The source code for this subsystem is available in the \href{https://github.com/rothdu/EEE4113F-Group13-2024}{project repository} on GitHub.
@@ -111,17 +118,17 @@ However, in future iterations of the project, there are particular merits to hos
 
 Aditionally, hosting the server on the receiver device allows for traditional web browsers to remotely connect as a client. This could allow for applications such as updating configuration stored configuration or viewing stored images on the receiver device from a smartphone or laptop.
 
-\subsection{Library selection}
+% \subsection{Library selection}
 
-The Arduino framework includes a wide variety of software libraries. These include "standard" libraries, which are integrated into the Arduino framework or the Arduino core for a particular device, and user-supplied libraries which are uploaded by Arduino users. In most cases, the "standard" libraries have the best support and documentation, and are known to be relatively bug-free; as such, "standard" libraries were used for all applications for which they were available.
+% The Arduino framework includes a wide variety of software libraries. These include "standard" libraries, which are integrated into the Arduino framework or the Arduino core for a particular device, and user-supplied libraries which are uploaded by Arduino users. In most cases, the "standard" libraries have the best support and documentation, and are known to be relatively bug-free; as such, "standard" libraries were used for all applications for which they were available.
 
-Some specific library selections falling outside of this general principle were:
+% Some specific library selections falling outside of this general principle were:
 
-\begin{itemize}
-    \item ArduinoJson cites 10\% better speed and memory efficiency than the "standard" library, and has extensive documentation available on its website.
-    \item ScreenUI  is a user-implemented library for easy development of menus which display on LCD screen, which was applied to the receiver module.
-    \item Reference I2C library here...
-\end{itemize}
+% \begin{itemize}
+%     \item ArduinoJson cites 10\% better speed and memory efficiency than the "standard" library, and has extensive documentation available on its website.
+%     \item ScreenUI  is a user-implemented library for easy development of menus which display on LCD screen, which was applied to the receiver module.
+%     \item Reference I2C library here...
+% \end{itemize}
 
 % TODO: reference the libraries I've used
 
@@ -142,7 +149,15 @@ Figure \ref{fig:espflow} demonstrates a high-level program flow of the Camera/Tr
 
 \subsection{HTTP server API}
 
-The HTTP server implemented on the receiver module or a standalone computer must have available endpoints for all the applications the client wishes to utilise.
+The HTTP server implemented on the receiver module or a standalone computer must have available endpoints for all the applications the client wishes to utilise. The endpoints realised were:
+
+\begin{itemize}
+    \item HTTP GET: /next\_instruction - server must send next instruction to client
+    \item HTTP GET: /update\_config - server must send updated config to client
+    \item HTTP PUT: /upload\_image - upload images to server (1 image per request)
+    \item HTTP PUT: /sample\_image - upload sample image to server
+    \item HTTP PUT: /metadata - send metadata to server
+\end{itemize}
 
 \subsection{Camera/transmitter module configuration file}
 
@@ -287,3 +302,11 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
     \caption{ATPs 8-11 for the firmware subsystem}
     \label{tab:firmware-atps2}
 \end{table}
+
+% ----------------------------------------------------
+\ifstandalone
+\bibliography{../Bibliography/References.bib}
+\printnoidxglossary[type=\acronymtype,nonumberlist]
+\fi
+\end{document}
+% ----------------------------------------------------
