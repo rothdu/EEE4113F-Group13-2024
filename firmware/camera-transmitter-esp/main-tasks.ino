@@ -98,6 +98,7 @@ void triggerTransmitter() {
 }
 
 void handleInstruction(t_instruction instruction) {
+  delay(100);
   switch (instruction) {
     case WAIT: 
       delay(10000);

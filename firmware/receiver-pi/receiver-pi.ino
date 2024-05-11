@@ -1,10 +1,10 @@
-#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 // put any smaller debug expressions in here
 #endif
 
-#define UNIT_TESTS
+// #define UNIT_TESTS
 
 #include <WiFi.h>
 #include <AsyncWebServer_RP2040W.h>
@@ -15,8 +15,6 @@
 #include <Wire.h>
 #include <LiquidCrystal_PCF8574.h>
 
-#include <Bounce2.h>
-
 /* LCD */
 char loading[4][2] = {"[","|","]","|"};
 uint8_t loadingIdx = 0;
@@ -25,8 +23,8 @@ int8_t menuPos = 0;
 
 const char rootMenuLen = 5;
 const char rootMenu[rootMenuLen][15] = {
-  "SEND CONFIG",
   "GET METADATA",
+  "SEND CONFIG",
   "GET PHOTOS",
   "SAMPLE PHOTO",
   "EXIT"
@@ -37,6 +35,8 @@ LiquidCrystal_PCF8574 lcd(0x27);
 bool initLCD();
 void showMenu(int8_t scroll);
 void showLoading();
+void clearBottom();
+void showSent();
 void updateUI();
 
 /* SD */
@@ -66,9 +66,11 @@ bool handleNextInstruction(AsyncWebServerRequest *request);
 bool handleUpdateConfig(AsyncWebServerRequest *request);
 
 /* GENERAL */
-String instructions[] = {"wait", "sendMetadata", "updateConfig", "sendPhotos", "samplePhoto", "exit"};
+String instructions[] = {"sendMetadata", "updateConfig", "sendPhotos", "samplePhoto", "exit", "wait"};
 volatile bool instructionSent = true;
+volatile bool instructionComplete = true;
 volatile bool oldInstructionSent = true;
+volatile bool oldInstructionComplete = true;
 typedef enum{
   SEND_METADATA = 0,
   UPDATE_CONFIG = 1,
@@ -117,56 +119,45 @@ const uint8_t CANCEL_PIN = 13;
 uint32_t prevButtonReadMillis = 0;
 const uint16_t debounceTime = 500;
 
-// Bounce2::Button confirmButton = Bounce2::Button();
-// Bounce2::Button upButton = Bounce2::Button();
-// Bounce2::Button downButton = Bounce2::Button();
-// Bounce2::Button cancelButton = Bounce2::Button();
-
 void initButtons();
 void getNextAction();
+
+/* RF-LINKER */
+uint32_t prevRequestMillis = 0;
+uint32_t prevPingMillis = 0;
+bool gpio20toggle = false;
+volatile bool deviceConnected = false;
+void waitForConnection();
+
+void pingDevice();
 
 #ifndef UNIT_TESTS // this is the production code
 
 void setup() {
-
   #ifdef DEBUG
   Serial.begin(115200);
   while (!Serial) {
     delay(200);
   }
+  Serial.println("Initialised Serial monitor");
   #endif
+  initWiFi();
+  if (!initMicroSDCard()) return;
+  if (!initLCD()) return;
+  setupHandlers();
+  initButtons();
+  showMenu(0);
+  pinMode(20, OUTPUT); // GPIO20 for RF linker
+  waitForConnection();
 
-  ///////////////////////////////////
-  
-  Serial.print(F("Connecting to SSID: "));
-  Serial.println(ssid);
-
-  status = WiFi.begin(ssid, password);
-
-  delay(1000);
-   
-  // attempt to connect to WiFi network
-  while ( status != WL_CONNECTED)
-  {
-    delay(500);
-        
-    // Connect to WPA/WPA2 network
-    status = WiFi.status();
-  }
-
-  printWifiStatus();
-  
-  ///////////////////////////////////
-
-  // ROOT
-
-
-  Serial.print(F("HTTP EthernetWebServer is @ IP : "));
-  Serial.println(WiFi.localIP());
 }
 
 void loop() {
-  check_status();
+  updateUI();
+  if (millis() - prevRequestMillis > 30000) { // no connection for 30 seconds...
+    deviceConnected = false;
+    waitForConnection();
+  }
 }
 #endif // end production code
 
@@ -176,7 +167,7 @@ void loop() {
 // #define LCD_DISPLAY_TEST // test status - PASSED
 // #define FILE_UPLOAD_TEST // test status - PASSED
 // #define MENU_TEST // test status - PASSED
-
+// #define SERVER_ENDPOINTS_TEST test status - PASSED
 
 #ifdef MENU_TEST
 uint32_t dummyMillis = 0;
@@ -269,6 +260,14 @@ void setup() {
   Serial.println("Finished init");
   #endif
   #endif // end MENU_TEST
+
+  #ifdef SERVER_ENDPOINTS_TEST
+  initWiFi();
+  initMicroSDCard();
+  setupHandlers();
+
+  currentInstruction = SAMPLE_PHOTO; // change this to test each instruction
+  #endif // end SERVER_ENDPOINTS_TEST
 }
 
 void loop() {

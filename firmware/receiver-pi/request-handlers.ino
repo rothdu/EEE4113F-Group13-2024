@@ -1,3 +1,14 @@
+void initWiFi() {
+  WiFi.mode(WIFI_AP);
+
+  WiFi.softAP(ssid, password);
+
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(300);
+  }
+  return;
+}
+
 void setupHandlers() {
 
   // handler for root
@@ -33,7 +44,7 @@ void setupHandlers() {
     },
     NULL,
     [](AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
-      handlePhotoUpload(request, data, len, index, total); // passing true indicates that it is a sample photo
+      handleMetadataUpload(request, data, len, index, total);
   });
 
   server.on(
@@ -56,6 +67,12 @@ void setupHandlers() {
 }
 
 bool handleUpdateConfig(AsyncWebServerRequest *request) {
+  prevRequestMillis = millis();
+  
+  #ifdef DEBUG
+  Serial.println("Updating config");
+  #endif
+  
   if (! request->hasHeader("Device-ID")) {
     #ifdef DEBUG
     Serial.println("Missing Device-ID");
@@ -86,15 +103,25 @@ bool handleUpdateConfig(AsyncWebServerRequest *request) {
 }
 
 bool handleNextInstruction(AsyncWebServerRequest *request) {
+  prevRequestMillis = millis();
+  deviceConnected = true;
   instructionSent = true;
   request->send(200, "text/plain", instructions[currentInstruction]);
   // good request, send next instruction.
   // TODO: Could add some sort of check of who is sending the request?
+  instructionComplete = (currentInstruction == WAIT);
+
+  currentInstruction = WAIT;
+
+  #ifdef DEBUG
+  Serial.print("Sending instruction: ");
+  Serial.println(instructions[currentInstruction]);
+  #endif
   return true;
 }
 
 bool handlePhotoUpload(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total, bool sample) {
-
+  prevRequestMillis = millis();
   if(! (request->hasHeader("Content-Type") && request->hasHeader("Content-Length") && request->hasHeader("Device-ID") && request->hasHeader("Photo-Name"))) {
     #ifdef DEBUG
     Serial.println("Missing request headers");
@@ -119,9 +146,7 @@ bool handlePhotoUpload(AsyncWebServerRequest *request, uint8_t *data, size_t len
   if (index == 0) { // first part
     String deviceID = request->getHeader("Device-ID")->value();
     String photoName = request->getHeader("Photo-Name")->value();
-    String dirName = deviceID;
-    if (sample) dirName = "sample"; // save to different folder for a sample...
-    checkAndCreateDir(String("/") + dirName);
+    checkAndCreateDir(String("/") + deviceID);
     String receivedFilePath = String("/") + deviceID + String("/") + photoName;
     SD.remove(receivedFilePath.c_str()); // remove and overwrite
     receivedFile = SD.open(receivedFilePath.c_str(), FILE_WRITE);
@@ -139,7 +164,7 @@ bool handlePhotoUpload(AsyncWebServerRequest *request, uint8_t *data, size_t len
 
   if (index + len == total) { // at the end of the file
     #ifdef DEBUG
-    Serial.println("Image upload good - responding 200");
+    Serial.println("Good image upload");
     #endif
     receivedFile.close();
     request->send(201);
@@ -149,7 +174,7 @@ bool handlePhotoUpload(AsyncWebServerRequest *request, uint8_t *data, size_t len
 }
 
 bool handleMetadataUpload(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-
+  prevRequestMillis = millis();
   if(! (request->hasHeader("Content-Type") && request->hasHeader("Content-Length") && request->hasHeader("Device-ID"))) {
     #ifdef DEBUG
     Serial.println("Missing request headers");
@@ -161,7 +186,7 @@ bool handleMetadataUpload(AsyncWebServerRequest *request, uint8_t *data, size_t 
 
   String contentType = request->getHeader("Content-Type")->value();
 
-  if (contentType != String("applicatione/json")) {
+  if (contentType != String("application/json")) {
     #ifdef DEBUG
     Serial.println("Not application/json");
     #endif
@@ -192,7 +217,7 @@ bool handleMetadataUpload(AsyncWebServerRequest *request, uint8_t *data, size_t 
 
   if (index + len == total) { // at the end of the file
     #ifdef DEBUG
-    Serial.println("Image upload good - responding 200");
+    Serial.println("Good metadata upload");
     #endif
     receivedFile.close();
     request->send(201);
@@ -202,16 +227,18 @@ bool handleMetadataUpload(AsyncWebServerRequest *request, uint8_t *data, size_t 
 }
 
 void handleNotFound(AsyncWebServerRequest *request) {
+  prevRequestMillis = millis();
   #ifdef DEBUG
-  Serial.println("Handling not found");
+  Serial.println("Request not found");
   #endif
   request->send(404);
   return;
 }
 
 void handleRoot(AsyncWebServerRequest *request) {
+  prevRequestMillis = millis();
   #ifdef DEBUG
-  Serial.println("Handling root");
+  Serial.println("Serving hello world root");
   #endif
   request->send(200, "text/html", "<title>Hello World</title><p>Hello World</p>");
   return;

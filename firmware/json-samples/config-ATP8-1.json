@@ -1,0 +1,7 @@
+{
+    "camera": {
+        "aecValue": 300, 
+        "capturesPerTrigger": 10, 
+        "timeBetweenTriggers": 15
+    }
+}

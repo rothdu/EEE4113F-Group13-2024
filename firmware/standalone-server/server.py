@@ -4,7 +4,7 @@ import time
 import sys
 import json
 
-hostName = "192.168.1.35"
+hostName = "172.20.10.2"
 serverPort = 8080
 
 
@@ -27,8 +27,7 @@ class MyServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(bytes("<title>Hello World</title><p>Hello World</p>", "utf-8"))
     
-    def do_POST(self):
-        print("Doing post")
+    def do_PUT(self):
         if self.path == '/upload_image': # check current header
             print("upload-image")
             if self.headers.get('Content-Type') == 'image/jpeg': # receiving a jpeg
@@ -46,13 +45,33 @@ class MyServer(BaseHTTPRequestHandler):
                 imgfile = self.rfile.read(content_len)
 
                 # Save image to file
-                save_name = 'images/' + savename  # filename to store the data
+                save_name = 'received/' + savename  # filename to store the data
                 with open(save_name, 'wb') as f:
                     f.write(imgfile)
                 self.send_response(200)
                 self.send_header('Content-type', 'text/plain')
                 self.end_headers()
-                self.wfile.write(b"great")
+                self.wfile.write("great")
+        if self.path == '/metadata': # check current header
+            print("metadata")
+            if self.headers.get('Content-Type') == 'application/json': # receiving a jpeg
+                try:
+                    content_len = int(self.headers.get('Content-Length', 0))
+                except TypeError: # content-length has not been set
+                    pass # TODO: sent bad response
+                    print("Problem with Content-Length")
+
+                receivedfile = self.rfile.read(content_len)
+
+                # Save image to file
+                save_name = 'received/' + savename  # filename to store the data
+                with open(save_name, 'wb') as f:
+                    f.write(receivedfile)
+
+                self.send_response(200)
+                self.send_header('Content-type', 'text/plain')
+                self.end_headers()
+                self.wfile.write("great")
          
 def main():
     # create webserver

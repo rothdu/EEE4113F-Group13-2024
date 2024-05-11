@@ -3,10 +3,6 @@ bool initLCD() {
   Wire.begin();
   Wire.beginTransmission(0x27);
   error = Wire.endTransmission();
-  #ifdef DEBUG
-  Serial.print("Error: ");
-  Serial.print(error);
-  #endif
 
   if (error != 0) {
     return false;
@@ -46,3 +42,14 @@ void showMenu(int8_t scroll) {
   return;
 }
 
+void showSent() {
+  lcd.setCursor(0, 1);
+  lcd.print(">SENT>");
+  lcd.home();
+}
+
+void clearBottom() {
+  lcd.setCursor(0, 1);
+  lcd.print("                ");
+  lcd.home();
+}

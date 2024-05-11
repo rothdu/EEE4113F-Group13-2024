@@ -43,6 +43,7 @@ bool checkAndCreateDir(String dirPath) {
       return false;
     }
     SD.mkdir(dirPath.c_str());
+    return true;
   }
 
   return true;

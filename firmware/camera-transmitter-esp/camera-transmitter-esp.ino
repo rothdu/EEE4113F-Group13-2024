@@ -1,8 +1,8 @@
 // define this to enable debug output on Serial
-#define DEBUG
+// #define DEBUG
 
 // define this to run the unit test code rather than the production code
-#define UNIT_TESTS
+// #define UNIT_TESTS
 
 // define this for ATP4
 // #define ATP4
@@ -177,7 +177,7 @@ void setup() {
     #endif
     pirRFSleep(); // immediately go back to sleep with PIR trigger
   }
-  else (wakeupReason != ESP_SLEEP_WAKEUP_EXT1) {
+  else if (wakeupReason != ESP_SLEEP_WAKEUP_EXT1) {
     #ifdef DEBUG
     Serial.println("Not awoken by deep sleep, sleeping");
     #endif
@@ -217,8 +217,8 @@ void loop() {
 // #define UPDATE_CONFIG_TEST // test status - PASSED
 // #define CAMERA_QUALITY_TESTING
 // #define SEND_METADATA_TEST
-// #define TRANSMITTER_MODE_TEST
-#define CAPTURE_MODE_TEST
+#define TRANSMITTER_MODE_TEST
+// #define CAPTURE_MODE_TEST
 /* still to run:
   Each instruction individually
   trigger capture mode

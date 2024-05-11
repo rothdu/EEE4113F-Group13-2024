@@ -130,7 +130,7 @@ int16_t sendPhoto(String thisPhotoDir, String thisPhotoName, uint32_t photoNum) 
 
 int16_t sendSample(String thisPhotoDir, String thisPhotoName) {
 
-  String filePath = thisPhotoDir + String("/") + thisPhotoName;
+  String filePath = thisPhotoDir + String("/") + thisPhotoName + String(".jpeg");
   // double check there are no problems with the file
   fs::FS &fs = SD_MMC;
   File file = fs.open(filePath.c_str());
