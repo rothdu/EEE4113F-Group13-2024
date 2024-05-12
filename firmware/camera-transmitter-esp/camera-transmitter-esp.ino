@@ -1,9 +1,18 @@
 // define this to enable debug output on Serial
-#define DEBUG
+// #define DEBUG
 
 // define this to run the unit test code rather than the production code
-#define UNIT_TESTS
+// #define UNIT_TESTS
 
+// define this for ATP4
+// #define ATP4
+
+// define this for ATP8
+// #define ATP8
+
+#if defined(ATP4) || defined(ATP8)
+#define ATPS
+#endif
 /* MAIN TASKS */
 typedef enum{
   SEND_METADATA = 0,
@@ -64,7 +73,8 @@ String password = "ilovestarlings";
 String serverAddress = "http://192.168.42.1:8080"; // server IP, can up updated via config
 WiFiClient client; // client for reading stream from server
 HTTPClient http;
-uint8_t numAttempts = 3; // global number of attempts at a web request before giving up and going back to sleep
+const uint8_t numAttempts = 3; // global number of attempts at a web request before giving up and going back to sleep
+uint8_t numWiFiFails = 0;
 /* web-requests.ino prototypes */
 int16_t sendPhoto(String thisPhotoDir, String thisPhotoName, uint32_t photoNum);
 uint32_t sendAllPhotos();
@@ -99,10 +109,10 @@ uint8_t specialEffects = 0;
 uint8_t whiteBalance = 1;
 uint8_t awbGain = 1;
 uint8_t wbMode = 0;
-uint8_t exposureCtrl = 1;
+uint8_t exposureCtrl = 0;
 uint8_t aec2 = 0;
 int8_t aeLevel = 0;
-uint16_t aecValue = 300;
+uint16_t aecValue = 1200;
 uint8_t gainCtrl = 1;
 uint8_t agcGain = 0;
 uint8_t gainCeiling = 0;
@@ -114,6 +124,7 @@ uint8_t hmirror = 0;
 uint8_t vflip = 0;
 uint8_t dcw = 1;
 uint8_t colorbar = 0; 
+uint8_t jpegQuality = 10;
 // timing config options
 uint16_t timeBetweenTriggers = 60; // in seconds
 uint16_t capturesPerTrigger = 3;
@@ -148,19 +159,31 @@ void deinitSleep();
 void setup() {
   // Disable brownout detector
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  esp_sleep_wakeup_cause_t wakeupReason = esp_sleep_get_wakeup_cause();
-  deinitSleep(); // TODO: Is there a chance this could mess checking the awakening pin?
-  if (wakeupReason == ESP_SLEEP_WAKEUP_TIMER) {
-    pirRFSleep(); // immediately go back to sleep with PIR trigger
-  }
-  // Start Serial Monitor
-  #ifdef DEBUG
+
+  #if defined(DEBUG) || defined(ATPS)
   Serial.begin(115200);
   while (!Serial) {
     sleep(200);
   }
   #endif
-
+  #ifdef ATPS // sleep to allow time to trigger GPIO1 switch
+  sleep(5000);
+  #endif
+  esp_sleep_wakeup_cause_t wakeupReason = esp_sleep_get_wakeup_cause();
+  deinitSleep(); // TODO: Is there a chance this could mess checking the awakening pin?
+  if (wakeupReason == ESP_SLEEP_WAKEUP_TIMER) {
+    #ifdef DEBUG
+    Serial.println("Awoken by timer, sleeping");
+    #endif
+    pirRFSleep(); // immediately go back to sleep with PIR trigger
+  }
+  else if (wakeupReason != ESP_SLEEP_WAKEUP_EXT1) {
+    #ifdef DEBUG
+    Serial.println("Not awoken by deep sleep, sleeping");
+    #endif
+    pirRFSleep();
+  }
+  // Start Serial Monitor
   uint8_t awakenPin = deepSleepAwakenPin();
 
   switch(awakenPin) {
@@ -192,6 +215,10 @@ void loop() {
 // #define SEND_ALL_FILES_TEST // test status - PASSED
 // #define UPLOAD_TO_PI_TEST // test status - PASSED
 // #define UPDATE_CONFIG_TEST // test status - PASSED
+// #define CAMERA_QUALITY_TESTING
+// #define SEND_METADATA_TEST
+#define TRANSMITTER_MODE_TEST
+// #define CAPTURE_MODE_TEST
 /* still to run:
   Each instruction individually
   trigger capture mode
@@ -210,6 +237,7 @@ void setup() {
   while (!Serial) {
     delay(200);
   }
+  Serial.println("Started serial monitor");
   #endif
 
   #ifdef CONFIG_TEST
@@ -240,23 +268,23 @@ void setup() {
   Serial.println(serverAddress);
   #endif
   sendAndDeleteImage(filePath);
-  #endif
+  #endif // end FILE_SENT_TEST
 
   #ifdef READ_NUM_IMAGES_TEST
   initMicroSDCard();
-  #endif
+  #endif // end READ_NUM_IMAGES_TEST
 
   #ifdef TAKE_PHOTO_TEST
   initMicroSDCard();
   configESPCamera();
   takeNewPhoto(String("/sampleCam.jpeg"));
   Serial.println("Taken photo...hopefully");
-  #endif
+  #endif // end TAKE_PHOTO_TEST
 
   #ifdef MANY_PHOTOS_TEST
   initMicroSDCard();
   configESPCamera();
-  #endif
+  #endif // end MANY_PHOTOS_TEST
 
   #ifdef SEND_ALL_FILES_TEST
   initMicroSDCard();
@@ -278,7 +306,7 @@ void setup() {
   #ifdef DEBUG
   Serial.println(successNum);
   #endif
-  #endif
+  #endif // end SNED_ALL_FILES_TEST
 
   #ifdef UPLOAD_TO_PI_TEST
   initMicroSDCard();
@@ -307,6 +335,38 @@ void setup() {
   // check SD card to see if it contains the updated config file
   #endif
   #endif // end UPDATE_CONFIG_TEST
+
+  #ifdef CAMERA_QUALITY_TESTING
+  initMicroSDCard();
+  loadFromConfig();
+  configESPCamera();
+
+  #ifdef DEBUG
+  Serial.println("Made it past config");
+  Serial.println("Config:");
+  Serial.println(brightness);
+  Serial.println(contrast);
+  Serial.println(saturation);
+  #endif
+
+  takeNewPhoto(configDir, sampleName);
+  #endif // end CAMERA_QUALITY_TESTING
+
+  #ifdef SEND_METADATA_TEST
+  initMicroSDCard();
+  loadFromConfig();
+  configESPCamera();
+  initWiFi();
+  handleInstruction(SEND_METADATA);
+  #endif // end SEND_METADATA_TEST
+
+  #ifdef TRANSMITTER_MODE_TEST
+  triggerTransmitter();
+  #endif // end TRANSMITTER_MODE_TEST
+
+  #ifdef CAPTURE_MODE_TEST
+  triggerCapture();
+  #endif
 }
 
 void loop() {
@@ -318,7 +378,7 @@ void loop() {
   Serial.println(saturation); // should be default
   Serial.println(aecValue); // should be default
   delay(5000);
-  #endif
+  #endif // end CONFIG_TEST
 
   #ifdef READ_NUM_IMAGES_TEST
   Serial.println("Starting test");
@@ -326,7 +386,7 @@ void loop() {
   Serial.println(num);
   setNumPhotos(num);
   delay(5000);
-  #endif
+  #endif // end READ_NUM_IMAGES_TEST
 
   #ifdef MANY_PHOTOS_TEST
   uint32_t nextPhotoNum = getNumPhotos();
@@ -348,6 +408,7 @@ void loop() {
   #endif
   delay(5000);
   #endif // end UPLOAD_TO_PI_TEST
+
 }
 #endif
 /* END UNIT TESTING */

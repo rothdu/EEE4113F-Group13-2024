@@ -5,8 +5,23 @@
  */
 bool loadFromConfig() {
   fs::FS &fs = SD_MMC;
+  #ifdef DEBUG
+  Serial.println("Loading from config");
+  #endif
+
+  if (!checkAndCreateDir(configDir)) {
+    #ifdef DEBUG
+    Serial.println("Couldn't create config DIR");
+    #endif
+    // this is a major fail...
+    return 0;
+  }
 
   File configFile = fs.open(configFilePath.c_str(), FILE_READ); // open file
+
+  #ifdef DEBUG
+  Serial.println("Theoretically opened config file");
+  #endif
 
   if (!configFile) {
     #ifdef DEBUG
@@ -297,6 +312,14 @@ bool cameraConfig(JsonObject cameraObj) {
     temp = cameraObj["colorbar"];
     if (temp >= 0 && temp <= 1) {
       colorbar = temp;
+    }
+  }
+
+  //jpeg Quality 1-63; low = better
+  if (cameraObj["jpegQuality"].is<int>()) {
+    temp = cameraObj["jpegQuality"];
+    if (temp >= 1 && temp <= 63) {
+      jpegQuality = temp;
     }
   }
 

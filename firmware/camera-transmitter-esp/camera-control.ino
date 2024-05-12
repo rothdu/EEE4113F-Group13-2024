@@ -32,7 +32,7 @@ bool configESPCamera() {
   // AI thinker should support PSRAM so this is mostly for code reuseability
   if (psramFound()) {
     config.frame_size = FRAMESIZE_UXGA; // Resolution
-    config.jpeg_quality = 10; //10-63 lower number = higher quality
+    config.jpeg_quality = jpegQuality; //10-63 lower number = higher quality
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
@@ -122,7 +122,7 @@ bool nextPhoto() {
     return false;
   }
 
-  return takeNewPhoto(photosDir, photoName);
+  return takeNewPhoto(photosDir, photoName + String(nextNum));
 }
 
 // for taking a new photo

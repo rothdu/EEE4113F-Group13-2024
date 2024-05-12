@@ -1,0 +1,5 @@
+1 - exposure control off, aec 1200 (bright conditions) brightness 2, contrast 1, saturation 1
+2 - exposure control on, aec 1200 (bright conditions) brightness 2, contrast 1, saturation 1
+3 - 1 but low light
+4 - 1 but dark
+5 - 1 but dark with IR

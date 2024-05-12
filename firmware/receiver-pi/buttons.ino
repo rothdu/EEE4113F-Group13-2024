@@ -9,10 +9,6 @@ void getNextAction() {
   
   if (millis() - prevButtonReadMillis < debounceTime) return; // only read if after debounce time
   prevButtonReadMillis = millis();
-  #ifdef DEBUG
-  Serial.print("Confirm status: ");
-  Serial.println(digitalRead(CONFIRM_PIN));
-  #endif
 
   if (digitalRead(CANCEL_PIN) == LOW) action = CANCEL;
   else if (digitalRead(CONFIRM_PIN) == LOW) action = CONFIRM;
@@ -28,26 +24,44 @@ void updateUI() {
   // #endif
   getNextAction();
 
-  if (!instructionSent) {
+    // detect a "rising & falling edge" of instructionSent
+  if (instructionSent != oldInstructionSent) {
     #ifdef DEBUG
-    Serial.println("Waiting for instructionSent");
+    Serial.println("instructionSent edge");
     #endif
+    if (instructionSent) showSent();
+    else clearBottom();
     oldInstructionSent = instructionSent;
+  }
+  // detect a "rising edge" of instructionComplete
+  if (instructionComplete != oldInstructionComplete) {
+    #ifdef DEBUG
+    Serial.println("instructionComplete edge");
+    #endif
+    if (instructionComplete) showMenu(0); // TODO: May have to change this up if showing actual actions after an operation
+    oldInstructionComplete = instructionComplete;
+  }
+
+  if (!instructionComplete) {
+    #ifdef DEBUG
+    // Serial.println("Waiting for instruction to complete");
+    #endif
+    if (!instructionSent) {
     switch (action) {
       case CANCEL:
       currentInstruction = WAIT;
       instructionSent = true;
+      oldInstructionSent = true;
+      showMenu(0);
       break;
+    }
     }
     action = NONE;
     showLoading();
     return;
   }
 
-  if (instructionSent && !oldInstructionSent) {
-    showMenu(0); // TODO: May have to change this up if showing actual actions after an operation
-    oldInstructionSent = instructionSent;
-  }
+
 
   switch (action) {
     case CONFIRM:
@@ -55,6 +69,7 @@ void updateUI() {
     Serial.println("Action confirm");
     #endif
     currentInstruction = intToInstruction(menuPos);
+    instructionComplete = false;
     instructionSent = false;
     break;
 

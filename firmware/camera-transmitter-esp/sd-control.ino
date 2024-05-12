@@ -2,9 +2,12 @@
 bool initMicroSDCard() {
   // Start the MicroSD card
 
-  // enable GPIO16 which disables the PNP switches
-  pinMode(16, OUTPUT);
-  digitalWrite(16, HIGH);
+  // enable GPIO1 which disables the PNP switches
+  // GPIO1 is also used for UART so cannot use in DEBUG mode
+  #if !defined(DEBUG) && !defined(ATPS)
+  pinMode(1, OUTPUT);
+  digitalWrite(1, HIGH);
+  #endif
   
   #ifdef DEBUG
   Serial.println("Mounting MicroSD Card");
@@ -25,6 +28,10 @@ bool initMicroSDCard() {
     Serial.println("No MicroSD Card found");
     return false;
   }
+
+  #ifdef DEBUG
+  Serial.println("Made it past SD card mounting");
+  #endif
 
   return true;
 }
