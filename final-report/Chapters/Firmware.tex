@@ -127,24 +127,26 @@ In line with \hyperlink{tab:firmware-requirements}{FR4}, the requirement was eit
 
 \section{Submodule design} \label{s:firmware-design-process}
 
-\subsection{High level camera/transmitter module firmware flow}
+\subsection{High level camera/transmitter module firmware flow} \label{ss:espflow}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\columnwidth]{"ESP-flow.png"}
-    \caption{Flowchart representing the program flow of the ESP32 Camera/Transmitter module}
+    \includegraphics[width=\textwidth]{"ESP-flow.png"}
+    \caption{Flowchart representing the program flow of the ESP32-cam camera/transmitter module}
     \label{fig:espflow}
 \end{figure}
 
 Figure \ref{fig:espflow} demonstrates a high-level program flow of the Camera/Transmitter module. The two sequences operate independently. The module has two primary purposes - capturing footage, and transmitting it. Footage capture is Transmission can be triggered manually from the reveiver module, with an interrupt that comes via the RF receiver. 
 
+\subsection{Implementation of configuration file}
+
+To meet the identified soft-configurability requirement, the camera/transmitter module reads a customiseable configuration file to determine a number of key settings. The configuration file is stored in plaintext json at "starling-cam/config/config.json" on the SD card. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid or missing, any missing parameters are loaded as defaults. The configuration can be updated remotely, overwriting the previous configuration.
+
 \subsection{HTTP server implementation and API}
 
 The HTTP server was implemented using an asynchronous web server library for the Raspberry Pi Pico W citations\cite{hoang2023async}. This library was based on a similar library for the ESP32 \cite{gochkov2023async}. An asynchronous library was preferred to a synchrnous one, since it allowed the main user interface and control of the receiver module to operate independently of the web server, meaning that web server operations would not cause unexpected delays or lack of responsiveness in the UI. This choice was also made in the interests of future developement; a future application with multiple clients (e.g., broswers on mobile phones) connecting to the server simultaneously could experience significant issues with responsiveness on the UI if the server operated synchronously. ESP32 library is well used and includes extensive code examples, which were a valuable tool in the development process  \cite{hoang2023async}. Although the library for the Raspbery Pi Pico W is not as well documented, it is built on the same principles as the ESP32 library and the examples and documentation from the ESP32 could thus be used instead.
 
-
 To meet this functionality of , the server Application Programming Interface (API) detailed in Table \ref{tab:server-api} was developed. No functions utilised URI parameters, though some did require specific request headers, as described in Table \ref{tab:server-api}. Additionally, all requests required a "Device-ID" header, which specified the ID of the incoming device; this would be used by the server to differentiate between different camera/transmitter modules if multiple were deployed.
-
 
 Communication from receiver to transmitter was sent via GET requests, since these indicate that the client is fetching a resource from the server. Communication from transmitter to receiver was sent via PUT requests. PUT requests indicate an idempotent transfer from client to server, meaning that a request with the same form as a previous request is sent, the previous resource is overwritten. This was deemed more appropriate than a non-idempotent POST request, since idempotency was in line with the way the images were stored on the receiver. An image received from the same device with the same name was assumed to be a repeat send of a previous image, and would thus overwrite the image stored on the receiver. This meant that the camera/transmitter module could safely resend images in the instance of an unexpected error from the response from the server, without risk of duplicating said images.
 
@@ -165,15 +167,43 @@ Communication from receiver to transmitter was sent via GET requests, since thes
     \label{tab:server-api}
 \end{table}
 
-\subsection{Implementation of configuration file}
+\subsection{User Interface (UI) control flow and design}
 
-To meet the identified soft-configurability requirement, the camera/transmitter module reads a customiseable configuration file to determine a number of key settings. The configuration file is stored in plaintext json at "starling-cam/config/config.json" on the SD card. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid or missing, any missing parameters are loaded as defaults.
+The hardware available for the user interface was a 16x2 character Liquid Crystal Display. The core requirement was to give the user control over the instructions sent to the camera/transmitter module, as discussed in subsection \ref{ss:espflow}. An overview of the control flow for the receiver module is shown in Figure \ref{fig:piflow}.
 
-\subsection{User Interface (UI) control flow design}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{"Pi-flow.png"}
+    \caption{Flowchart representing the program flow of the Raspberry Pi Pico W reciever module}
+    \label{fig:piflow}
+\end{figure}
 
-The hardware available for the user interface was a 16x2 character Liquid Crystal Display. The core requirement was to give the user control over the instructions sent to the camera/transmitter module, as shown in Figure \ref{fig:espflow}. An overview of the control flow for the receiver module is shown in Figure .
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.4\textwidth]{"ui.jpeg"}
+    \caption{Sample of the menu display for the receiver module}
+    \label{fig:uisample}
+\end{figure}
 
-To meet SS, the 
+To meet SS, the user interface must be easy to understand. On a small LCD screen, it is not possible to display a lot of information. Showing information would require shortening or abstracting it to levels that can easily become incomprehensible.  The user interface was developed with a simple menu, giving only the options availble from subsetion \ref{ss:espflow}. If more functions were necessary on the receiver device were needed, it may have been necessary to investigate a user interface with multiple sub-menus (each containing groups of similar functions). However, the small size of the display limits the ability to show the user feedback about their current position in the program; keeping the menu simple is thus important for user comperehensibility. It was thus deemed more appropriate to have a single menu screen. A sample of the dispalyed menue is shown in Figure \ref{fig:uisample}. The menu options are shown below. 
+\begin{itemize}
+    \item GET METADATA
+    \item UPDATE CONFIG
+    \item SEND PHOTOS
+    \item SAMPLE PHOTO
+    \item EXIT
+\end{itemize}
+
+Menu navigation is performed through via the 4 buttons, each of which is assigned a dedicated task - UP, DOWN, CONFIRM, and CANCEL. The user can learn precisely what to expect from these buttons because their functions do not change. The UP and DOWN buttons scroll through the menu. The CONFIRM button confirms the currently selected option. The CANCEL buttons cancels the current operation if it has not yet been sent to the camera/transmitter.
+
+To meet SS, the user interface must show constant feedback, to indicate the current state of the device and to show that the device is still operational. To achieve this, the following were integrated into the user design:
+
+\begin{itemize}
+    \item As the user scrolls through the menu, an arrow (>) in the top-right corner indicates that the function displayed on the top line of the menu can be selected.
+    \item While the device is waiting for connection to the camera/transmitter, it displays "connecting", with a constantly moving character. The menu is not visible, making it clear to the user that the menu functions will not operate until the camera/transmitter is connected.
+    \item While the device is waiting to send an instruction or waiting for confirmation from the camera/transmiter that the instruction has been completed, a constantly moving character is displayed to indicate to the user that the reciever device is still operational. The selected option remains visible on the screen so that the user can be confident about what the device is currently doing.
+    \item Once the instruction to the camera/transmitter is sent and can not longer be cancelled, ">SENT>" is displayed on the screen, to make the current status of the function clear to the user.
+\end{itemize}
 
 \subsection{Camera sensor settings}
 
@@ -202,10 +232,6 @@ Testing was performed on the system hardware. A number of tools and practices we
     \item Curl commands: HTTP requests were made in testing using Curl \cite{hostetter1997curl}. The tool could easily be used to create well-formatted HTTP requests with the desired information. This allowed testing of the web server on the receiver device in isolation from the transmitter device.
     \item Python webserver: A simple python web server was developed for testing the HTTP requests from the camera/transmitter device.
 \end{itemize}
-
-% TODO: Probably some test about file size and a proper analysis of photo vs video
-
-% TODO: A proper analysis of the settings available
 
 
 \section{Acceptance Tests \label{s:firmware-atps}}
@@ -329,7 +355,7 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
     \label{tab:firmware-atps2}
 \end{table}
 
-\subsection{Future developments}
+\section{Future developments}
 
 
 \section{Conclusions}
