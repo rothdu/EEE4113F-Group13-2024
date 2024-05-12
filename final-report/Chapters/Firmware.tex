@@ -131,41 +131,81 @@ In line with \hyperlink{tab:firmware-requirements}{FR4}, the requirement was eit
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\columnwidth]{"Images/ESP-flow.png"}
+    \includegraphics[width=\columnwidth]{"ESP-flow.png"}
     \caption{Flowchart representing the program flow of the ESP32 Camera/Transmitter module}
     \label{fig:espflow}
 \end{figure}
 
 Figure \ref{fig:espflow} demonstrates a high-level program flow of the Camera/Transmitter module. The two sequences operate independently. The module has two primary purposes - capturing footage, and transmitting it. Footage capture is Transmission can be triggered manually from the reveiver module, with an interrupt that comes via the RF receiver. 
 
-\subsection{HTTP server API}
+\subsection{HTTP server implementation and API}
 
-The HTTP server implemented on the receiver module or a standalone computer must have available endpoints for all the applications the client wishes to utilise. The endpoints realised were:
+The HTTP server was implemented using an asynchronous web server library for the Raspberry Pi Pico W citations\cite{hoang2023async}. This library was based on a similar library for the ESP32 \cite{gochkov2023async}. An asynchronous library was preferred to a synchrnous one, since it allowed the main user interface and control of the receiver module to operate independently of the web server, meaning that web server operations would not cause unexpected delays or lack of responsiveness in the UI. This choice was also made in the interests of future developement; a future application with multiple clients (e.g., broswers on mobile phones) connecting to the server simultaneously could experience significant issues with responsiveness on the UI if the server operated synchronously. ESP32 library is well used and includes extensive code examples, which were a valuable tool in the development process  \cite{hoang2023async}. Although the library for the Raspbery Pi Pico W is not as well documented, it is built on the same principles as the ESP32 library and the examples and documentation from the ESP32 could thus be used instead.
 
-\begin{itemize}
-    \item HTTP GET: /next\_instruction - server must send next instruction to client
-    \item HTTP GET: /update\_config - server must send updated config to client
-    \item HTTP PUT: /upload\_image - upload images to server (1 image per request)
-    \item HTTP PUT: /sample\_image - upload sample image to server
-    \item HTTP PUT: /metadata - send metadata to server
-\end{itemize}
 
-To meet this functionality, the server Application Programming Interface (API) detailed in Table was developed. Communication from receiver to transmitter was sent via GET requests, since these indicate that the client is fetching a resource from the server. Communication from transmitter to receiver was sent via PUT requests. PUT requests indicate an idempotent transfer from client to server, meaning that a request with the same form as a previous request is sent, the previous resource is overwritten. This was deemed more appropriate than a non-idempotent POST request, since idempotency was in line with the way the images were stored on the receiver. An image received from the same device with the same name was assumed to be a repeat send of a previous image, and would thus overwrite the image stored on the receiver. This meant that the camera/transmitter module could safely resend images in the instance of an unexpected error from the response from the server, without risk of duplicating said images.
+To meet this functionality of , the server Application Programming Interface (API) detailed in Table \ref{tab:server-api} was developed. No functions utilised URI parameters, though some did require specific request headers, as described in Table \ref{tab:server-api}. Additionally, all requests required a "Device-ID" header, which specified the ID of the incoming device; this would be used by the server to differentiate between different camera/transmitter modules if multiple were deployed.
 
+
+Communication from receiver to transmitter was sent via GET requests, since these indicate that the client is fetching a resource from the server. Communication from transmitter to receiver was sent via PUT requests. PUT requests indicate an idempotent transfer from client to server, meaning that a request with the same form as a previous request is sent, the previous resource is overwritten. This was deemed more appropriate than a non-idempotent POST request, since idempotency was in line with the way the images were stored on the receiver. An image received from the same device with the same name was assumed to be a repeat send of a previous image, and would thus overwrite the image stored on the receiver. This meant that the camera/transmitter module could safely resend images in the instance of an unexpected error from the response from the server, without risk of duplicating said images.
+
+\begin{table}[ht]
+    \centering
+    \begin{scriptsize}
+    \begin{tabularx}{\textwidth}{|p{0.2\textwidth}|p{0.05\textwidth}|X|}
+    \hline
+    \textbf{Endpoint} & \textbf{request type} & \textbf{Description} \\ \hline
+    /next\_instruction & GET & Client requests a new instruction on what operation to perform from the server. Instruction is delivered in plaintext in the response body. Instructions are as shown in Figure \ref{fig:espflow}. \\ \hline
+    /metadata & PUT & Client uploads a file of type "application/json" to the server. File contains the number of images currently stored on the camera/transmitter, and the percentage of SD card storage used. Server saves the file as "metadata.json" in the directory corresponding to the device ID. \\ \hline
+    /upload\_image & PUT & Client uploads a file of type "image/jpeg" to the server. File name is specified request header "Photo-Name". Server saves the photo with the given name to the directory corresponding to the device ID. Used multiple times in succession to send all images from client to server. \\ \hline
+    /sample\_image & PUT & Client uploads a file of type "image/jpeg" to the server. Server saves the photo as "sample.jpeg" to the directory corresponding to the device ID. \\ \hline
+    /update\_config & GET & Client requests an updated configuration file. Server responds with file of type "application/json". File sent is "config.json" from the directory corresponding to the device ID on the server. \\ \hline
+    \end{tabularx}%
+    \end{scriptsize}
+    \caption{Summary of common coding environments for the available microcontroller}
+    \label{tab:server-api}
+\end{table}
 
 \subsection{Implementation of configuration file}
 
-To meet the identified soft-configurability requirement, the ESP32 module will read a customiseable configuration file to determine a number of key settings. The configuration file is stored in plaintext json at "starling-cam/config/config.json" on the SD card. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid or missing, any missing parameters are loaded as defaults.
+To meet the identified soft-configurability requirement, the camera/transmitter module reads a customiseable configuration file to determine a number of key settings. The configuration file is stored in plaintext json at "starling-cam/config/config.json" on the SD card. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid or missing, any missing parameters are loaded as defaults.
+
+\subsection{User Interface (UI) control flow design}
+
+The hardware available for the user interface was a 16x2 character Liquid Crystal Display. The core requirement was to give the user control over the instructions sent to the camera/transmitter module, as shown in Figure \ref{fig:espflow}. An overview of the control flow for the receiver module is shown in Figure .
+
+To meet SS, the 
 
 \subsection{Camera sensor settings}
 
-The user requirements specified that video or image capture was acceptable, though for the latter a number of images in quick succession would be preferable. A key limitation in this regard was the SD card on the camera/transmitter module, which had to be formatted with the FAT32 filesystem in order for the module to interface with it. FAT32 is an older file system which only supports up to 4GB of storage. This storage limitation made still image capture more feasible, especially allowing for the possibility that images would be captured many time each day.
+The OV2640 camera has a wide variety of configuration options which can be adjusted to suit the particular needs of the camera. These options were all included in the configuration file, as the best settings for each location would be best determined by the researchers involved upon deployment. However, a select number of configuration options were considered for the purposes of choosing default values, which could provide a workable positon from which thec configuration could be adjusted. 
+
+The settings considered were the automatic exposure control, exposure level, brightness, contrast, and saturation. The camera was tested with various settings in fairly well-lit conditions, which most of the nests are likely to have. Dark conditions could not be tested owing the the limitations faced with the infrared filter on the camera discussed in \ref{ch:hardware}. Qualitative assessments of the image quality were performed to determine the optimum settings.
+
+It quickly became apparent that the automatic exposure control did not function effectively. Even in moderate light, the images taken with automatic expsure control were too dark to make out any detail. Turning off the automatic exposure control and manually setting the exposure to it's maximum value was the only way to yield photos with enough light to make out any detail. At these exposure details, the brightness, contrast, and saturation settings made minimal difference to the image quality, though the qualitative assessment was that the clearest images were produced with higher values. A sample image with the final chosen settings is shown in Figure \ref{fig:sample-image-firmware}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.4\textwidth]{"sample-image-firmware.jpeg"}
+    \caption{Sample image taken with exposure manually set to maximum}
+    \label{fig:sample-image-firmware}
+\end{figure}
+
+The file size of the images varied greatly depending on the contents of the image, ranging from $\approx 40 \mathrm{KB}$ to $\approx 250 \mathrm{KB}$ with the default settings. Assuming a poor performance of $200 \mathrm{KB}$ per image, the $\approx 4 \mathrm{GiB}$ of storage available from the FAT32 filesystem could store $\approx 5350$ images. With the default settings of $3$ images per trigger and $60\mathrm{s}$ between triggers, the camera/transmitter module could capture up to $4320$ images per day. The storage on the SD card was thus adequate for daily access to the images. In reality, it is highly unlikely that the camera/transmitter module would be triggered at every possible opportunity, and the trigger frequency and time between triggers could be increased.
+
+\subsection{Simulation and testing practices}
+
+Testing was performed on the system hardware. A number of tools and practices were used to aid in the development process:
+
+\begin{itemize}
+    \item Debug mode: A debug c/c++ macro was defined in the script. When defined, this macro enabled a number of serial outputs to aid in the process of debugging. This was defined using a c/c++ macro so that the code used for debugging was not unnecessarily present in the final code.
+    \item Unit testing procedures: A number of c/c++ macros were used to define unit tests, which could test portions of the firmware individually. These were used to individually validate the functions.
+    \item Curl commands: HTTP requests were made in testing using Curl \cite{hostetter1997curl}. The tool could easily be used to create well-formatted HTTP requests with the desired information. This allowed testing of the web server on the receiver device in isolation from the transmitter device.
+    \item Python webserver: A simple python web server was developed for testing the HTTP requests from the camera/transmitter device.
+\end{itemize}
 
 % TODO: Probably some test about file size and a proper analysis of photo vs video
 
 % TODO: A proper analysis of the settings available
-
-\subsection{Camera speed testing}
 
 
 \section{Acceptance Tests \label{s:firmware-atps}}
@@ -288,6 +328,9 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
     \caption{ATPs 8-11 for the firmware subsystem}
     \label{tab:firmware-atps2}
 \end{table}
+
+\subsection{Future developments}
+
 
 \section{Conclusions}
 
