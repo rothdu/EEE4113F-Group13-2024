@@ -361,7 +361,7 @@ In the receiver, shown in Figure \ref{fig:R_Schem}, the Pi Pico W is the main hu
     \end{subfigure}
 \end{figure}
 
-Figure \ref{fig:PNP_Switch} shows a 2N2907 transistor acting as a switch, serving as a buffer between the sensor inputs and GPIO pins. A current limiting resistor is placed between the input and the emitter to prevent overloading. The collector is connected to the GPIO pin with a resistor connecting to GND. The base is connected to GPIO16 through a 10k resistor. 
+Figure \ref{fig:PNP_Switch} shows a 2N2907 transistor acting as a buffer between the sensor and GPIO pins. A resistor is placed between the Sensor and the emitter to prevent current overload. The collector is connected to the GPIO pin with a resistor pulling the pin to GND. The base is connected to GPIO16 through a 10k resistor. 
 
 When GPIO16 is low, the sensor input is allowed to trigger the GPIO pin. When the sensor input is high, the ESP32-CAM is woken up from deep sleep, and GPIO16 is immediately set to high, to isolate the sensor from the GPIO pin. 
 
@@ -373,9 +373,9 @@ An N-Channel MOSFET is used as a level shift, such that when the 3V3 voltage fro
 
 Figure \ref{fig:LED_schem} shows a 2N2222 transistor acts as a switch to control the flow of current to 5 IR LEDs are placed in parallel. The switch is operated by the comparator output, i.e., the output from the LDR circuit. When the base is high (3V3), current flows through the LEDs, otherwise, the switch will be off and no current will flow. 
 
-The datasheet quoted that each 950nm LED required 1.1V and 50mA. The circuit was simulated and built to deliver each LED with rated power. Lab testing confirmed that each LED drew 48mA. The emitting light from these LEDs are invisible to the human eye. For testing purposes, regular LEDs were used temporarily to see if the switch worked, adjusting the collector resistor to avoid overloading. The circuit functioned perfectly. 
+The datasheet quoted that each 950nm LED required 1.1V and 50mA. The circuit was simulated and built to deliver each LED with rated power. Lab testing confirmed that each LED drew 48mA. The emitting light from these LEDs are invisible to the human eye. Normal green LEDs were used to test if the switch was working. The resistor values were adjusted to ensure the rated current was applied to each LED. The circuit functioned perfectly. 
 
-During a 10 minute continuous run, the current and voltage across each IR LED remained stable, measured in 1 minute intervals. The IR LEDs became slightly warm, which was normal. 
+The IR LEDs and corresponding resistors were placed in the circuit and run for 10 minutes with the rated power. The current and voltage remained stable, with the current and voltage across the IR LEDs remaining constant. There was heat being radiated off each LED, which was normal. 
 
 \section{Power Consumption}
 \subsection{Transmitter Power Consumption}
@@ -521,7 +521,8 @@ ATP8 & Load test script "ATP8.ino" onto the Pi Pico W and follow the instruction
 * ATP2 failed on time. When purchasing the ESP32-CAM, it was expected that the IR filter was easily removable by opening the lens and popping it out. However, position was relocated in this model to the base of the camera. Accessing it required fully disassembling and desoldering the camera with the risk of permanent damage. With more time this could be completed, or alternatively an older camera model could be purchased but there were not any available that could be purchased before the deadline. 
 
 \section{Conclusion}
-This subsection achieved its goal of designing a functional receiver and camera/transmitter module for the Red Winged Starling nest monitoring system. The design process was thorough, with each decision documented and justified with a pass/fail. 
+This subsection was successful in designing a working receiver and camera/transmitter module for the Red Winged Starling nest monitoring system. The design process was thorough, where each decision was graded in 
+a pass/fail system to assess whether it was a viable option or not. 
 
 The ESP32-CAM and Pi Pico W were the main hub for the receiver and transmitter in the final design respectively, since each showcased a balance between cost and performance in the grading system. 
 
