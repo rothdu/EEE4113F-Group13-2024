@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-05-12T13:28:38.611Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0" etag="7Oi-hJ5TrebMls9wi4xe" version="24.4.0" type="github">
+<mxfile host="app.diagrams.net" modified="2024-05-12T13:51:12.545Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0" etag="lp0TjQ6aklEXs4IWuYM3" version="24.4.0" type="github">
   <diagram name="Page-1" id="edf60f1a-56cd-e834-aa8a-f176f3a09ee4">
     <mxGraphModel dx="1434" dy="792" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
@@ -44,12 +44,6 @@
         </mxCell>
         <mxCell id="8wMr0uCC5O4KT8hbaWq0-2" value="Initialise SD card" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;" parent="1" vertex="1">
           <mxGeometry x="50" y="160" width="100" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="8wMr0uCC5O4KT8hbaWq0-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Times New Roman;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="630" y="590" as="sourcePoint" />
-            <mxPoint x="630" y="611" as="targetPoint" />
-          </mxGeometry>
         </mxCell>
         <mxCell id="Sxoak5ZOZguQGcgC7deF-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="8wMr0uCC5O4KT8hbaWq0-12" target="Sxoak5ZOZguQGcgC7deF-4">
           <mxGeometry relative="1" as="geometry" />
