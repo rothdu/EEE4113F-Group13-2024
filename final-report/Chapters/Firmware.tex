@@ -160,7 +160,7 @@ As decided in subsection \ref{ss:fwconfig}, the camera/transmitter module reads 
 
 The HTTP server was implemented using an asynchronous web server library for the Raspberry Pi Pico W citations\cite{hoang2023async}. This library was based on a similar library for the ESP32 \cite{gochkov2023async}. An asynchronous library was preferred to a synchronous one, since it allowed the main user interface and control of the receiver module to operate independently of the web server, meaning that web server operations would not cause unexpected delays or lack of responsiveness in the UI. This choice was also made in the interests of future developement; a future application with multiple clients (e.g., broswers on mobile phones) connecting to the server simultaneously could experience significant issues with responsiveness on the UI if the server operated synchronously. ESP32 library is well used and includes extensive code examples, which were a valuable tool in the development process  \cite{hoang2023async}. Although the library for the Raspbery Pi Pico W is not as well documented, it is built on the same principles as the ESP32 library and the examples and documentation from the ESP32 were thus still relevant.
 
-To meet this functionality of, the server Application Programming Interface (API) detailed in Table \ref{tab:server-api} was developed. No functions utilised URI parameters, though some did require specific request headers, as described in Table \ref{tab:server-api}. Additionally, all requests required a `Device-ID' header, which specified the ID of the incoming device; this would be used by the server to differentiate between different camera/transmitter modules if multiple were deployed.
+To meet this functionality of, the server Application Programming Interface (API) detailed in Table \ref{tab:server-api} was developed. Additionally, all requests required a `Device-ID' header, which specified the ID of the incoming device; this would be used by the server to differentiate between different camera/transmitter modules if multiple were deployed.
 
 Communication from receiver to transmitter was performed via GET requests, since these indicate that the client is fetching a resource from the server. Communication from transmitter to receiver was sent via PUT requests. PUT requests indicate an idempotent transfer from client to server, meaning that a request with the same form as a previous request is sent, the previous resource is overwritten. This was deemed more appropriate than a non-idempotent POST request, since idempotency was in line with the way the images were stored on the receiver. An image received from the same device with the same name was assumed to be a repeat send of a previous image, and would thus overwrite the image stored on the receiver. This meant that the camera/transmitter module could safely resend images in the instance of an unexpected error from the response from the server, without risk of duplicating said images.
 
@@ -230,7 +230,7 @@ It quickly became apparent that the automatic exposure control did not function 
     \label{fig:sample-image-firmware}
 \end{figure}
 
-The file size of the images varied greatly depending on the contents of the image, ranging from $\approx 40 \mathrm{KB}$ to $\approx 250 \mathrm{KB}$ with the default settings. Assuming a poor performance of $200 \mathrm{KB}$ per image, the $\approx 4 \mathrm{GiB}$ of storage available from the FAT32 filesystem could store $\approx 5350$ images. With the default settings of $3$ images per trigger and $60\mathrm{s}$ between triggers, the camera/transmitter module could capture up to $4320$ images per day. The storage on the SD card was thus adequate for daily access to the images. In reality, it is highly unlikely that the camera/transmitter module would be triggered at every possible opportunity, and the trigger frequency and time between triggers could comfortably be increased.
+% The file size of the images varied greatly depending on the contents of the image, ranging from $\approx 40 \mathrm{KB}$ to $\approx 250 \mathrm{KB}$ with the default settings. Assuming a poor performance of $200 \mathrm{KB}$ per image, the $\approx 4 \mathrm{GiB}$ of storage available from the FAT32 filesystem could store $\approx 5350$ images. With the default settings of $3$ images per trigger and $60\mathrm{s}$ between triggers, the camera/transmitter module could capture up to $4320$ images per day. The storage on the SD card was thus adequate for daily access to the images. In reality, it is highly unlikely that the camera/transmitter module would be triggered at every possible opportunity, and the trigger frequency and time between triggers could comfortably be increased.
 
 \subsection{Simulation and testing practices}
 
@@ -288,12 +288,18 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
         \textit{Acceptance criteria} & A sample image is present at the `cam1/sample.jpeg' on the SD card. \\ 
         \textit{Pass/fail} & PASS \\ \hline
 
+        \textit{ATP \& related SS} & ATP6 - \hyperlink{tab:firmware-requirements}{SS3, SS6}\\
+        \textit{Description} & All captured photos are sent over network. \\
+        \textit{Procedure} & Power on camera/transmitter module. Trigger the camera/transmitter module as described in ATP1 at least 10 times. Open the camera/transmitter SD card on a computer and observe its contents. Replace the SD card in the camera/transmitter module. Power on the receiver module and wait for it to connect to the camera/transmitter module. Select the `SEND PHOTOS' option. Wait for completion. Open the receiver SD card on a computer and observe its contents.\\
+        \textit{Acceptance criteria} & All images initially present in the `photos' directory of the camera/transmitter module SD card are present in the `cam1' directory of the receiver SD card.\\ 
+        \textit{Pass/fail} & PASS \\ \hline
+
 
         
 
     \end{tabularx}
     \end{scriptsize}
-    \caption{ATPs 1-5 for the firmware subsystem}
+    \caption{ATPs 1-6 for the firmware subsystem}
     \label{tab:firmware-atps1}
 \end{table}
 
@@ -304,14 +310,6 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
         
         \hline
         \textbf{UR/FR/SS} & \textbf{Description}\\ \hline
-
-
-
-        \textit{ATP \& related SS} & ATP6 - \hyperlink{tab:firmware-requirements}{SS3, SS6}\\
-        \textit{Description} & All captured photos are sent over network. \\
-        \textit{Procedure} & Power on camera/transmitter module. Trigger the camera/transmitter module as described in ATP1 at least 10 times. Open the camera/transmitter SD card on a computer and observe its contents. Replace the SD card in the camera/transmitter module. Power on the receiver module and wait for it to connect to the camera/transmitter module. Select the `SEND PHOTOS' option. Wait for completion. Open the receiver SD card on a computer and observe its contents.\\
-        \textit{Acceptance criteria} & All images initially present in the `photos' directory of the camera/transmitter module SD card are present in the `cam1' directory of the receiver SD card.\\ 
-        \textit{Pass/fail} & PASS \\ \hline
 
         \textit{ATP \& related SS} & ATP7 - \hyperlink{tab:firmware-requirements}{SS10} \\
         \textit{Description} & Configuration options are loaded from SD card.\\
@@ -339,7 +337,7 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
 
     \end{tabularx}
     \end{scriptsize}
-    \caption{ATPs 6-10 for the firmware subsystem}
+    \caption{ATPs 7-10 for the firmware subsystem}
     \label{tab:firmware-atps2}
 \end{table}
 
@@ -357,11 +355,11 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
 
 This section discussed firmware development for the Red-Winged Starling Nest Cameras. The user requirements were detailed and derived into functional requirements and specifications. The ultimate goal of this subsystem was to integrate the various hardware peripherals and microcontrollers into a system that was capable of taking images, transmitting the images wirelessly to a receiver device, using and remotely updateable configuration, and interfacing with users in an intuitive way. 
 
-It was decided that the Arduino framework would be used for code development. An HTTP server was implemented for wireless communication between the camera/transmitter and receiver device. The configuration was stored and loaded on a human-readable JSON file. The web server was hosted on the receiver device to enable future applications that might include access to the server from a web browser on a mobile phone.
+The Arduino framework was chosen for firmware development. An HTTP server was implemented for wireless communication between the camera/transmitter and receiver modules. The configuration was stored and loaded on a human-readable JSON file. The web server was hosted on the receiver device to enable future applications that might include access to the server from mobile broswers.
 
-A system firmware flow was developed for the camera/transmitter device that triggered footage capture on detection of movement, and triggerd transmission mode upon connection from the receiver device. An appropriate web server was developed to server for the receiver device was developed to serve the endpoints required by the camera/transmitter device. A user control scheme and user interface was developed to enable user interaction with the receiver device. A qualitative assessment of the camera settings was performed to determine optimum default settings for the device; though the settings were also configurable via the remote configuration options.
+A system firmware flow was developed for the camera/transmitter device that triggered footage capture on detection of movement, and triggerd transmission mode upon connection from the receiver device. An appropriate web server was developed to server for the receiver device was developed to serve the endpoints required by the camera/transmitter device. A user control scheme and user interface was developed to enable user interaction with the receiver device. A qualitative assessment of the soft-configurable camera settings was performed to determine optimum default settings.
 
-A set of acceptance test procedures were developed and detailed in line with the system specifications. The system passed all the acceptance tests. 
+A set of acceptance test procedures were developed from the subsystem specifications. All acceptance tests were passed.
 
 
 % ----------------------------------------------------
