@@ -313,14 +313,14 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
 
         \textit{ATP \& related SS} & ATP7 - \hyperlink{tab:firmware-requirements}{SS10} \\
         \textit{Description} & Configuration options are loaded from SD card.\\
-        \textit{Procedure} & Enable the ATP7 macro on the camera/transmitter module. Copy the contents of \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP8-1.json}{`config-ATP7-1.json'} into `config/config.json' on the SD card. Power on the module trigger and it in capture mode following the procedure from ATP1. Observe the outputted exposure level, number of captures per trigger, and time between triggers on the serial monitor. Repeat with \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP7-2.json}{`config-ATP7-2.json'}. \\
+        \textit{Procedure} & Enable the ATP7 macro on the camera/transmitter module. Copy the contents of \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP7-1.json}{`config-ATP7-1.json'} into `config/config.json' on the SD card. Power on the module trigger and it in capture mode following the procedure from ATP1. Observe the outputted exposure level, number of captures per trigger, and time between triggers on the serial monitor. Repeat with \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP7-2.json}{`config-ATP7-2.json'}. \\
         \textit{Acceptance criteria} & First run: outputted values are as specified in the config file. Second run: outputted values are the defaults (1200, 3, 60), since the values from the config file are invalid.\\ 
         \textit{Pass/fail} & PASS\\ \hline
 
         \textit{ATP \& related SS} & ATP8 - \hyperlink{tab:firmware-requirements}{SS11}\\
         \textit{Description} & Update configuration options remotely.\\
         \textit{Procedure} & Power on both modules. Load the contents of \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP8.json}{`config-ATP8.json'} into `cam1/config.json' on the SD card. Wait for the modules to connect, then navigate the menu and select the `UPDATE CONFIG' option. Wait for confirmation. Open the camera/transmitter SD card on a computer and observe its contents.\\
-        \textit{Acceptance criteria} & The content of `config/config.json' from the SD card is the same as `config-ATP9.json'.\\ 
+        \textit{Acceptance criteria} & The content of `config/config.json' from the SD card is the same as \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP8.json}.\\ 
         \textit{Pass/fail} & PASS \\ \hline
 
         \textit{ATP \& related SS} & ATP9 - \hyperlink{tab:firmware-requirements}{SS9}\\
