@@ -12,12 +12,11 @@
 \chapter{Camera/Transmitter (CT) \& Receiver (R) Hardware (PLLTHI032)\label{ch:hardware}}
 
 
-
 \section{Subsystem introduction}
-This section involves the design and implementation of the hardware for the transmitter and receiver module for a Red-winged Starling nest monitoring system. The focus is to design a camera system that is motion activated when there is activity in the nest. This data is then transferred to a handheld receiver operated by the user on the ground. 
+This section involves the design and implementation of the hardware for the transmitter/camera and receiver module for a Red-winged Starling nest monitoring system. The focus is to design a camera system that is motion activated when there is activity in the nest. This data is then transferred to a handheld receiver operated by the user on the ground. 
 
 \section{Requirements \& Specifications}
-\begin{table}[ht]
+\begin{table}[h]
 \centering
 \begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|p{1cm}|}
 \hline
@@ -27,19 +26,19 @@ Clear images of the birds must be captured and stored onboard. & The CT should b
 \hline
 The camera should only turn on with motion & The camera should trigger when there is movement. & Equip the CT with PIR sensors for motion detection. & ATP3 \\
 \hline
-The CT should transmit data wirelessly, avoiding cables & The CT should be capable of wireless data transmission. & The CT must be equipped with a working wireless module. & ATP4, ATP5 \\
+The CT should transmit data wirelessly, avoiding cables & The CT should be capable of wireless data transmission. & The CT must be equipped with a working wireless module. & ATP1, ATP4 \\
 \hline
-The CT must be as small as possible. & The CT should not be too big as to disturb the birds. & The CT module must be no bigger than 80mm(W) x 60mm(L) x 60mm(H). & ATP6 \\
+The CT must be as small as possible. & The CT should not be too big as to disturb the birds. & The CT module must be no bigger than 60mm(W) x 80mm(L) x 60mm(H). & ATP5 \\
 \hline
-The Receiver must have wireless connectivity. & The receiver should be capable of establishing a wireless connection. & The receiver must be equipped with a wireless module. & ATP7 \\
+The Receiver must have wireless connectivity. & The receiver should be capable of establishing a wireless connection. & The receiver must be equipped with a wireless module. & ATP6 \\
 \hline
-The receiver must have onboard storage to store the retrieved data. & The receiver should be able to store the data onboard to be used later. & The receiver must have a MicroSD card option for storage. & ATP8 \\
+The receiver must have onboard storage to store the retrieved data. & The receiver should be able to store the data onboard to be used later. & The receiver must have a MicroSD card option for storage. & ATP7 \\
 \hline
-The receiver must have a screen and interactive buttons to view the basic information. & The receiver should have buttons for easy navigation through the UI. & The receiver must be equipped with a screen and have 4 pushbuttons connected to pull down resistors. & ATP9, ATP10 \\
+The receiver must have a screen and interactive buttons to view the basic information. & The receiver should have buttons for easy navigation through the UI. & The receiver must be equipped with a screen and have 4 pushbuttons configure with internal pull up resistors. & ATP8 \\
 \hline
 \end{tabular}
 \caption{User Requirements, Functional Requirements, Specifications, and ATP}
-\label{tab:my_label1}
+\label{tab:HW_Requirements}
 \end{table}
 
 
@@ -51,7 +50,7 @@ The receiver must have a screen and interactive buttons to view the basic inform
 \subsection{Wired vs. Wireless Communication}
 There are two options for communication: wired and wireless. the table below goes through the aspects of each. 
 
-\begin{table}[ht]
+\begin{table}[h]
 \centering
 \begin{tabular}{|p{3.5cm}|p{6cm}|p{6cm}|}
 \hline
@@ -75,8 +74,10 @@ Maintenance & High & Low \\
 \hline
 \end{tabular}
 \caption{Comparison of Wired and Wireless Communication}
-\label{tab:communication_comparison}
+\label{tab:HW_communication_comparison}
 \end{table}
+
+
 With the nests located high up on buildings, wireless communication offers the user better access despite slightly slower speeds. The disadvantages of using wireless communication does not warrant a change to wired communication. 
 
 \subsection{Wireless Communication Protocols}
@@ -106,7 +107,7 @@ Existing Libraries \& Support & Does the protocol have available libraries and e
 \hline
 \end{tabular}
 \caption{Criteria for Assessing Wireless Protocols}
-\label{tab:wireless_protocol_criteria}
+\label{tab:HW_Comm_Criteria}
 \end{table}
 
 The criteria above will be used to grade each protocol with a pass or fail. The more passes a protocol has, the more likely it was to be chosen. 
@@ -117,26 +118,28 @@ The criteria above will be used to grade each protocol with a pass or fail. The 
 \hline
 \textbf{Criteria} & \textbf{BLE} & \textbf{Bluetooth Classic} & \textbf{ESP-Now} & \textbf{Wi-Fi} & \textbf{LoRa} & \textbf{RFID} \\
 \hline
-Range \& Coverage & Fail & Fail & Pass & Pass & Pass & Pass \\
+Range \& Coverage & \textcolor{red}{Fail} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Data Rate & Fail & Fail & Fail & Pass & Fail & Fail \\
+Data Rate & \textcolor{red}{Fail} & \textcolor{red}{Fail} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} \\
 \hline
-Power Consumption & Pass & Fail & Pass & Fail & Pass & Pass \\
+Power Consumption & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Latency & Fail & Pass & Pass & Pass & Pass & Pass \\
+Latency & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Interference \& Noise & Pass & Pass & Pass & Pass & Fail & Fail \\
+Interference \& Noise & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} \\
 \hline
-Cost & Pass & Fail & Pass & Pass & Fail & Fail \\
+Cost & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} \\
 \hline
-Payload & Pass & Pass & Fail & Pass & Fail & Fail \\
+Payload & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} \\
 \hline
-Existing Libraries \& Support & Pass & Pass & Pass & Pass & Pass & Pass \\
+Existing Libraries \& Support & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
 \end{tabular}
 \caption{Assessment of Different Wireless Protocols}
-\label{tab:wireless_protocol_assessment}
+\label{tab:HW_Comm_Result}
 \end{table}
+
+
 Both WiFi and ESP-NOW emerged as viable options from this evaluations, with the fewest fails of all the options. Looking at the fails of ESP-NOW, it has an very low payload of around 250 bytes, making it capable of sending only messages between boards. The data rate is around 1 Mbps, which is okay, but not as fast as WiFi. 
 WiFi, on the other hand, only has issues with power consumption. With the high speed data transfer and lower latency relative to the other options, this is an acceptable trade off. While yes, there are other options that offer lower power consumption, the data transfer is also slower. Looking at the bigger picture, if the data rate is slower, despite having a lower power consumption, the module will have to stay on for longer till the transfer is complete. This could consume even more power than WiFi, since the module would not have to stay on for that much longer. 
 The user also does not want to wait a very long time to retrieve the data. Their time is important. WiFi is chosen. The next part of the design process looks at the different micro-controller options. 
@@ -168,12 +171,14 @@ Cost & Is the microcontroller affordable? \\
 Size & Is the microcontroller small and compact? \\
 \hline
 \end{tabular}
-\label{tab:microcontroller_criteria1}
+\label{tab:HW_CT_Criteria_1}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[h]
 \centering
 \begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Criteria} & \textbf{Justification} \\
 \hline
 Existing Libraries \& Support & Does the microcontroller have many libraries available and community support? \\
 \hline
@@ -187,46 +192,47 @@ MicroSD card holder & Does the microcontroller have a microSD card holder onboar
 \hline
 \end{tabular}
 \caption{Criteria for the Transmitter Microcontroller Selection}
-\label{tab:microcontroller_criteria2}
+\label{tab:HW_CT_Criteria_2}
 \end{table}
+
 
 The table below proceeds to assess four potential board which have been chosen for the transmitter submodule against the criterion outlines in Table 1.5.
 
-\begin{table}[ht]
+\begin{table}[h]
 \centering
 \begin{tabular}{|p{3.5cm}|l|l|l|l|l|}
 \hline
 \textbf{Criteria} & \textbf{Pi Pico W} & \textbf{ESP32-CAM} & \textbf{ESP32-CH340} & \textbf{ESP32-C6} & \textbf{ESP32 S3} \\
 \hline
-Processing Power & Fail & Pass & Pass & Fail & Pass \\
+Processing Power & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Memory & Pass & Pass & Pass & Pass & Pass \\
+Memory & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Low Power Modes & Pass & Pass & Pass & Pass & Pass \\
+Low Power Modes & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Power Consumption & Pass & Pass & Fail & Pass & Fail \\
+Power Consumption & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} \\
 \hline
-Input/Output (I/O) Pins & Pass & Fail & Pass & Pass & Pass \\
+Input/Output (I/O) Pins & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Development Environment & Pass & Pass & Pass & Pass & Pass \\
+Development Environment & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Cost & Pass & Pass & Pass & Fail & Pass \\
+Cost & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Size & Pass & Pass & Fail & Fail & Pass \\
+Size & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Existing Libraries \& Support & Pass & Pass & Pass & Pass & Pass \\
+Existing Libraries \& Support & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Operating Voltage & Pass & Pass & Pass & Pass & Pass \\
+Operating Voltage & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Camera Support & Pass & Pass & Pass & Fail & Fail \\
+Camera Support & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} \\
 \hline
-Weight & Pass & Pass & Pass & Pass & Pass \\
+Weight & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-MicroSD card holder & Fail & Pass & Fail & Fail & Fail \\
+MicroSD card holder & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} & \textcolor{red}{Fail} \\
 \hline
 \end{tabular}
 \caption{Assessment of Different Transmitter Microcontrollers}
-\label{tab:microcontroller_assessment1}
+\label{tab:HW_CT_Result}
 \end{table}
 
 The Pi Pico W and ESP32-CH340 have poor processing power and power consumption respectively, with the latter having an additional space constraint. The ESP32-C8 had similar limitations, while also being expensive with poor camera support. The ESP32 S3 lacks camera support and has bad power consumption. 
@@ -236,8 +242,9 @@ The ESP32-CAM stands out, offering an onboard MicroSD card holder with quad SPI 
 
 \subsection{Receiver Microcontroller}
 
-Table 1.1. detailed what the Receiver module should have. The table below lays out a set of criteria to assess different microcontroller options. However, since the microcontroller options have already been assessed in the previous section, just a few of the amended criteria will be looked at
-\begin{table}[ht]
+Table \ref{tab:HW_Requirements} detailed what the Receiver module should have. The table below lays out a set of criteria to assess different microcontroller options. However, since the microcontroller options have already been assessed in the previous section, just a few of the amended criteria will be looked at. 
+
+\begin{table}[h]
 \centering
 \begin{tabular}{|l|p{10cm}|}
 \hline
@@ -257,32 +264,32 @@ Weight & Does the microcontroller weigh more than 5 g? \\
 \hline
 \end{tabular}
 \caption{Criteria for Receiver Microcontroller Selection}
-\label{tab:microcontroller_criteria3}
+\label{tab:HW_R_Criteria}
 \end{table}
 
-Given the information above, the three best microcontrollers from table 1.6. are assessed to see if they meet the demands of this module. 
+Using table \ref{tab:HW_R_Criteria}, three microcontrollers from table \ref{tab:HW_CT_Criteria} are assessed to see if they meet the demands of this module.
 
-\begin{table}[ht]
+\begin{table}[h]
 \centering
 \begin{tabular}{|l|l|l|l|}
 \hline
 \textbf{Criteria} & \textbf{Pi Pico W} & \textbf{ESP32-C6} & \textbf{ESP32 S3} \\
 \hline
-Processing Power & Pass & Pass & Pass \\
+Processing Power & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Memory & Pass & Pass & Pass \\
+Memory & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Input/Output (I/O) Pins & Pass & Pass & Pass \\
+Input/Output (I/O) Pins & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Cost & Pass & Fail & Pass \\
+Cost & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Size & Pass & Fail & Pass \\
+Size & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{ForestGreen}{Pass} \\
 \hline
-Weight & Pass & Fail & Fail \\
+Weight & \textcolor{ForestGreen}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} \\
 \hline
 \end{tabular}
 \caption{Assessment of Different Receiver Microcontrollers}
-\label{tab:microcontroller_assessment2}
+\label{tab:HW_R_Result}
 \end{table}
 
 This was an easy decision. The Pi Pico W was the smallest, cheapest, and lightest microcontroller option. It had the best price to performance ratio, hence why it is chosen to operate the receiver module. 
@@ -299,117 +306,228 @@ This was an easy decision. The Pi Pico W was the smallest, cheapest, and lightes
 \section{Final Design}
 
 \subsection{General Overview}
-\begin{figure}[ht]
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{Images/Transmitter_layout.png}
+\includegraphics[width=0.9\textwidth]{Images/Transmitter_layout.png}
 \caption{Final Transmitter Board Layout}
-\label{fig:my_label2}
+\label{fig:T_Schem}
 \end{figure}
 
-The ESP32-CAM, powered by 5VDC. is the main hub that houses the connections for the LDR circuit, IR LED array, PIR sensors, and RF receiver. 
+In the transmitter, shown in Figure \ref{fig:T_Schem}, the ESP32-CAM, powered by 5VDC. is the main hub that houses the connections for the LDR circuit, IR LED array, PIR sensors, and RF receiver. 
 Given the limited GPIO pins, which become unusable when the WiFi module or MicroSD card are active, the PIR sensors and RF receiver are connected to Real-Time Clock (RTC) pins. These are the only pins that wake up the ESP32-CAM from deep sleep. 
 
-When either of the two PIR sensors detect motion, the ESP32-CAM is activated (through PNP switches), which turns on the LDR circuit (through the VCC pin); if it is dark, the IR LED circuit turns on to light up the area. The OV2640 camera is a 2MP camera with a maximum resolution of 1280x720 at a frame rate of 12.5, but images would be choppy. The frame rate can be adjusted for smoother quality in videos, however the resolution would be reduced. The IR filter present in the lens was challenging to remove. 
+When either of the two PIR sensors detect motion, the ESP32-CAM is activated (through PNP switches), which turns on the LDR circuit (through the VCC pin); if it is dark, the IR LED circuit turns on to light up the area. GPIO1, which is fed to the base of the PNP switch, would go high as soon as the ESP32-CAM is activated, to prevent the board from shorting the sensors. The OV2640 camera is a 2MP camera with a maximum resolution of 1280x720. The IR filter present in the lens was challenging to remove. 
+
+When the RF Receiver goes high from the user sending a signal from the RF transmitter, the ESP32-CAM is activated for data transmission. The same PNP switch as used for the PIR connections was used here. 
 
 The storage is limited to 4GB. The HC MicroSD card must be formatted to FAT32. The RF receiver wakes the ESP32-CAM out of deep sleep mode for data retrieval (since WiFi also becomes inactive). 
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{Images/Receiver_layout.png}
 \caption{Final Receiver Board Layout}
-\label{fig:my_label3}
+\label{fig:R_Schem}
 \end{figure}
 
-In the receiver, the Pi Pico W is the main hub connecting various peripherals:
+In the receiver, shown in Figure \ref{fig:R_Schem}, the Pi Pico W is the main hub connecting various peripherals:
 \begin{itemize}
     \item Liquid Crystal Display: The module connects to the Pi Pico W with I2C protocol. The GPIO4 and GPIO5 pins are connected to SDA and SCL respectively. The 3V3 pin and GND pins are connected to the VCC and Ground pins of the display. 
     \item SD Card Reader: The module connects to the Pi Pico W with SPI protocol. 
     \item Pushbuttons: Allow for the user to interface with the display. These buttons are connected to GPIO10-13. 
-    \item RF Transmitter: The data line connects to GPIO20 on the Pi Pico W. When the WiFi connection cannot be established between the Pi Pico W and the ESP32-CAM, then GPIO20 is set high to turn the ESP32-CAM on remotely. 
+    \item RF Transmitter: The data line connects to GPIO20 on the Pi Pico W. When the WiFi connection cannot be established between the Pi Pico W and the ESP32-CAM, then GPIO20 is set high to activate the ESP32-CAM on remotely. 
 \end{itemize}
 
 
 
 \subsection{Transmitter Support Circuitry and Testing}
-The transmitter had numerous support circuits, as mentioned above. The design and debug process is given below. 
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.3\textwidth]{Images/Switch_circuit.png}
-\caption{PNP Switch Schematic}
-\label{fig:my_label4}
+\begin{figure}[hbt!]
+    \begin{subfigure}[b]{0.25\textwidth}
+        \includegraphics[width=\linewidth]{Images/Switch_circuit.png}
+        \caption{PNP Switch Schematic}
+        \label{fig:PNP_Switch}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\linewidth]{Images/LDR_circuit.png}
+        \caption{LDR Comparator Circuit Schematic}
+        \label{fig:LDR_schem}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.25\textwidth}
+        \includegraphics[width=\linewidth]{Images/IR_LED_Array.png}
+        \caption{IR LED Array Schematic}
+        \label{fig:LED_schem}
+    \end{subfigure}
 \end{figure}
 
-Figure 1.3. shows a 2N2907 transistor acting as a switch, serving as a buffer between the sensor inputs and GPIO pins. A current limiting resistor is placed between the input and the emitter to prevent overloading. The collector is connected to the GPIO pin with a resistor connecting to GND. The base is connected to GPIO16 through a 10k resistor. 
+Figure \ref{fig:PNP_Switch} shows a 2N2907 transistor acting as a switch, serving as a buffer between the sensor inputs and GPIO pins. A current limiting resistor is placed between the input and the emitter to prevent overloading. The collector is connected to the GPIO pin with a resistor connecting to GND. The base is connected to GPIO16 through a 10k resistor. 
 
 When GPIO16 is low, the sensor input is allowed to trigger the GPIO pin. When the sensor input is high, the ESP32-CAM is woken up from deep sleep, and GPIO16 is immediately set to high, to isolate the sensor from the GPIO pin. 
 
 The simulated output was around 3V, which was confirmed in testing when a simulated 3V3 input was applied to the switch, and the base was controlled by a 3V3 voltage. The GPIO pin will still trigger a high since the quoted GPIO range on the ESP datasheet is 2.3V to 3.6V. 
 
-An OR gate circuit that takes both sensor outputs and inputs it to one GPIO pin was designed to use less GPIO pins and combine the inputs of both PIR sensors(sketches in the appendix). In simulations it worked beautifully, but in reality the component values listed on the datasheet were incorrect which led to a distorted output. 
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.4\textwidth]{Images/LDR_circuit.png}
-\caption{LDR Circuit Schematic}
-\label{fig:my_label5}
-\end{figure}
-
-Figure 1.4. shows a basic comparator circuit. The Light Dependent Resistor (LDR) was test under dark conditions, having a resistance of 25k, which dropped in light conditions to 6.5k. The inverting (-) and non-inverting (+) pins are connected to voltage dividers. The (-) pin is connected to 2.5V. The (+) pin is connected to a voltage divider with the LDR. When the surroundings get darker, the resistance increases and the voltage at the (+) increases. Once (V+)>(V-), the output, fed through another voltage divider, will be 3V3. Otherwise the output will be 0V. 
+Figure \ref{fig:LDR_schem} shows a basic comparator circuit. The Light Dependent Resistor (LDR) was test under dark conditions, having a resistance of 25k, which dropped in light conditions to 6.5k. The inverting (-) and non-inverting (+) pins are connected to voltage dividers. The (-) pin is connected to 2.5V. The (+) pin is connected to a voltage divider with the LDR. When the surroundings get darker, the resistance increases and the voltage at the (+) increases. Once (V+)>(V-), the output, fed through another voltage divider, will be 3V3. Otherwise the output will be around 0V (22 mV). 
 
 An N-Channel MOSFET is used as a level shift, such that when the 3V3 voltage from the ESP32-CAM is applied to it, the rest of the circuit can then be supplied with 5V, otherwise the circuit is inactive.
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.3\textwidth]{Images/IR_LED_Array.png}
-\caption{IR LED Schematic}
-\label{fig:my_label6}
-\end{figure}
-
-Figure 1.5. shows a 2N2222 transistor acts as a switch to controll the flow of current to 5 IR LEDs are placed in parallel. The switch is operated by the comparator output, i.e., the output from the LDR circuit. When the base is high (3V3), current flows through the LEDs, otherwise, the switch will be off and no current will flow. 
+Figure \ref{fig:LED_schem} shows a 2N2222 transistor acts as a switch to control the flow of current to 5 IR LEDs are placed in parallel. The switch is operated by the comparator output, i.e., the output from the LDR circuit. When the base is high (3V3), current flows through the LEDs, otherwise, the switch will be off and no current will flow. 
 
 The datasheet quoted that each 950nm LED required 1.1V and 50mA. The circuit was simulated and built to deliver each LED with rated power. Lab testing confirmed that each LED drew 48mA. The emitting light from these LEDs are invisible to the human eye. For testing purposes, regular LEDs were used temporarily to see if the switch worked, adjusting the collector resistor to avoid overloading. The circuit functioned perfectly. 
 
 During a 10 minute continuous run, the current and voltage across each IR LED remained stable, measured in 1 minute intervals. The IR LEDs became slightly warm, which was normal. 
 
+\section{Power Consumption}
+\subsection{Transmitter Power Consumption}
+Now that the supporting circuits have been constructed, it is time to do an evaluation of the power consumption of the transmitter when the ESP32-CAM is in deep sleep and active mode. 
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{2.5cm}|p{6.5cm}|p{6.5cm}|}
+\hline
+\textbf{Device} & \textbf{Power Consumption in Deep Sleep} & \textbf{Power Consumption in Active Mode} \\
+\hline
+ESP32-CAM & 6 mA @ 5 V & 180 mA @ 5 V \\
+\hline
+PNP Switch & 0 mA @ 0 V & When Sensor input goes high: 0.133 mA @ 5 V \\
+& & When base current is applied: 3.31 pA @ 5V \\
+\hline
+RF Receiver & When output low: 4 mA @ 5 V & When output low: 4 mA @ 5 V \\
+& When output high: 20 mA @ 5 V & When output high: 20 mA @ 3.4 V \\
+\hline
+PIR (x2) & 0.06 mA @ 5 V & 0.06 mA @ 5 V \\
+\hline
+LDR Circuit & 0 mA @ 0 V & When light: 0.34 mA @ 5V \\
+& & When dark: 0.6 mA @ 5V \\
+\hline
+IR LED Array & 0 mA @ 5 V & When LDR out low: 0 mA @ 5 V \\
+& & When LDR out high: 262 mA @ 5 V \\
+\hline
+Total & Min: 10.06 mA @ 5 V, 50.3 mW & Min: 184.40 mA @ 5 V, 922 mW \\
+& Max: 26.06 mA @ 5 V, 130.3 mW & Max: 462.53 mA @ 5 V, 2.31 W \\
+\hline
+\end{tabular}
+\caption{Transmitter Power Consumption}
+\label{tab:CT_PWR}
+\end{table}
+
+The power consumption reaches a high of 2.31 W when the camera, WiFi and SD card is in use. This should be avoided as much as possible to increase the longevity of the battery onboard. In standby mode, the system performs great by consuming very little power which will help save battery in periods when there is no nest activity. 
+
+\subsection{Receiver Power Consumption}
+The receiver will always remain in the active mode. When the user no longer needs to use the Receiver, they can just turn it off. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Device} & \textbf{Power Consumption in Active Mode} \\
+\hline
+Pi Pico W & 60 mA @ 5 V \\
+\hline
+LCD Display & 30 mA @ 3V3 \\
+\hline
+RF Transmitter & When on standby: 0 mA @ 5 V \\
+& When in use: 4 mA @ 5 V \\
+\hline
+MicroSD Card Holder & 16 mA @ 3V3 \\
+\hline
+Total & Min: 106 mA @ 5 V, 530 mW \\
+& Max: 110 mA @ 5 V, 550 mW \\
+\hline
+\end{tabular}
+\caption{Receiver Power Consumption}
+\label{tab:R_PWR}
+\end{table}
+
+Power consumption is fairly consistent. These values were calculated when the WiFi module was in operation, so this is possibly the highest power consumption that could be seen on the receiver. 
+
 \section{Testing and Results}
 \subsection{Acceptance Test Procedures}
 
-\begin{table}[ht]
+\begin{table}[h]
 \centering
-\begin{tabular}{|p{1cm}|p{5cm}|p{7cm}|p{2cm}|}
+\begin{tabular}{|p{1cm}|p{15cm}|}
 \hline
-\textbf{Code} & \textbf{Description} & \textbf{Acceptance Criterion} & \textbf{Result} \\
+\textbf{Code} & \textbf{Description} \\
 \hline
-ATP1 & Test that the camera can take clear images and store it onboard. & The pictures that are taken should be clear at 1m. A test script is run that sets up an HTTP server that displays the images the camera takes and stores on the SD card. Wait 5 seconds for the images to display. &  \\
+ATP1 & Test that the camera can take clear images and store it onboard.\\
 \hline
-ATP2 & Test the night vision capabilities of the camera module. & The LEDs should turn on when the surroundings are dark to illuminate the images captured. &  \\
+ATP2 & Test the night vision capabilities of the camera module. \\
 \hline
-ATP3 & Test that the ESP32-CAM wakes up from deep sleep when the PIR picks up motion. & The PIR must pull the GPIO pin it is connected to high when an object is moved in front of it. & Pass \\
+ATP3 & Test that the ESP32-CAM wakes up from deep sleep when the PIR picks up motion. \\ 
 \hline
-ATP4 & Initialise a Wi-Fi hotspot on the ESP32-CAM to test the module. & Run a test script that should display a “connected message” in the system monitor terminal after 5 second since the execution of the code. & Pass \\
+ATP4 & Test that the RF receiver pulls the pin on the ESP32-CAM it is connected to high when the RF transmitter is fed a pulse.\\ 
 \hline
-ATP5 & Test that the RF receiver pulls the pin on the ESP32-CAM it is connected to high when the RF transmitter is fed a pulse. & The output of the RF receiver is measured when the RF transmitter is fed a 3V3 pulse & Pass \\
+ATP5 & Test that the CT module can fit in the space constraint. \\
 \hline
-ATP6 & Test that the CT module can fit in the space constraint. & An 80mm(W) x 60mm(L) x 60mm(H) box was constructed out of paper to see if the module fits in the space. &  \\
+ATP6 & Initialise a Wi-Fi hotspot on the Pi Pico W to test the module. \\ 
 \hline
-ATP7 & Initialise a Wi-Fi hotspot on the Pi Pico W to test the module. & Run a test script that should display a “connected message” in the system monitor terminal after 5 second since the execution of the code. & Pass \\
+ATP7 & Test the MicroSD card module.\\ 
 \hline
-ATP8 & Test the MicroSD card module to see if it is readable. & Run a test script that should display the SD card information in the system monitor terminal after 5 second since the execution of the code. & Pass \\
-\hline
-ATP9 & Test if the screen can display text. & Run a test script that should display a “Hello World” message on the screen. & Pass \\
-\hline
-ATP10 & Test if the button actions can be detected by the Pi Pico W. & Run a test script that makes the onboard LED flash when one of the buttons are pressed. &  \\
+ATP8 & Test if the screen can display text. \\ 
 \hline
 \end{tabular}
-\caption{Acceptance Test Procedures (ATPs)}
-\label{tab:ATPs}
+\caption{Table of ATP Descriptions}
+\label{tab:ATPs_Criteria}
 \end{table}
 
+Below are all the test scripts that will be used in the ATPs. These can be found in the GitHub under "Sample Code":
 
+"ATP1.ino": Create a WiFi hotspot with ssid "ESP\_WiFi" and password "Thiyashan" on your device. Go to Tools>Serial Monitor to get the IP address of the board and input this to the browser on your device. The HTTP server should display with three buttons: ROTATE, CAPTURE PHOTO and REFRESH PAGE, as shown in \ref{fig:ATP1_Test}. Press CAPTURE PHOTO which saves the image to the SD card. Wait 5 seconds then press REFRESH PAGE. If the image displays, then the test passed. Once the test is completed, close application. \cite{randomnerdtutorialsESP32CAMTake}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{Images/ATP1.png}
+\caption{HTTP Web Page Layout With Image Displayed}
+\label{fig:ATP1_Test}
+\end{figure}
+
+"ATP6.ino": Once the program is loaded onto the Pi Pico W, open Tools>Serial Monitor and change the baud rate to 115200. Open the WiFi setting on your device, and wait around 10s for "Pi\_WiFi" to appear. Enter password "Thiyashan" if you wish to connect. If the network appears, the it is a pass. Close all applications after test.
+
+"ATP7.ino": The MISO, MOSI, SC, and SCK pins are connected to 16, 19, 17, 18 respectively and initialised as such in the code. Place an SD card with no files into the holder. Run program. This should load a text file called "example.txt". Unplug the SD card and read it on your computer to make sure the text file was generated. If it is there, then the system has passed the ATP. 
+
+"ATP8.ino": Wait around 5 seconds for the message "Hello World" to be displayed on the screen. If this happens, then the screen passes the ATP. 
+
+There are three possible results in table \ref{tab:ATPs_result}. Either a Pass, Fail or Time. Pass and Fail is with regards to the designs ability to satisfy a user requirement. Time means that there was not enough time to fully test the ATP, so the design could pass the ATP if there was sufficient time. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{1cm}|p{13cm}|p{2cm}|}
+\hline
+\textbf{Code} & \textbf{Acceptance Criterion} & \textbf{Result} \\
+\hline
+ATP1 & The pictures that are taken should be clear at 1m. Load test script "ATP1.ino" and follow the instructions above. & Pass \\
+\hline
+ATP2 & Place the camera in a dark area to test camera quality. Load test script "ATP1.ino" onto the ESP32-CAM to view the images. & Time* \\
+\hline
+ATP3 & The PIR must output 3V3 to the GPIO pin it is connected to. When motion stops, it should take around 10s for the voltage to return to zero. The components passes if this happens & Pass \\ 
+\hline
+ATP4 & When a 3V3 pulse is fed to the RF transmitter, the oscilloscope, set to trigger a rising edge, must detect a 3V3 pulse on the RF receiver. The component passes if this happens & Pass \\ 
+\hline
+ATP5 & An 60mm(W) x 80mm(L) x 60mm(H) box was constructed out of paper to see if the module fits in the space. If all components fit then it is a pass. & Pass \\
+\hline
+ATP6 & Load test script "ATP6.ino" onto the Pi Pico W. Once loaded, follow the instructions below the table. & Pass \\ 
+\hline
+ATP7 & Follow the instruction in "ATP7.ino". & Pass \\ 
+\hline
+ATP8 & Load test script "ATP8.ino" onto the Pi Pico W and follow the instructions above. & Pass \\ 
+\hline
+\end{tabular}
+\caption{Table of ATP results}
+\label{tab:ATPs_result}
+\end{table}
+
+* ATP2 failed on time. When purchasing the ESP32-CAM, it was expected that the IR filter was easily removable by opening the lens and popping it out. However, position was relocated in this model to the base of the camera. Accessing it required fully disassembling and desoldering the camera with the risk of permanent damage. With more time this could be completed, or alternatively an older camera model could be purchased but there were not any available that could be purchased before the deadline. 
 
 \section{Conclusion}
+This subsection achieved its goal of designing a functional receiver and camera/transmitter module for the Red Winged Starling nest monitoring system. The design process was thorough, with each decision documented and justified with a pass/fail. 
 
+The ESP32-CAM and Pi Pico W were the main hub for the receiver and transmitter in the final design respectively, since each showcased a balance between cost and performance in the grading system. 
+
+The system was built with motion-activated capture and wireless data transfer in mind, while also prioritising power efficiency and cost. The hardware was tested to ensure all components met a set of criteria. Despite the limitations, the design was efficient in the end. 
+
+The design provided insights into the trade-offs that need to be made in order to cater for the specific user needs, as well as future improvements that could be made, such as adding video capabilities and mending the night vision abilities. 
 
 % ----------------------------------------------------
 \ifstandalone
