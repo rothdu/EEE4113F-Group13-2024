@@ -9,7 +9,7 @@
 \tableofcontents
 \fi
 % ----------------------------------------------------
-\chapter{ Mechanical Casing and Housing (MRBMAT004)\label{ch:mechanical}}
+\chapter{ Mechanical Casing and Housing (MRBMAT004)\label{ch:literature}}
 % \epigraph{}%
     % {\emph{---Carl Sagan}}
 % \vspace{0.5cm}
@@ -45,10 +45,10 @@ A comprehensive breakdown of the design processes, material choices, and iterati
 The first iteration of the prototype was a simple rectangular box. During the initial stages of the design process, there was limited scope and clarity regarding the project requirements, prompting the development of a basic prototype to initiate discussions with stakeholders.
 \newline
 
-However, upon further refinement of the project specifications, it became evident that the initial rectangular design did not align with Sally's requirements, particularly in terms of size. The dimensions of the prototype were arbitrary and did not meet the specified 6x6x8cm dimensions. This discrepancy highlighted the need for clearer communication and adherence to design specifications from the outset of the project.
+However, upon further refinement of the project specifications, it became evident that the initial rectangular design did not align with Sally's requirements, particularly in terms of size. The dimensions of the prototype were arbitrary and did not meet the specified 6x6x8cm dimensions. This discrepancy highlighted the need for clearer communication and adherence to design specifications from the onset of the project.
 \newline
 
-Additionally, the choice of PLA material for the prototype was based on availability, without consideration of alternative materials such as PETG, which offers superior properties for this application. The transition to PETG, as suggested by Ryan Jones, was later explored to address concerns related to material durability and performance.
+Additionally, the choice of PLA material for the prototype was based on availability, without consideration of alternative materials such as PETG, which offers superior properties for this application. The transition to PETG was later explored to address concerns related to material durability and performance.
 \newline
 
 One notable feature of the first iteration was the inclusion of a sliding mechanism for the open/close function. While this mechanism provided ease of access to the internal components, it posed challenges in terms of sealing effectiveness against moisture, dust, and water ingress. This limitation underscored the importance of robust sealing methods to ensure environmental protection and longevity of the electronic components housed within the enclosure.
@@ -108,7 +108,7 @@ Strength and Durability & Low-to-medium strength filament given its low heat and
 Toxicity and Odour & Low odour and no toxicity & Has considerable odour and toxicity. & No odour or toxicity \\ \hline
 Best Use Cases & Applications that do not have any specific functional requirements. & Often used in functional items that are used frequently or need to be durable. E.g. Drone frame & Excellent for items in contact with food and UV exposure, great for functional parts \\ \hline
     \end{tabular}
-    \caption{Caption}
+    \caption{3D prints filaments Comparison}
     \label{tab:my_label1}
 \end{table}
 
@@ -147,6 +147,13 @@ The final design for the mechanical cases for the transmitter subsection was cho
 
 Four rectangular extrusions, situated 9mm above the base of the box, provided mounting or adhesive points for the Vero boards. This elevated placement reduced contact with any water that might enter through the base vents, ensuring the integrity of the components. Moreover, this design allowed for sufficient space for cool air to circulate around the boards.
 \newline
+\newline
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{"sensor_ss.png"}
+    \caption{Solid works sensor design}
+    \label{fig:enter-label3}
+\end{figure}
 
 To further enhance thermal management, aluminium heatsinks were strategically placed next to resistive and heat prone components. The orientation of the heatsink fins facing vertically upwards facilitated the natural convection process, whereby warm air rises. This directed the heat away from the components and towards the top of the enclosure. This is because warm air has lower density than cold air hence it rises. 
 \newline
@@ -167,7 +174,7 @@ Mounting the enclosure was deemed a superior safety and security measure, partic
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{"nest.png"}
-    \caption{Enter Caption}
+    \caption{Starlings bird Nest Position}
     \label{fig:enter-label2}
 \end{figure}
 
@@ -175,11 +182,19 @@ Mounting the enclosure was deemed a superior safety and security measure, partic
 In the ongoing development of the electronic enclosure, a transition has been made from a sliding open/close mechanism to a lid screw configuration. This upgrade aims to provide a more robust closure, effectively minimizing the intrusion of dust and water, while also enhancing security for the enclosed electronics.
 \newline
 
+\newline
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{"lid.png"}
+    \caption{SolidWorks lid design}
+    \label{fig:enter-label3}
+\end{figure}
+
 Additionally, to address water and moisture management within the enclosure, silica gel desiccant packs have been integrated into the design. These packs serve as an effective solution for moisture absorption, ensuring the internal environment remains dry and conducive to the optimal functioning of the electronic components. Furthermore, the potential addition of cotton alongside the silica gel desiccant packs can provide an extra layer of moisture protection, especially in environments with high humidity levels or where condensation may occur. Cotton's ability to absorb excess moisture and function as a buffer between electronic components and desiccant packs offers additional assurance against moisture infiltration.
 \newline
 
 \subsubsection{Material of Choice}
-PETG was the material of choice for the enclosure. PETG offers UV resistance, ensuring the enclosure's structural integrity and optical clarity under prolonged sunlight exposure. Its weather resistance enables it to withstand extreme temperatures, both cold and hot, without compromising its mechanical properties. PETG's strength and loadbearing capacity make it suitable for housing electronic components securely. Importantly, PETG is nontoxic and does not emit harmful gases, aligning with your sustainability goals. Additionally, its recyclable nature promotes responsible material usage, further enhancing the project's sustainability. 
+PETG was the material of choice for the enclosure. PETG offers UV resistance, ensuring the enclosure's structural integrity and optical clarity under prolonged sunlight exposure. Its weather resistance enables it to withstand extreme temperatures, both cold and hot, without compromising its mechanical properties. PETG's strength and loadbearing capacity make it suitable for housing electronic components securely. Importantly, PETG is non-toxic and does not emit harmful gases, aligning with your sustainability goals. Additionally, its recyclable nature promotes responsible material usage, further enhancing the project's sustainability. 
 \newline
 
 There were two enclosures designed for the transmitter subsection housing, one for the power module and the other for the sensing circuitry discussed in the other two sections of the report. The dual enclosure method was implemented based on the advantages discussed above. Moreover, it allowed for modular design for each of the systems’ requirements. 
@@ -190,7 +205,7 @@ The power enclosure had all the design considerations discussed above: a lid scr
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{"power_house.png"}
-    \caption{Enter Caption}
+    \caption{The Power system enclosure}
     \label{fig:enter-label3}
 \end{figure}
 
@@ -204,7 +219,7 @@ The sensing circuitry housing had the same design as the housing for power and h
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{"sensor_house.png"}
-    \caption{Enter Caption}
+    \caption{The Sensor system enclosure}
     \label{fig:enter-label4}
 \end{figure}
 
@@ -226,7 +241,7 @@ The receiver module did not have specific dimensions but was required to accommo
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.30\linewidth]{"receiver_house.png"}
-    \caption{Enter Caption}
+    \caption{The receiver enclosure}
     \label{fig:enter-label5}
 \end{figure}
 
@@ -244,20 +259,20 @@ The receiver module did not have specific dimensions but was required to accommo
 
 2. Ventilation and Airflow Test:
     The enclosure designs with ventilation holes and extrusions were 3D printed. Temperature and humidity sensors were used to measure airflow and temperature distribution within the enclosures.
-    The effectiveness of the ventilation system in maintaining optimal operating conditions for enclosed components was evaluated.
+    The effectiveness of the ventilation system in maintaining optimal operating conditions for enclosed components was evaluated. The system integration with the sensing subsystem could not be done due to time constraints so this test could not be performed, hence undeterminable.
     \newline
 
 3. Weather Resistance Test:
-    The 3D printed enclosures were subjected to temperature and humidity variations in a controlled environment. Exposure to UV light was done by placing the enclosures on the window for days. The enclosures were assessed for any signs of degradation, discoloration, or moisture ingress after exposure. None were found so passed.
+    The 3D-printed enclosures were subjected to temperature and humidity variations in a controlled environment. Exposure to UV light was done by placing the enclosures on the window for days. The enclosures were assessed for any signs of degradation, discoloration, or moisture ingress after exposure. None were found so passed.
     \newline
 
 4. Lid Screw Seal Integrity Test:
-    The enclosures were 3D printed with lid screw mechanisms. The lid and housing were mated on SolidWorks to ensure that they fit together through simulation. The lid was screwed to the enclosure as seen in the pictures above.
+    The enclosures were 3D printed with lid screw mechanisms. The lid and housing were mated on SolidWorks to ensure that they fit together through simulation. The lid was successfully screwed to the enclosure, although it had to be cut since Solidworks scaled the enclosures. Passed.
     \newline
     
 
 5. Moisture Management Test:
- Silica gel desiccant packs and cotton were placed inside the 3D-printed enclosures. Moisture levels inside the enclosures were monitored over time using moisture indicators. The effectiveness of moisture absorption and management by the desiccant packs and cotton was verified.
+ Silica gel desiccant packs and cotton were placed inside the 3D-printed enclosures. Moisture levels inside the enclosures were monitored over time using moisture indicators. The effectiveness of moisture absorption and management by the desiccant packs and cotton was verified. The system integration with the sensing subsystem could not be done due to time constraints so this test could not be performed, hence undeterminable.
 \newline
 
 6. Portability and Handheld Use Test:
@@ -269,16 +284,16 @@ The 3D-printed enclosures were assembled, and the bought design for handheld use
     \newline
 
 8. Mounting and Security Test:
- The 3D printed enclosures were attached to stable structures using mounting brackets or adhesive mounts. Force or pressure was applied to the mounted enclosures to simulate external impacts, verifying their stability and security. Passed. 
+ The 3D-printed enclosures were attached to stable structures using mounting brackets or adhesive mounts. Force or pressure was applied to the mounted enclosures to simulate external impacts, verifying their stability and security. Passed. 
  \newline
 
 9. Functionality and Compatibility Test:
-Electronic components and power sources were installed inside the 3D printed enclosures. The functionality of the LCD display, buttons, and other components was evaluated to ensure proper operation. Compatibility with the specified electronic components and power requirements was verified.
+Electronic components and power sources were installed inside the 3D-printed enclosures. The functionality of the LCD display, buttons, and other components was evaluated to ensure proper operation. Compatibility with the specified electronic components and power requirements was verified.
 Failed. The enclosures were scaled down by the Prusa slicer and were not the same dimensions as given on solid works, hence the printed enclosures were small, and the lid had to be cut as it was not scaled to fit the small enclosures. 
 \newline
 
 
-Waterproof: silica gel https://www.ygenclosure.com/article/howtopreventcondensationinyourelectricalenclosures.html
+
 
 
 
