@@ -1,0 +1,46 @@
+\documentclass[class=report,11pt,crop=false]{standalone}
+\input{../Style/ChapterStyle.tex}
+\input{../FrontMatter/Glossary.tex}
+\begin{document}
+\ifstandalone
+\tableofcontents
+\fi
+%------------------------------------------------------------
+
+% \appendix{Evidence of GAs met}
+
+\chapter{BOM}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|r|}
+\hline
+\textbf{Qty.} & \textbf{Component} & \textbf{Price} \\
+\hline
+2 & MicroSD Card Holder & R46.00 \\
+1 & ESP32 CAM & R235.00 \\
+1 & Jumper Cables & R23.00 \\
+2 & PIR Sensors & R66.40 \\
+2 & SD Card & R165.00 \\
+1 & 433MHz RF Link Kit & R59.00 \\
+1 & LDR & R25.30 \\
+1 & Pi Pico W & R134.90 \\
+1 & Backlight LCD Display & R66.70 \\
+1 & Toggle Switch & R27.60 \\
+2 & MOSFET & R8.48 \\
+1 & LM358 & R5.69 \\
+\hline
+\multicolumn{2}{|r|}{\textbf{Total}} & R863.07 \\
+\hline
+\end{tabular}
+\caption{Chapter \ref{ch:hardware} BOM}
+\label{tab:HW_BOM}
+\end{table}
+
+
+%------------------------------------------------------------
+\ifstandalone
+\bibliography{../Bibliography/References.bib}
+\printnoidxglossary[type=\acronymtype,nonumberlist]
+\fi
+\end{document}
