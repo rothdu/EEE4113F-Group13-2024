@@ -10,7 +10,7 @@
 \fi
 % ----------------------------------------------------
 \chapter{ Power Submodule
-(PRMRUV001)\label{ch:power}}
+(PRMRUV001)\label{ch:literature}}
 \section{Power Submodule}
 
 In the submodule, it will detail the supply of power to the entire system as a whole. It serves as the heartbeat of the project and is very important. It deals with in a broader scope, the charging and storage of power that can be consumed, as well voltage regulation to a voltage that is suitable for the other submodules that need to draw power.
@@ -435,7 +435,7 @@ Hence, the buck converter using first principles is the best option.
      \centering
      \includegraphics[width=0.5\linewidth]{Power_Flowchart.png}
      \caption{Flowchart of subsystem}
-     \label{fig:enter-label1}
+     \label{fig:enter-label}
  \end{figure}
 
 \subsection{Pulse Width Modulation}
@@ -447,7 +447,7 @@ The circuit can be found below:
     \centering
     \includegraphics[width=0.5\linewidth]{image.png}
     \caption{PWM generator using a 555 timer.}
-    \label{fig:enter-label2}
+    \label{fig:enter-label}
 \end{figure}
 
 
@@ -458,6 +458,28 @@ For this project, it is required that the designed system is efficient and can r
 To explain how the selection of parameters occurred we will need to have a scenario/problem. 
 
 Let's consider a scenario where we aim to design a DC-DC converter that converts a 20V DC input to a stable 5V DC output. We've chosen a switching frequency of 100 kHz. In addition, we want to maintain a current ripple of 0.5 and a voltage ripple of 10 mV for optimal performance.
+
+\[Ripple\ current = \ \mathrm{\Delta}i_{L} = 0.5\ A\]
+
+\[
+{Therefore\ to\ find\ Inductor\ Value:}\]
+
+\[
+{L = \frac{V_{0}(1 - D)}{f_{s}\mathrm{\Delta}i_{L}}
+}{Where:
+}{V_{0} = 5V
+}{D = \frac{V_{o}}{V_{in}} = \frac{5}{20} = 0.25
+}{f_{s} = 100kHz}\]
+
+\[Therefore\ from\ above\ the\ inductor\ value\ can\ be\ calculated:\]
+
+\[
+{L = \frac{5(1 - 0.25)}{(1000000)(0.5)} = 75\mu H}\]
+
+\[Capacitor\ value\ is\ calculated\ using:\]
+
+\[C = \frac{1 - D}{8L\left( \frac{\mathrm{\Delta}V_{o}}{V} \right)f^{2}} = \frac{1 - 0.25}{8(75\mu)\left( \frac{0.01}{5} \right)(100000)^{2}} = 62.5\mu F\]
+
 
  
 
@@ -473,9 +495,9 @@ Let's consider a scenario where we aim to design a DC-DC converter that converts
 
  Component selection:
 
-· Inductor value 75 
+· Inductor value 75 uH
 
-· Capacitor value 68 
+· Capacitor value 62.5 uF
 
 The figure below shows the schematic of the designed circuit:
 \begin{figure}
@@ -491,7 +513,7 @@ For this design, we simply needed to design a circuit that would provide reverse
     \centering
     \includegraphics[width=0.5\linewidth]{protection.png}
     \caption{Reverse polarity schematic}
-    \label{fig:enter-label3}
+    \label{fig:enter-label}
 \end{figure}
 
 \subsection{Battery Charging Circuit}
@@ -501,7 +523,7 @@ For the purpose of the battery charging circuit being able to be charged by sola
     \centering
     \includegraphics[width=0.5\linewidth]{Battery.png}
     \caption{Battery charging circuit with over voltage protection}
-    \label{fig:enter-label4}
+    \label{fig:enter-label}
 \end{figure}
 
 \subsection{Voltage Divider (Receiver)}
@@ -511,7 +533,7 @@ For the receiver, there is no need for much protection, just the basics. Hence, 
     \centering
     \includegraphics[width=0.5\linewidth]{VoltageDivider.png}
     \caption{Voltage divider for receiver}
-    \label{fig:enter-label5}
+    \label{fig:enter-label}
 \end{figure}
 
 \section{Testing and validation}
@@ -525,7 +547,7 @@ The PWM generator was constructed using the 555 timer and it was then connected 
     \centering
     \includegraphics[width=0.5\linewidth]{PWM.png}
     \caption{PWM output}
-    \label{fig:enter-label6}
+    \label{fig:enter-label}
 \end{figure}
 
 As seen in the figure, the PWM output works as expected with a duty cycle of 25\%.
@@ -547,7 +569,7 @@ To test the buck converter, a 20V supply voltage was applied at the input and th
     \centering
     \includegraphics[width=0.5\linewidth]{buckOutput.png}
     \caption{Buck converter output}
-    \label{fig:enter-label}7
+    \label{fig:enter-label}
 \end{figure}
 
 \section{ATP Evaluation}
