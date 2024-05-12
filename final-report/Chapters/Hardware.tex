@@ -12,10 +12,10 @@
 \chapter{Camera/Transmitter (CT) \& Receiver (R) Hardware (PLLTHI032)\label{ch:hardware}}
 
 
-\section{Subsystem introduction}
+\section{Subsystem introduction}\label{sc: HW_intro}
 This section involves the design and implementation of the hardware for the transmitter/camera and receiver module for a Red-winged Starling nest monitoring system. The focus is to design a camera system that is motion activated when there is activity in the nest. This data is then transferred to a handheld receiver operated by the user on the ground. 
 
-\section{Requirements \& Specifications}
+\section{Requirements \& Specifications}\label{sc: HW_R_S}
 \begin{table}[h]
 \centering
 \begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|p{1cm}|}
@@ -45,7 +45,7 @@ The receiver must have a screen and interactive buttons to view the basic inform
 
 
 
-\section{Design Process}
+\section{Design Process}\label{sc: HW_DP}
 
 \subsection{Wired vs. Wireless Communication}
 There are two options for communication: wired and wireless. the table below goes through the aspects of each. 
@@ -303,7 +303,7 @@ This was an easy decision. The Pi Pico W was the smallest, cheapest, and lightes
     \item Display (I2C): The information the user needs can be shown on a 16x2 liquid crystal display. Four pushbuttons are used to interact with the display. Each button is configured with an internal pull-up resistor. The screen connects to the Pi using I2C, and is powered by 3V3. 
 \end{itemize}
 
-\section{Final Design}
+\section{Final Design}\label{sc: HW_FD}
 
 \subsection{General Overview}
 \begin{figure}[h]
@@ -377,7 +377,7 @@ The datasheet quoted that each 950nm LED required 1.1V and 50mA. The circuit was
 
 The IR LEDs and corresponding resistors were placed in the circuit and run for 10 minutes with the rated power. The current and voltage remained stable, with the current and voltage across the IR LEDs remaining constant. There was heat being radiated off each LED, which was normal. 
 
-\section{Power Consumption}
+\section{Power Consumption}\label{sc: HW_PC}
 \subsection{Transmitter Power Consumption}
 Now that the supporting circuits have been constructed, it is time to do an evaluation of the power consumption of the transmitter when the ESP32-CAM is in deep sleep and active mode. 
 
@@ -442,7 +442,7 @@ Total & Min: 106 mA @ 5 V, 530 mW \\
 
 Power consumption is fairly consistent. These values were calculated when the WiFi module was in operation, so this is possibly the highest power consumption that could be seen on the receiver. 
 
-\section{Testing and Results}
+\section{Testing and Results} \label{sc: HW_TR}
 \subsection{Acceptance Test Procedures}
 
 \begin{table}[h]
@@ -520,7 +520,7 @@ ATP8 & Load test script "ATP8.ino" onto the Pi Pico W and follow the instruction
 
 * ATP2 failed on time. When purchasing the ESP32-CAM, it was expected that the IR filter was easily removable by opening the lens and popping it out. However, position was relocated in this model to the base of the camera. Accessing it required fully disassembling and desoldering the camera with the risk of permanent damage. With more time this could be completed, or alternatively an older camera model could be purchased but there were not any available that could be purchased before the deadline. 
 
-\section{Conclusion}
+\section{Conclusion} \label{sc: HW_C}
 This subsection was successful in designing a working receiver and camera/transmitter module for the Red Winged Starling nest monitoring system. The design process was thorough, where each decision was graded in 
 a pass/fail system to assess whether it was a viable option or not. 
 

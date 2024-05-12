@@ -40,17 +40,50 @@
     \hline
     \textbf{GA} & \textbf{GA Description} & \textbf{Area GA is met} \\ \hline
 
+<<<<<<< HEAD
     GA3 & Engineering Design & Chapter \ref{ch:hardware} details the development of the hardware for the Red-Winged Starling Nest Monitoring project. After engagement with project stakeholders, the user requirements, functional requirements and specifications were created and analysed. Thereafter, the entire design process was documented. This was followed by a thorough round of testing of the microcontroller functionality and support circuitry. Finally, a number of acceptance test procedures were developed and performed. The source code for the testing is available in the \href{https://github.com/rothdu/EEE4113F-Group13-2024}{project repository} on GitHub. \\ \hline
+=======
+    GA3 & Engineering Design & Chapter \ref{ch:hardware} details the development of the hardware for the Red-Winged Starling Nest Monitoring project. After engagement with project stakeholders, the user requirements, functional requirements and specifications were created and analysed, shown in section \ref{sc: HW_R_S}. Thereafter, the entire design process was documented and shown in section \ref{sc: HW_DP}. This was followed by a proposed final design and development of support circuitry, shown in section \ref{sc: HW_FD}. The power consumption was then measured in different operating modes, shown in section \ref{sc: HW_PC}. Finally, a number of acceptance test procedures were developed and performed, shown in section \ref{sc: HW_TR}. The source code for the firmware is available in the \href{https://github.com/rothdu/EEE4113F-Group13-2024}{project repository} on GitHub.   \\ \hline
+>>>>>>> 73f93f683cc9ef83fd0b8c86b449ae618c0ceba1
 
-    GA7 & Sustainability and Impact of Engineering Activity & The Red-Winged Starling Nest Monitoring project works towards sustainability of engineering activity by developing a tool for research in wildlife conservation. \\ \hline
+    GA7 & Sustainability and Impact of Engineering Activity & The Red-Winged Starling Nest Monitoring project works towards sustainability of engineering activity by developing a tool for research in wildlife conservation.  In addition, the group attended D-School to develop skills on design approaches. In the report, section \ref{sc: HW_R_S} looks at analysing the needs of the user to design a product to meet said needs. \\ \hline
 
     GA8 & Individual, Team and Multidiscipliniary Working & Throughout the project, teamwork was key in making sure the final product worked together harmoniously. This involved creating a joint literature review, along with communicating weekly on Microsoft Teams. Extensive discussions were conducted, with the main objective to find the perfect solution to meet the stakeholder requirements, as well as dividing the work into equal subsystems. Thereafter, individual work was conducted to develop the hardware subsystem of the camera/transmitter and receiver on my end. The group members encompassed a multidiscipliniary engineering team, with specialisations in Electrical Engineer, Electrical and Computer Engineering, and Mechatronics. The project also involved extensive engagement with ornothological researchers, who work outside of the engineering field. \\ \hline
 
-    GA10 & Engineering Professionalism & Throughout the project, professional relationships and communication were maintained with the other group members, project stakeholders and project staff. All deliverables were presented on time. \\ \hline
+    GA10 & Engineering Professionalism & Throughout the project, professional relationships and communication were maintained with the other group members, project stakeholders and project staff. All submission activities met including final report and presentation. \\ \hline
 
 
 \end{tabularx}
 \raggedright
+
+\chapter{BOM}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|r|}
+\hline
+\textbf{Qty.} & \textbf{Component} & \textbf{Price} \\
+\hline
+2 & MicroSD Card Holder & R46.00 \\
+1 & ESP32 CAM & R235.00 \\
+1 & Jumper Cables & R23.00 \\
+2 & PIR Sensors & R66.40 \\
+2 & SD Card & R165.00 \\
+1 & 433MHz RF Link Kit & R59.00 \\
+1 & LDR & R25.30 \\
+1 & Pi Pico W & R134.90 \\
+1 & Backlight LCD Display & R66.70 \\
+1 & Toggle Switch & R27.60 \\
+2 & MOSFET & R8.48 \\
+1 & LM358 & R5.69 \\
+\hline
+\multicolumn{2}{|r|}{\textbf{Total}} & R863.07 \\
+\hline
+\end{tabular}
+\caption{Chapter \ref{ch:hardware} BOM}
+\label{tab:HW_BOM}
+\end{table}
+
 
 %------------------------------------------------------------
 \ifstandalone
