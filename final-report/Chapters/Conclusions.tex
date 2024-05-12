@@ -3,21 +3,26 @@
 \input{../Style/ChapterStyle.tex}
 \input{../FrontMatter/Glossary.tex}
 \begin{document}
-\chapter{Conclusions \label{ch:conclusions}}
+\chapter{Conclusion \label{ch:conclusions}}
 
-The purpose of this project was to...
+The purpose of this project was to develop a nest monitoring system tailor built for the nest environments of the Red-Winged Starling situated around UCT. The proposed solution was to develop a receiver and transmitter that wirelessly connect to each other for data transmission. The ESP32-CAM was the main hub for the transmitter module. An OV2640 camera was positioned along with motion sensors, reducing the chance of missing important events in the nest. This information would then be transmitted to the receiver upon the users' request. 
 
-This report began with...
+This report began with a short introduction on the project. This included looking at the background information on The FitzPatrick Institute of African Ornithology's Red-winged Starling study. The problem statement was also defined, based on the problems researchers endure when studying the Red-winged Starlings. The scope and limitations were addressed, which included the financial constraints and limited available facilities to order from. Finally, the report outline was also discussed. 
 
-The literature review was followed in Chapter...
+The literature review was followed in Chapter \ref{ch:literature}. This was an exploration of current solutions relating to the project, different computing hardware used, motion detection, Image/video capturing hardware, data transmission techniques, power demands, before finally looking at the challenges of deploying camera traps in urban settings. 
 
-The bulk of the work for this project followed next, in Chapter... 
+The bulk of the work for this project followed next. Chapter \ref{ch:power} documented the full design process of the power supply for both the receiver and transmitter/camera module, while taking into account the power demands of the components and space constraints laid out by the stakeholders. 
 
-In Chapter...
+Chapter \ref{ch:hardware} detailed the entire design process of the camera/transmitter and receiver hardware, with all design decisions accounted for, ending off with a tested and working final design. 
 
-Finally, Chapter... attempted to... 
+The firmware used on the hardware developed was discussed in Chapter \ref{ch:firmware}, where all decisions made were discussed. The final firmware solution was then rigourously tested to ensure the interface was reliable. 
 
-In summary, the project achieved the goals that were set out, by designing and demonstrating...
+Finally, Chapter \ref{ch:mechanical} discussed the design and testing of the weatherproof casing for the camera/transmitter and handheld box for the receiver. 
+
+In summary, the project achieved the goals that were set out, by designing and eploying a working nest monitoring system suited to the nesting environments of Red-winged Starlings at the University of Cape Town. This design will hopefully allow the researcher to capture useful images of the birds, and reduces the risk of missing important milestones in the life cycle of the Red-winged Starlings. 
+
+\chapter{Recommendations}
+
 
 % ----------------------------------------------------
 \ifstandalone
