@@ -282,6 +282,24 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
         \textit{Acceptance criteria} & Number of photographs and percentage of storage used indicated on the reciever are the same as the numbers manually observed on the camera/transmitter SD card. \\ 
         \textit{Pass/fail} & PASS\\ \hline
 
+
+
+
+        
+
+    \end{tabularx}
+    \end{scriptsize}
+    \caption{ATPs 1-4 for the firmware subsystem}
+    \label{tab:firmware-atps1}
+\end{table}
+
+\begin{table}[!ht]
+    \centering
+    \begin{scriptsize}
+    \begin{tabularx}{\textwidth}{|p{0.15\textwidth} X|}
+        
+        \hline
+        \textbf{UR/FR/SS} & \textbf{Description}\\ \hline
         \textit{ATP \& related SS} & ATP5 - \hyperlink{tab:firmware-requirements}{SS3, SS5} \\
         \textit{Description} & Sample photo is sent over network.\\
         \textit{Procedure} & Power on both modules. Wait for the devices to connect to each other. Select the `SEND SAMPLE' option. Wait for confirmation of completion. Open the receiver SD card on a computer and observe its contents.\\
@@ -293,24 +311,6 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
         \textit{Procedure} & Power on camera/transmitter module. Trigger the camera/transmitter module as described in ATP1 at least 10 times. Open the camera/transmitter SD card on a computer and observe its contents. Replace the SD card in the camera/transmitter module. Power on the receiver module and wait for it to connect to the camera/transmitter module. Select the `SEND PHOTOS' option. Wait for completion. Open the receiver SD card on a computer and observe its contents.\\
         \textit{Acceptance criteria} & All images initially present in the `photos' directory of the camera/transmitter module SD card are present in the `cam1' directory of the receiver SD card.\\ 
         \textit{Pass/fail} & PASS \\ \hline
-
-
-        
-
-    \end{tabularx}
-    \end{scriptsize}
-    \caption{ATPs 1-6 for the firmware subsystem}
-    \label{tab:firmware-atps1}
-\end{table}
-
-\begin{table}[!ht]
-    \centering
-    \begin{scriptsize}
-    \begin{tabularx}{\textwidth}{|p{0.15\textwidth} X|}
-        
-        \hline
-        \textbf{UR/FR/SS} & \textbf{Description}\\ \hline
-
         \textit{ATP \& related SS} & ATP7 - \hyperlink{tab:firmware-requirements}{SS10} \\
         \textit{Description} & Configuration options are loaded from SD card.\\
         \textit{Procedure} & Enable the ATP7 macro on the camera/transmitter module. Copy the contents of \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP7-1.json}{`config-ATP7-1.json'} into `config/config.json' on the SD card. Power on the module trigger and it in capture mode following the procedure from ATP1. Observe the outputted exposure level, number of captures per trigger, and time between triggers on the serial monitor. Repeat with \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP7-2.json}{`config-ATP7-2.json'}. \\
@@ -337,19 +337,17 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
 
     \end{tabularx}
     \end{scriptsize}
-    \caption{ATPs 7-10 for the firmware subsystem}
+    \caption{ATPs 5-10 for the firmware subsystem}
     \label{tab:firmware-atps2}
 \end{table}
 
-% \section{Future developments}
+\section{Future developments}
 
-% All the user requirements for the subsystem have been met. However, there is scope for future development of many features that could add to the functionality of the system or improve the user experience.
+All the user requirements for the subsystem have been met. However, there is scope for future development of many features that could add to the functionality of the system or improve the user experience.
 
-% Although still image photography is sufficient to satisfy the user requirements in this iteration of the project, implementation of video footage capture would make a good addition to the project. With sufficient time to invest in adapting existing implementations using the ESP32-cam device, it may be possible to capture video footage at a sufficiently high resolution and framerate that it would still be useful in research.
+The current implementation of the receiver device is capable of sending and receiving files from the SD card. However, these files must be loaded and viewed by removing the SD card and reading it from a computer or mobile phone. While this is definitely within the capabilities of the users for the system, their experience could be improved through the development of a web app that can be accessed from a mobile phone. The web app could be used to load new configuration options onto the receiver device (for future transmission to a camera/transmitter module). The web app could also display the stored images on the receiver device while the researchers are using the device in the field.
 
-% The current implementation of the receiver device is capable of sending and receiving files from the SD card. However, these files must be loaded and viewed by removing the SD card and reading it from a computer or mobile phone. While this is definitely within the capabilities of the users for the system, their experience could be improved through the development of a web app that can be accessed from a mobile phone. The web app could be used to load new configuration options onto the receiver device (for future transmission to a camera/transmitter module). The web app could also display the stored images on the receiver device while the researchers are using the device in the field.
-
-% Finally, in some cases, it may be possible to operate the modules autonomously by allowing them to connect to the University's WiFi network, and developing a separate web server which could be hosted externally. Given enough time, it would be useful to investigate the viability of this model by checking the available wireless connectivity at the actual nest sites. If the connectivity is deemed to be sufficient, a separate version of the server developed for the receiver device could be implemented on a personal computer for permanent operation.
+Finally, in some cases, it may be possible to operate the modules autonomously by allowing them to connect to the University's WiFi network, and developing a separate web server which could be hosted externally. Given enough time, it would be useful to investigate the viability of this model by checking the available wireless connectivity at the actual nest sites. If the connectivity is deemed to be sufficient, a separate version of the server developed for the receiver device could be implemented on a personal computer for permanent operation.
 
 \section{Conclusions}
 
