@@ -15,7 +15,9 @@ This subsystem deals with the development of firmware for the microcontrollers i
 
 Section \ref{s:firmware-requirements} presents the subsystem's user requirements, interpretted functional requirements, and the corresponding system specifications. Section \ref{s:firmware-design-decisions} discusses high-level design decisions that informed the subsystem development process. Section \ref{s:firmware-design-process} details the design process and the functionality of the final implementation. Finally, section \ref{s:firmware-atps} shows the acceptance test procedures, proving that the user requirements have been adequately met.
 
-\section{Requirement analysis} \label{s:firmware-requirements}
+The system provided from the hardware subsystem include an ESP32-Cam for the camera/transmitter module, and a Raspberry Pi Pico W for the receiver. The ESP32-Cam module includes an onboard SD card and camera, and integrated WiFi. Externally, it is connected to PIR movement sensors, and an RF receiver (for remote waking from the receiver device). The PIR sensors and RF receiver utilise the same pins as the SD card; the external peripherals must thus be disabled (via a switch connected to a GPIO pin) before the SD card can be initialised. The receiver module includes onboard WiFi. Externall, it is connected to a 16x2 LCD, an SPI SD card reader, and and four pushbuttons for user input.
+
+\section{Requirements and specifications} \label{s:firmware-requirements}
 User requirements (UR) where determined from discussions with the red-winged starling researchers \cite{hofmeyer2024private}. The user requirements were interpretted to form functional requirements (FR) for the subsystem, and subsystem specifications (SS). These are reflected in Table \ref{tab:firmware-requirements}
 
 \begin{table}[!ht]
@@ -127,7 +129,7 @@ In line with \hyperlink{tab:firmware-requirements}{FR4}, the requirement was eit
 
 \section{Submodule design} \label{s:firmware-design-process}
 
-\subsection{High level camera/transmitter module firmware flow} \label{ss:espflow}
+\subsection{Camera/transmitter module firmware flow} \label{ss:espflow}
 
 \begin{figure}[ht]
     \centering
@@ -136,7 +138,7 @@ In line with \hyperlink{tab:firmware-requirements}{FR4}, the requirement was eit
     \label{fig:espflow}
 \end{figure}
 
-Figure \ref{fig:espflow} demonstrates a high-level program flow of the Camera/Transmitter module. The two sequences operate independently. The module has two primary purposes - capturing footage, and transmitting it. Footage capture is Transmission can be triggered manually from the reveiver module, with an interrupt that comes via the RF receiver. 
+Figure \ref{fig:espflow} demonstrates a high-level program flow of the Camera/Transmitter module. The two sequences operate independently. The module has two primary purposes - capturing footage, and transmitting it. Footage capture is Transmission can be triggered manually from the reveiver module, with an interrupt that comes via the RF receiver. The system automatically goes back to sleep if it fails to initialise key peripherals, fails to connect to WiFi, or if the web requests fail more than 3 times in a row.
 
 \subsection{Implementation of configuration file}
 
@@ -167,7 +169,7 @@ Communication from receiver to transmitter was sent via GET requests, since thes
     \label{tab:server-api}
 \end{table}
 
-\subsection{User Interface (UI) control flow and design}
+\subsection{Receiver control flow}
 
 The hardware available for the user interface was a 16x2 character Liquid Crystal Display. The core requirement was to give the user control over the instructions sent to the camera/transmitter module, as discussed in subsection \ref{ss:espflow}. An overview of the control flow for the receiver module is shown in Figure \ref{fig:piflow}.
 
@@ -178,6 +180,9 @@ The hardware available for the user interface was a 16x2 character Liquid Crysta
     \label{fig:piflow}
 \end{figure}
 
+Buttons can either be read inside the program control loop, or using hardware interrupts. The lack of hardware debouncing informed this decision. Software debouncing can easily be implemented by checking when a button was last triggered, and not reading the button input again until a specified timeframe has elapsed. However, with interrupts, there is the added consideration that the intterupt handler triggers every time the button is triggered. This prevents the main loop from executing, and in this instance, could slow down the asychronous web server. As such, the buttons were read in the main loop. 
+
+\subsection{User Interface (UI) design}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.4\textwidth]{"ui.jpeg"}
@@ -209,7 +214,7 @@ To meet SS, the user interface must show constant feedback, to indicate the curr
 
 The OV2640 camera has a wide variety of configuration options which can be adjusted to suit the particular needs of the camera. These options were all included in the configuration file, as the best settings for each location would be best determined by the researchers involved upon deployment. However, a select number of configuration options were considered for the purposes of choosing default values, which could provide a workable positon from which thec configuration could be adjusted. 
 
-The settings considered were the automatic exposure control, exposure level, brightness, contrast, and saturation. The camera was tested with various settings in fairly well-lit conditions, which most of the nests are likely to have. Dark conditions could not be tested owing the the limitations faced with the infrared filter on the camera discussed in \ref{ch:hardware}. Qualitative assessments of the image quality were performed to determine the optimum settings.
+The number of captures per trigger (\mathrm{3}) and interval between triggers $60 \mathrm{s}$ were implemented based on the suggestions from the project stakeholders \cite{hofmeyer2024private}. Other settings considered were the automatic exposure control, exposure level, brightness, contrast, and saturation. The camera was tested with various settings in fairly well-lit conditions, which most of the nests are likely to have. Dark conditions could not be tested owing the the limitations faced with the infrared filter on the camera discussed in \ref{ch:hardware}. Qualitative assessments of the image quality were performed to determine the optimum settings.
 
 It quickly became apparent that the automatic exposure control did not function effectively. Even in moderate light, the images taken with automatic expsure control were too dark to make out any detail. Turning off the automatic exposure control and manually setting the exposure to it's maximum value was the only way to yield photos with enough light to make out any detail. At these exposure details, the brightness, contrast, and saturation settings made minimal difference to the image quality, though the qualitative assessment was that the clearest images were produced with higher values. A sample image with the final chosen settings is shown in Figure \ref{fig:sample-image-firmware}.
 
@@ -318,7 +323,6 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
         \textit{Procedure} & Enable the ATP8 macro on the camera/transmitter module. Copy the contents of "config-ATP8-1.json" into "config/config.json" on the SD card. Power on the module trigger it in capture mode following the procedure from ATP1. Observe the outputted exposure level, number of captures per trigger, and time between triggers on the serial monitor. Repeat with "config-ATP8-2.json" \\
         \textit{Acceptance criteria} & First run: outputted values are as specified in the config file. Second run: outputted values are the defaults (1200, 3, 60), since the values from the config file are invalid.\\ 
         \textit{Pass/fail} & PASS\\ \hline
-        % TODO: Link github config files
 
         \textit{ATP ID} & ATP9\\
         \textit{Related UR/FR/SS} & \\
@@ -357,9 +361,23 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
 
 \section{Future developments}
 
+All the user requirements for the subsystem have been met. However, there is scope for future development of many features that could add to the functionality of the system or improve the user experience.
+
+Although still image photography is sufficient to satisfy the user requirements in this iteration of the project, implementation of video footage capture would make a good addition to the project. With sufficient time to invest in adapting existing implementations using the ESP32-cam device, it may be possible to capture video footage at a sufficiently high resolution and framerate that it would still be useful in research.
+
+The current implementation of the receiver device is capable of sending and receiving files from the SD card. However, these files must be loaded and viewed by removing the SD card and reading it from a computer or mobile phone. While this is definitely within the capabilities of the users for the system, their experience could be improved through the development of a web app that can be accessed from a mobile phone. The web app could be used to load new configuration options onto the receiver device (for future transmission to a camera/transmitter module). The web app could also display the stored images on the receiver device while the researchers are using the device in the field.
+
+Finally, in some cases, it may be possible to operate the modules autonomously by allowing them to connect to the University's WiFi network, and developing a separate web server which could be hosted externally. Given enough time, it would be useful to investigate the viability of this model by checking the available wireless connectivity at the actual nest sites. If the connectivity is deemed to be sufficient, a separate version of the server developed for the receiver device could be implemented on a personal computer for permanent operation.
 
 \section{Conclusions}
 
+This section discussed firmware development for the Red-Winged Starling Nest Cameras. The user requirements were detailed and derived into functional requirements and specifications. The ultimate goal of this subsystem was to integrate the various hardware peripherals and microcontrollers into a system that was capable of taking images, transmitting the images wirelessly to a receiver device, using and remotely updateable configuration, and interfacing with users in an intuitive way. 
+
+It was decided that the Arduino framework would be used for code development. An HTTP server was implemented for wireless communication between the camera/transmitter and receiver device. The configuration was stored and loaded on a human-readable JSON file. The web server was hosted on the receiver device to enable future applications that might include access to the server from a web browser on a mobile phone.
+
+A system firmware flow was developed for the camera/transmitter device that triggered footage capture on detection of movement, and triggerd transmission mode upon connection from the receiver device. An appropriate web server was developed to server for the receiver device was developed to serve the endpoints required by the camera/transmitter device. A user control scheme and user interface was developed to enable user interaction with the receiver device. A qualitative assessment of the camera settings was performed to determine optimum default settings for the device; though the settings were also configurable via the remote configuration options.
+
+A set of acceptance test procedures were developed and detailed in line with the system specifications. The system passed all the acceptance tests. 
 
 
 % ----------------------------------------------------
