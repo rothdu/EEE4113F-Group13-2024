@@ -8,7 +8,30 @@
 \chapter{Problem Analysis \label{ch:problem-analysis}}
 % ----------------------------------------------------
 
+\section{D-school activities}
+Two afternoon sessions were spent at the Hasso Plattner School of Design Thinking Afrika. In collaboration with instructors from the D-School, the group engaged in various activities aimed at teaching design thinking and understanding the needs of the stakeholders for wildlife conservation projects. The stakeholders presented the challenges they were facing with their research. The group analysed these conversations to gain a deeper understanding of the stakeholders' needs.  
 
+Many of the stakeholders required surveillance of the various birds they were researching. Ultimately the group was drawn towards the project involving nest monitoring for Red-Winged Starlings. The stakeholders appeared to be limited by their tools (a GoPro camera on a stick) \cite{hofmeyer2024private}. The group felt that there was potential to develop a viable product to help with their research. Ultimately, this led to the problem statement:
+
+\begin{quote}
+    Sally, an academic researching starlings on UCT campus, requires remote visual surveillance of the birds for an extended period of time without human intervention and without risk of damage or theft of hardware.
+\end{quote}
+
+\section{Subsystem breakdown}
+
+This problem was broken down into four subsystems:
+
+\centering
+\begin{tabularx}{\textwidth}[]{|p{0.2\textwidth}| X|}
+    \hline
+    \textbf{Subsystem} & \textbf{Description} \\ \hline
+    Power & Deals with power supply. Provides power to the electronic hardware subsystem. \\ \hline
+    Electronic hardware & Deals with the design of microcontroller and sensing hardware.\\ \hline
+    Mechanical & Deals with the physical housing of the power and electronic hardware subsystems. \\ \hline
+    Firmware & Deals with the firmware development of the microcontrollers, including communications and user interface design. \\ \hline
+    
+\end{tabularx}
+\raggedright
 
 % ----------------------------------------------------
 \ifstandalone
