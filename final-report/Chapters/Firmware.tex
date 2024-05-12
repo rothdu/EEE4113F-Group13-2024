@@ -13,7 +13,7 @@
 
 This subsystem deals with the development of firmware for the microcontrollers in both the camera/transmitter and receiver modules. The fundamental goals of this subsystem are to enable the camera/transmitter module to take photographs of the red-winged starlings, and to transmit this photographs to the receiver module without disturbing the birds' nests. The source code for this subsystem is available in the \href{https://github.com/rothdu/EEE4113F-Group13-2024}{project repository} on GitHub.
 
-Section \ref{s:firmware-requirements} presents a traceability matrix with the subsystem's user requirements, interpretted functional requirements, and the corresponding ATPs. Section \ref{s:firmware-design-decisions} discusses high-level design decisions that informed the subsystem development process. Section \ref{s:firmware-design-process} details the design process and the functionality of the final implementation. Finally, section \ref{s:firmware-atps} shows the acceptance test procedures, proving that the user requirements have been adequately met.
+Section \ref{s:firmware-requirements} presents the subsystem's user requirements, interpretted functional requirements, and the corresponding system specifications. Section \ref{s:firmware-design-decisions} discusses high-level design decisions that informed the subsystem development process. Section \ref{s:firmware-design-process} details the design process and the functionality of the final implementation. Finally, section \ref{s:firmware-atps} shows the acceptance test procedures, proving that the user requirements have been adequately met.
 
 \section{Requirement analysis} \label{s:firmware-requirements}
 User requirements (UR) where determined from discussions with the red-winged starling researchers \cite{hofmeyer2024private}. The user requirements were interpretted to form functional requirements (FR) for the subsystem, and subsystem specifications (SS). These are reflected in Table \ref{tab:firmware-requirements}
@@ -103,10 +103,7 @@ The Raspbery Pi Pico W supports two Arduino ports - the "official" one, and a co
 
 \subsection{File transfer method}
 
-As described in Chapter , the WiFi was selected as the preffered communication method on a hardware level. Both microcontrollers also support Bluetooth, but this was largely coincidental.
-%TODO: Add reference to Thiyashan's section
-
-For data transmission over WiFi, numerous protocols exist, including encrypted and unencrypted protocols. An encrypted protocol was not necessary for this application, as the devices did not transmit sensitive data. The encryption involved inherently makes them more complex and often less efficient; as such, only unencrypted protocols were considered.
+The requirement from the hardware subsystem was to transfer the data over WiFi. For data transmission over WiFi, numerous protocols exist, including encrypted and unencrypted protocols. An encrypted protocol was not necessary for this application, as the devices did not transmit sensitive data. The encryption involved inherently makes these more complex and often less efficient; as such, only unencrypted protocols were considered.
 
 Standard unencrypted protocols include User Datagram Protocol (UDP), Tranmission Control Protocol (TCP), File Transfer Protocol (FTP) and Hypertext Transfer Protocol (HTTP). UDP and TCP are low-level protocols; using a standard higher-level prtocol such as FTP or HTTP is more appropriate unless very fine control of data transmission is needed. FTP and HTTP both operate on top of TCP. Of FTP and HTTP, HTTP is much more widely used owing to its use in the World Wide Web, and thus has better library support and documentation, thus it was chosen as the preffered option.
 
@@ -116,23 +113,17 @@ Communication over HTTP is based on a client-server model, where a client sends 
 
 However, in future iterations of the project, there are particular merits to hosting the server on the receiver device. The server requires a known IP address such that the client knows where to direct it's requests. Once a client has connected to the server, the server sends it's response directly back to whatever client responded to it. The network settings of the UCT campus WiFi do not allow devices to set static IP addresses, meaning it is impossible to host the server on the campus WiFi. If the camera/transmitter acts as the client, it does not need a known IP address when connected to campus WiFi, and could connect to a remotely hosted server. To save power on the camera/transmitter module, it could also be useful to allow the module to immediately initiate connection to the server by acting as the client. 
 
-Aditionally, hosting the server on the receiver device allows for traditional web browsers to remotely connect as a client. This could allow for applications such as updating configuration stored configuration or viewing stored images on the receiver device from a smartphone or laptop.
+Aditionally, hosting the server on the receiver device allows for traditional web browsers to remotely connect as a client. This could allow for applications such as updating configuration or viewing stored images on the receiver device from a smartphone or laptop.
 
-% \subsection{Library selection}
+\subsection{Configuration file}
 
-% The Arduino framework includes a wide variety of software libraries. These include "standard" libraries, which are integrated into the Arduino framework or the Arduino core for a particular device, and user-supplied libraries which are uploaded by Arduino users. In most cases, the "standard" libraries have the best support and documentation, and are known to be relatively bug-free; as such, "standard" libraries were used for all applications for which they were available.
+In line with \hyperlink{tab:firmware-requirements}{SS8}, the camera/transmitter module must read a configuration file. There were three options for storing this configuration file: flash memory, EEPROM, or a file on the SD card. Storing configuration on the SD card was chosen, since it enables easy deployment of a new module with a custom configuration, simply by loading the appropriate configuration file onto the SD card before the module is deployed.
 
-% Some specific library selections falling outside of this general principle were:
+There are numerous ways to store configuration files, including the XML, JSON, YAML, and INI file formats. All of these formats are plaintext files, and each could be adequately adapted to be used in the project with the correct text parsing. However, of the available, JSON stands out, since it is a human-readable format, making it easier to create a new configuration file without any external tool. It is also well supported on Arduino via the ArduinoJson library \cite{blanchon2019arduino}.
 
-% \begin{itemize}
-%     \item ArduinoJson cites 10\% better speed and memory efficiency than the "standard" library, and has extensive documentation available on its website.
-%     \item ScreenUI  is a user-implemented library for easy development of menus which display on LCD screen, which was applied to the receiver module.
-%     \item Reference I2C library here...
-% \end{itemize}
+\subsection{Multi-photo vs video capture}
 
-% TODO: reference the libraries I've used
-
-
+In line with \hyperlink{tab:firmware-requirements}{FR4}, the requirement was either to take multiple photographs per trigger or to capture video footage. Existing implementations using the ESP-32 cam module either use resolutions much lower than the module is capable of or can only achieve very low framerates \cite{zahary2019esp}. Additionally, examination of the source code of these existing implementations revealed that the module is only natively capabale of capturing a single frame at a time, and utilising video footage requires complex considerations of the timing of frame captures and the encoding of the video files. Within the time limits of this project, it was deemed that still images would be more appropriate, especially since the requirement could still be met by capturing multiple still images per movement trigger. 
 
 \section{Submodule design} \label{s:firmware-design-process}
 
@@ -159,17 +150,12 @@ The HTTP server implemented on the receiver module or a standalone computer must
     \item HTTP PUT: /metadata - send metadata to server
 \end{itemize}
 
-\subsection{Camera/transmitter module configuration file}
+To meet this functionality, the server Application Programming Interface (API) detailed in Table was developed. Communication from receiver to transmitter was sent via GET requests, since these indicate that the client is fetching a resource from the server. Communication from transmitter to receiver was sent via PUT requests. PUT requests indicate an idempotent transfer from client to server, meaning that a request with the same form as a previous request is sent, the previous resource is overwritten. This was deemed more appropriate than a non-idempotent POST request, since idempotency was in line with the way the images were stored on the receiver. An image received from the same device with the same name was assumed to be a repeat send of a previous image, and would thus overwrite the image stored on the receiver. This meant that the camera/transmitter module could safely resend images in the instance of an unexpected error from the response from the server, without risk of duplicating said images.
+
+
+\subsection{Implementation of configuration file}
 
 To meet the identified soft-configurability requirement, the ESP32 module will read a customiseable configuration file to determine a number of key settings. The configuration file is stored in plaintext json at "starling-cam/config/config.json" on the SD card. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid or missing, any missing parameters are loaded as defaults.
-
-This configuration option has a number of advantages:
-
-\begin{itemize}
-    \item Storing configuration on the SD card makes it possible to load new configuration options without needing to flash new code onto the ESP32 or access it remotely.
-    \item JSON is human-readable format, making easily possible to write new configuration files.
-    \item JSON is a well-supported format, and can easily be read and interpretted on the ESP32 using the ArduinoJson library % TODO \ref{arduinoJSON ref here}
-\end{itemize}
 
 \subsection{Camera sensor settings}
 
@@ -214,34 +200,34 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
         \textit{Related UR/FR/SS} &\\
         \textit{Description} & Receiver menu navigation works.\\
         \textit{Procedure} & Power on the receiver module. Navigate the menu using the up, down, confirm, and cancel buttons.\\
-        \textit{Acceptance criteria} & Up button scrolls the menu upwards. Down button scrolls the menu downwards. Confirm buttton trigger the currently selected action and, after a brief waiting period, displays an information screen relating to the selected operation. Up and down buttons do not work after selecting confirm. Cancel button returns display to the menu.\\ 
+        \textit{Acceptance criteria} & Up button scrolls the menu upwards. Down button scrolls the menu downwards. Confirm buttton trigger the currently selected action and, after a brief waiting period, indicates that the request has been sent. Up and down buttons do not work after selecting confirm. Cancel button returns display to the menu if the request has not yet been sent.\\ 
         \textit{Pass/fail} & PASS \\ \hline
 
         \textit{ATP ID} & ATP4 \\
         \textit{Related UR/FR/SS} & \\
         \textit{Description} & Camera/transmitter module awakens in transmission mode. \\
-        \textit{Procedure} &  Enable the ATP4 macro prior on the camera/transmitter module. Power on the module and monitor the serial port. Power on the receiver module. Navigate the menu and select the "WAKE DEVICE" option.\\
+        \textit{Procedure} &  Enable the ATP4 macro prior on the camera/transmitter module. Power on the module and monitor the serial port. Power on the receiver module (which will automatically awaken the camera/transmitter module using the RF-linker).\\
         \textit{Acceptance criteria} & Serial monitor on the camera/transmitter module confirms awoken in transmission mode.\\ 
         \textit{Pass/fail} & PASS\\ \hline
 
         \textit{ATP ID} & ATP5  \\
         \textit{Related UR/FR/SS} &\\
         \textit{Description} & Metadata is sent over network.\\
-        \textit{Procedure} & Trigger the footage capture as described in ATP1 at least 5 times. Open the SD card on a computer, and note the number of images present and the percentage of storage currently used. Power on on the receiver module. Navigate the menu and selelct the "WAKE DEVICE" option. Upon confirmation of connection, select the "SEND METADATA" option.\\
-        \textit{Acceptance criteria} & Number of photographs and percentage of storage used displayed on the reciever is the same as the numbers manually observed on the SD card. \\ 
+        \textit{Procedure} & Trigger the footage capture as described in ATP1 at least 5 times. Open the SD card on a computer, and note the number of images present and the percentage of storage currently used. Power on on the receiver module and wait for it to connect to the camera/transmitter module. Navigate the menu and select the "SEND METADATA" option. Open the receiver SD card on a computer and observer the contents of "cam1/metadata.json"\\
+        \textit{Acceptance criteria} & Number of photographs and percentage of storage used indicated on the reciever are the same as the numbers manually observed on the camera/transmitter SD card. \\ 
         \textit{Pass/fail} & PASS\\ \hline
 
         \textit{ATP ID} & ATP6\\
         \textit{Related UR/FR/SS} & \\
         \textit{Description} & Sample photo is sent over network.\\
         \textit{Procedure} & Power on both modules. Navigate the menu and select the "WAKE DEVICE" option. Upon confirmation of connection, select the "SEND SAMPLE" option. Wait for confirmation of completion. Open the receiver SD card on a computer and observe its contents.\\
-        \textit{Acceptance criteria} & A sample image "sample.jpeg" is present in the "cam1" directory on the SD card. \\ 
+        \textit{Acceptance criteria} & A sample image is present at the "cam1/sample.jpeg" on the SD card. \\ 
         \textit{Pass/fail} & PASS \\ \hline
 
         \textit{ATP ID} & ATP7 \\
         \textit{Related UR/FR/SS} & \\
         \textit{Description} & All captured photos are sent over network.\\
-        \textit{Procedure} & Power on both modules. Trigger the camera/transmitter module as described in ATP1 at least 10 times. Open the camera/transmitter SD card on a computer and observer its contents. Replace the SD card in the camera/transmitter module. Navigate the menu and select the "WAKE DEVICE" option. Upon completion, select the "SEND PHOTOS" option. Wait for confirmation of completion. Open the receiver SD card on a computer and observe their contents.\\
+        \textit{Procedure} & Power on camera/transmitter module. Trigger the camera/transmitter module as described in ATP1 at least 10 times. Open the camera/transmitter SD card on a computer and observe its contents. Replace the SD card in the camera/transmitter module. Power on the receiver module and wait for it to connect to the camera/transmitter module. Select the "SEND PHOTOS" option. Wait for completion. Open the receiver SD card on a computer and observe its contents.\\
         \textit{Acceptance criteria} & All images initially present in the "photos" directory of the camera/transmitter module SD card are present in the "cam1" directory of the receiver SD card.\\ 
         \textit{Pass/fail} & PASS \\ \hline
         
@@ -302,6 +288,10 @@ The SD card for the camera/transmitter module should be formatted with the FAT32
     \caption{ATPs 8-11 for the firmware subsystem}
     \label{tab:firmware-atps2}
 \end{table}
+
+\section{Conclusions}
+
+
 
 % ----------------------------------------------------
 \ifstandalone
