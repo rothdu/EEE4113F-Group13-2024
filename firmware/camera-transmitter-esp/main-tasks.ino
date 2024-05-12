@@ -16,7 +16,7 @@ void triggerCapture() {
     #endif
     // failure means the default config is used
   }
-  #ifdef ATP8
+  #ifdef ATP7
   Serial.print("Exposure: ");
   Serial.println(aecValue);
   Serial.print("Captures per trigger: ");
@@ -42,7 +42,7 @@ void triggerCapture() {
 }
 
 void triggerTransmitter() {
-  #ifdef ATP4
+  #ifdef ATP1
   Serial.println("Awoken in transmission mode");
   #endif 
 

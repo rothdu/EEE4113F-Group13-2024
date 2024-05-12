@@ -4,13 +4,13 @@
 // define this to run the unit test code rather than the production code
 // #define UNIT_TESTS
 
-// define this for ATP4
-// #define ATP4
+// define this for ATP1
+// #define ATP1
 
-// define this for ATP8
-// #define ATP8
+// define this for ATP7
+// #define ATP7
 
-#if defined(ATP4) || defined(ATP8)
+#if defined(ATP1) || defined(ATP7)
 #define ATPS
 #endif
 /* MAIN TASKS */
