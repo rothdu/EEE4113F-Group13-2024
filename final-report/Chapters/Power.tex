@@ -10,7 +10,7 @@
 \fi
 % ----------------------------------------------------
 \chapter{ Power Submodule
-(PRMRUV001)\label{ch:literature}}
+(PRMRUV001)\label{ch:power}}
 \section{Power Submodule}
 
 In the submodule, it will detail the supply of power to the entire system as a whole. It serves as the heartbeat of the project and is very important. It deals with in a broader scope, the charging and storage of power that can be consumed, as well voltage regulation to a voltage that is suitable for the other submodules that need to draw power.
@@ -435,7 +435,7 @@ Hence, the buck converter using first principles is the best option.
      \centering
      \includegraphics[width=0.5\linewidth]{Power_Flowchart.png}
      \caption{Flowchart of subsystem}
-     \label{fig:enter-label}
+     \label{fig:enter-label1}
  \end{figure}
 
 \subsection{Pulse Width Modulation}
@@ -447,7 +447,7 @@ The circuit can be found below:
     \centering
     \includegraphics[width=0.5\linewidth]{image.png}
     \caption{PWM generator using a 555 timer.}
-    \label{fig:enter-label}
+    \label{fig:enter-label2}
 \end{figure}
 
 
@@ -491,7 +491,7 @@ For this design, we simply needed to design a circuit that would provide reverse
     \centering
     \includegraphics[width=0.5\linewidth]{protection.png}
     \caption{Reverse polarity schematic}
-    \label{fig:enter-label}
+    \label{fig:enter-label3}
 \end{figure}
 
 \subsection{Battery Charging Circuit}
@@ -501,7 +501,7 @@ For the purpose of the battery charging circuit being able to be charged by sola
     \centering
     \includegraphics[width=0.5\linewidth]{Battery.png}
     \caption{Battery charging circuit with over voltage protection}
-    \label{fig:enter-label}
+    \label{fig:enter-label4}
 \end{figure}
 
 \subsection{Voltage Divider (Receiver)}
@@ -511,7 +511,7 @@ For the receiver, there is no need for much protection, just the basics. Hence, 
     \centering
     \includegraphics[width=0.5\linewidth]{VoltageDivider.png}
     \caption{Voltage divider for receiver}
-    \label{fig:enter-label}
+    \label{fig:enter-label5}
 \end{figure}
 
 \section{Testing and validation}
@@ -525,7 +525,7 @@ The PWM generator was constructed using the 555 timer and it was then connected 
     \centering
     \includegraphics[width=0.5\linewidth]{PWM.png}
     \caption{PWM output}
-    \label{fig:enter-label}
+    \label{fig:enter-label6}
 \end{figure}
 
 As seen in the figure, the PWM output works as expected with a duty cycle of 25\%.
@@ -547,7 +547,7 @@ To test the buck converter, a 20V supply voltage was applied at the input and th
     \centering
     \includegraphics[width=0.5\linewidth]{buckOutput.png}
     \caption{Buck converter output}
-    \label{fig:enter-label}
+    \label{fig:enter-label}7
 \end{figure}
 
 \section{ATP Evaluation}
