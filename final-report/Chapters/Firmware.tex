@@ -11,54 +11,66 @@
 \chapter{Firmware (DGMROB001) \label{ch:firmware}}
 \section{Subsystem introduction}
 
-This subsystem deals with the development of firmware for the microcontrollers in both the camera/transmitter and receiver modules. The fundamental goals of this subsystem are to enable the camera/transmitter module to take photographs of the red-winged starlings, and to transmit this photographs to the receiver module without disturbing the birds' nests. The source code for this subsystem is available in the \href{https://github.com/rothdu/EEE4113F-Group13-2024}{project repository} on GitHub.
+This subsystem deals with the development of firmware for the microcontrollers in both the camera/transmitter and receiver modules. The fundamental goals of this subsystem were to enable the camera/transmitter module to take photographs of the red-winged starlings, and to transmit this photographs to the receiver module without disturbing the birds' nests. The source code for this subsystem is available in the \href{https://github.com/rothdu/EEE4113F-Group13-2024}{project repository} on GitHub.
 
 Section \ref{s:firmware-requirements} presents the subsystem's user requirements, interpretted functional requirements, and the corresponding system specifications. Section \ref{s:firmware-design-decisions} discusses high-level design decisions that informed the subsystem development process. Section \ref{s:firmware-design-process} details the design process and the functionality of the final implementation. Finally, section \ref{s:firmware-atps} shows the acceptance test procedures, proving that the user requirements have been adequately met.
 
-The system provided from the hardware subsystem include an ESP32-Cam for the camera/transmitter module, and a Raspberry Pi Pico W for the receiver. The ESP32-Cam module includes an onboard SD card and camera, and integrated WiFi. Externally, it is connected to PIR movement sensors, and an RF receiver (for remote waking from the receiver device). The PIR sensors and RF receiver utilise the same pins as the SD card; the external peripherals must thus be disabled (via a switch connected to a GPIO pin) before the SD card can be initialised. The receiver module includes onboard WiFi. Externall, it is connected to a 16x2 LCD, an SPI SD card reader, and and four pushbuttons for user input.
+The system provided from the hardware subsystem includes an ESP32-Cam for the camera/transmitter module, and a Raspberry Pi Pico W for the receiver. The ESP32-Cam module includes an onboard SD card reader and camera, and integrated WiFi. Externally, it is connected to PIR movement sensors, and an RF receiver (for remote waking from the receiver device). The PIR sensors and RF receiver utilise the same pins as the SD card; the external peripherals must thus be disabled (via a switch connected to a GPIO pin) before the SD card can be initialised. The receiver module includes onboard WiFi. Externally, it is connected to a 16x2 I2C LCD, an SPI SD card reader, and and four pushbuttons for user input.
 
 \section{Requirements and specifications} \label{s:firmware-requirements}
 User requirements (UR) where determined from discussions with the red-winged starling researchers \cite{hofmeyer2024private}. The user requirements were interpretted to form functional requirements (FR) for the subsystem, and subsystem specifications (SS). These are reflected in Table \ref{tab:firmware-requirements}
 
-\begin{table}[!ht]
+\begin{table}[ht]
     \centering
     \begin{scriptsize}
     \begin{tabularx}{\textwidth}{|p{0.13\textwidth} X|}
         
         \hline
         \textbf{UR/FR/SS} & \textbf{Description}\\ \hline
-        \textit{UR1} & Triggered with movement\\
-        \textit{FR1} & Image capture triggered quickly after PIR sensor reading to see the object that moved\\
-        \textit{FR2} & Image capture fast enough to see object that moved\\
-        \textit{SS1} & Image capture triggered on PIR sensor high\\ 
-        \textit{SS2} & Image captures within 1 second of PIR trigger\\ \hline
+        \textit{UR1} & Triggered with movement.\\
+        \textit{FR1} & Image capture triggered quickly after PIR sensor reading to see the object that moved.\\
+        \textit{FR2} & Image capture fast enough to see object that moved.\\
+        \textit{SS1} & Image capture triggered on PIR sensor high.\\ 
+        \textit{SS2} & Image captures within 1 second of PIR trigger.\\ \hline
 
-        \textit{UR2} & Data access without disturbing nests\\
-        \textit{FR3} & A wireless communication protocol must be set up to transfer camera/transmitter data to the receiver\\
-        \textit{SS3} & Appropriate two-way communication protocol using WiFi chosen\\
-        \textit{SS4} & Protocol transmits all images from the camera/transmitter to the receiver\\ \hline
+        \textit{UR2} & Data access without disturbing nests.\\
+        \textit{FR3} & A wireless communication protocol must be set up to transfer camera/transmitter data to the receiver.\\
+        \textit{SS3} & Appropriate two-way communication protocol using WiFi implemented.\\
+        \textit{SS4} & System transmits metadata from the camera/transmitter to the receiver.\\ 
+        \textit{SS5} & System transmits a sample image from the camera/transmitter to the receiver.\\ 
+        \textit{SS6} & System transmits all captured footage from the camera/transmitter to the receiver.\\ \hline
 
-        \textit{UR3} & Repeated photographs or video footage\\
-        \textit{FR4} & Camera must capture multiple time per trigger or take video footage\\
-        \textit{SS5} & Module captures a configurable number \textit{n} images each time it is triggered\\ \hline
+        \textit{UR3} & Repeated images or video footage.\\
+        \textit{FR4} & Camera must capture multiple time per trigger or take video footage.\\
+        \textit{SS7} & Module captures images a configurable number \textit{n} images each time it is triggered.\\ \hline
 
-        \textit{UR4} & Access to images in real time\\
-        \textit{FR5} & Tranmission from the camera/transmitter module must be available on-demand from the receiver module\\
-        \textit{SS6} & Transmission from the camera/transmitter to the receiver is triggered by a high reading from the RF linker\\ \hline
+        \textit{UR4} & Access to images in real time.\\
+        \textit{FR5} & Tranmission from the camera/transmitter module must be available on-demand from the receiver module.\\
+        \textit{SS8} & Transmission from the camera/transmitter to the receiver is triggered by a high reading from the RF linker.\\ \hline
 
-        \textit{UR5} & Data gathering over 7-week breeding season without frequent camera/transmitter battery changes\\
-        \textit{FR6} & Camera/transmitter module must utilise power-saving modes where possible\\
-        \textit{SS7} & Camera/transmitter module enters deep sleep mode after finishing image capture or data transmission \\ \hline
+        \textit{UR5} & Data gathering over 7-week breeding season without frequent camera/transmitter battery changes.\\
+        \textit{FR6} & Camera/transmitter module must utilise power-saving modes where possible.\\
+        \textit{SS9} & Camera/transmitter module enters deep sleep mode after finishing image capture or data transmission. \\ \hline
 
-        \textit{UR6} & Configurable image quality and trigger frequency\\
-        \textit{FR7} & Camera/transmitter module must include remotely updateable configuration options\\
-        \textit{SS8} & Camera/transmitter module reads a configuration file in initialisation and loads the appropriate configuration values \\
-        \textit{SS9} & New configuration file can be sent from receiver to camera/transmitter which is loaded on next camera/transmitter boot \\ \hline
+        \textit{UR6} & Configurable image quality and trigger frequency.\\
+        \textit{FR7} & Camera/transmitter module must include remotely updateable configuration options.\\
+        \textit{SS10} & Camera/transmitter module reads a configuration file and loads the appropriate configuration values. \\
+        \textit{SS11} & New configuration file can be sent from receiver to camera/transmitter which is loaded on next boot. \\ \hline
+        
+        \textit{FR8} & Device takes good quality photographs. \\
+        \textit{SS12} & Default device settings allow for photographs of adequate quality on a qualitative assessment. \\ \hline
 
-        \textit{UR7} & Deployment of multiple camera/transmitter modules for different nests\\
-        \textit{FR8} & Receiver device must handle separate image storage and configuration options for many camera/transmitter modules\\
-        \textit{SS10} & Each module stores and transmits a unique device ID\\
-        \textit{SS11} & Receiver module stores a separate folder for data relating to separate deployed modules\\ \hline
+        \textit{UR7} & Deployment of multiple camera/transmitter modules for different nests.\\
+        \textit{FR9} & Receiver must hanlde separate image storage and configuration options for many camera/transmitter modules.\\
+        \textit{SS13} & Each camera/transmitter module stores and transmits a unique device ID.\\
+        \textit{SS14} & Receiver module stores a separate folder for data relating to separate deployed modules.\\ \hline
+
+        \textit{FR10} & Receiver device has appropriate functionality to allow user interaction.\\
+        \textit{SS15} & Device features a menu which can be controlled by the user.\\
+        \textit{SS16} & Menu shows appropriate feedback to the user at all times.\\
+        \textit{SS17} & User interface is easy to understand.\\ \hline
+        
+
 
     \end{tabularx}
     \end{scriptsize}
@@ -74,7 +86,7 @@ This section details high-level design decisions that were made prior to any imp
 
 \subsection{Development environment}
 
-Both the ESP32 used for the camera/transmitter and the Raspberry Pi Pico W used for the receiver support a variety of code development environments, including their own native C/C++ frameworks, Arduino, MicroPython and CircuitPython. A summary of the support and features of the various coding frameworks is presented in Table \ref{tab:coding-env}.
+Both the ESP32 used for the camera/transmitter and the Raspberry Pi Pico W used for the receiver support a variety of code development environments, including their own native C/C++ frameworks, Arduino, MicroPython and CircuitPython. A summary of the support and features of the various frameworks is presented in Table \ref{tab:coding-env}.
 
 \begin{table}[ht]
     \centering
@@ -97,35 +109,35 @@ Both the ESP32 used for the camera/transmitter and the Raspberry Pi Pico W used 
     \label{tab:coding-env}
 \end{table}
 
-With the exception of MicroPython and CircuitPython for the ESP32, the library and online support is likely sufficient for this application. Abstraction level is thus a key consideration. Frameworks with low extraction levels are typically used in professional applications that require fine control over the device hardware. This often makes using these frameworks much more time consuming, unless you have extensive experience with the framework. On the other hand, high abstraction levels sometimes abstract away desired hardware control. A moderate abstraction level is preferred, to strike a balance between these considerations.
+With the exception of MicroPython and CircuitPython for the ESP32, the library and online support is likely sufficient for this application. Abstraction level is thus a key consideration. Frameworks with low abstraction levels are typically used in professional applications that require fine control over the device hardware. This often makes using these frameworks much more time consuming, without extensive prior experience with the framework. On the other hand, high abstraction levels sometimes abstract away desired hardware control. A moderate abstraction level is preferred, to strike a balance between these considerations.
 
-Arduino thus emerges as a clear choice for the ESP32. Although MicroPython and CircuitPython may provide all the functionality needed for the the Raspberry Pi Pico W, Arduino was chosen such that the entire project was coded in the same framework, thus requiring knowledge of only the one framework in the current and future iterations of the project.
+Arduino thus as a clear choice for the ESP32. Although MicroPython and CircuitPython may provide all the functionality needed for the the Raspberry Pi Pico W, Arduino was chosen such that the entire project was coded in the same framework, thus requiring knowledge of only the one framework in the current and future iterations of the project.
 
-The Raspbery Pi Pico W supports two Arduino ports - the "official" one, and a community maintained one. Contrary to what might be expected, the community port offers better library and online/user support, as it has been in development for longer; thus, the community port was used.
+The Raspbery Pi Pico W supports two Arduino ports - the `official' one, and a community maintained one. Contrary to what might be expected, the community port offers better library and online/user support, as it has been in development longer; thus, the community port was used.
 
 \subsection{File transfer method}
 
-The requirement from the hardware subsystem was to transfer the data over WiFi. For data transmission over WiFi, numerous protocols exist, including encrypted and unencrypted protocols. An encrypted protocol was not necessary for this application, as the devices did not transmit sensitive data. The encryption involved inherently makes these more complex and often less efficient; as such, only unencrypted protocols were considered.
+Meeting \hyperlink{tab:firmware-requirements}{SS3, SS4, SS5, and SS6} requires data transmission over WiFi. For this, numerous protocols exist, including encrypted and unencrypted protocols. An encrypted protocol was not necessary for this application, as the devices did not transmit sensitive data. The encryption involved inherently makes these protocols more complex and often less efficient; as such, the choices were narrowed to unencrypted protocols.
 
-Standard unencrypted protocols include User Datagram Protocol (UDP), Tranmission Control Protocol (TCP), File Transfer Protocol (FTP) and Hypertext Transfer Protocol (HTTP). UDP and TCP are low-level protocols; using a standard higher-level prtocol such as FTP or HTTP is more appropriate unless very fine control of data transmission is needed. FTP and HTTP both operate on top of TCP. Of FTP and HTTP, HTTP is much more widely used owing to its use in the World Wide Web, and thus has better library support and documentation, thus it was chosen as the preffered option.
+Standard unencrypted protocols include User Datagram Protocol (UDP), Tranmission Control Protocol (TCP), File Transfer Protocol (FTP) and Hypertext Transfer Protocol (HTTP). UDP and TCP are low-level protocols; using a standard higher-level prtocol such as FTP or HTTP is more appropriate unless very fine control of data transmission is needed. FTP and HTTP both operate on top of TCP. Of FTP and HTTP, HTTP is much more widely used owing to its application in the World Wide Web, and thus has better library support and documentation. HTTP was thus chosen as the preferred option.
 
 \subsection{Server and client location}
 
-Communication over HTTP is based on a client-server model, where a client sends a request to a known host. It was decided that the camera/transmitter module would act as the client, while the server would be hosted on the receiver. In the current iteration of the project, either device could viably be the server or the client, given HTTP supports two-way communication. 
+Communication over HTTP is based on a client-server model, where a client sends a request to a known host. In the current iteration of the project, either device could viably be the server or the client, given HTTP supports two-way communication. 
 
-However, in future iterations of the project, there are particular merits to hosting the server on the receiver device. The server requires a known IP address such that the client knows where to direct it's requests. Once a client has connected to the server, the server sends it's response directly back to whatever client responded to it. The network settings of the UCT campus WiFi do not allow devices to set static IP addresses, meaning it is impossible to host the server on the campus WiFi. If the camera/transmitter acts as the client, it does not need a known IP address when connected to campus WiFi, and could connect to a remotely hosted server. To save power on the camera/transmitter module, it could also be useful to allow the module to immediately initiate connection to the server by acting as the client. 
+However, in future iterations of the project, there are particular merits to hosting the server on the receiver device. The server requires a known IP address such that the client knows where to direct it's requests. Once a client has connected to the server, the server sends it's response directly back to whatever client responded to it. The network settings of the UCT campus WiFi do not allow devices to set static IP addresses, meaning it is challenging to host the server on the campus WiFi. If the camera/transmitter acts as the client, it does not need a known IP address when connected to campus WiFi, and could connect to a remotely hosted server.
 
-Aditionally, hosting the server on the receiver device allows for traditional web browsers to remotely connect as a client. This could allow for applications such as updating configuration or viewing stored images on the receiver device from a smartphone or laptop.
+Aditionally, hosting the server on the receiver device allows for traditional web browsers to remotely connect as a client. This could allow for applications such as updating configuration or viewing stored images on the receiver device from a smartphone or laptop in future iterations of the projects.
 
-\subsection{Configuration file}
+\subsection{Configuration file} \label{ss:fwconfig}
 
-In line with \hyperlink{tab:firmware-requirements}{SS8}, the camera/transmitter module must read a configuration file. There were three options for storing this configuration file: flash memory, EEPROM, or a file on the SD card. Storing configuration on the SD card was chosen, since it enables easy deployment of a new module with a custom configuration, simply by loading the appropriate configuration file onto the SD card before the module is deployed.
+In line with \hyperlink{tab:firmware-requirements}{SS10}, the camera/transmitter module must read a configuration file. There were three options for storing this configuration file: flash memory, EEPROM, or a file on the SD card. Storing configuration on the SD card was chosen, since it enables easy deployment of a new module with a custom configuration, simply by loading the appropriate configuration file onto the SD card before the module is deployed.
 
-There are numerous ways to store configuration files, including the XML, JSON, YAML, and INI file formats. All of these formats are plaintext files, and each could be adequately adapted to be used in the project with the correct text parsing. However, of the available, JSON stands out, since it is a human-readable format, making it easier to create a new configuration file without any external tool. It is also well supported on Arduino via the ArduinoJson library \cite{blanchon2019arduino}.
+There are numerous ways to store configuration files, including the XML, JSON, YAML, and INI file formats. All of these formats are plaintext files, and each could be adequately adapted to be used in the project with the correct text parsing. However, of the available options, JSON stands out, since it is a human-readable format, making it easier to create a new configuration file without any external tool. It is also well supported on the Arduino framework via the ArduinoJson library \cite{blanchon2019arduino}.
 
 \subsection{Multi-photo vs video capture}
 
-In line with \hyperlink{tab:firmware-requirements}{FR4}, the requirement was either to take multiple photographs per trigger or to capture video footage. Existing implementations using the ESP-32 cam module either use resolutions much lower than the module is capable of or can only achieve very low framerates \cite{zahary2019esp}. Additionally, examination of the source code of these existing implementations revealed that the module is only natively capabale of capturing a single frame at a time, and utilising video footage requires complex considerations of the timing of frame captures and the encoding of the video files. Within the time limits of this project, it was deemed that still images would be more appropriate, especially since the requirement could still be met by capturing multiple still images per movement trigger. 
+To determine \hyperlink{tab:firmware-requirements}{SS7}, the requirement was either to take multiple photographs per trigger or to capture video footage. Existing implementations of the latter on the ESP-32 cam module either use resolutions much lower than the module is capable of or can only achieve very low framerates \cite{zahary2019esp}. Additionally, examination of the source code used for video capture reveals that the module is only natively capabale of capturing a single frame at a time, and utilising video footage requires complex considerations of the timing of frame captures and the encoding of the video files. Within the time limits of this project, it was deemed that still images would be more appropriate, especially since the requirement could still be met by capturing multiple still images per movement trigger. 
 
 \section{Submodule design} \label{s:firmware-design-process}
 
@@ -138,31 +150,31 @@ In line with \hyperlink{tab:firmware-requirements}{FR4}, the requirement was eit
     \label{fig:espflow}
 \end{figure}
 
-Figure \ref{fig:espflow} demonstrates a high-level program flow of the Camera/Transmitter module. The two sequences operate independently. The module has two primary purposes - capturing footage, and transmitting it. Footage capture is Transmission can be triggered manually from the reveiver module, with an interrupt that comes via the RF receiver. The system automatically goes back to sleep if it fails to initialise key peripherals, fails to connect to WiFi, or if the web requests fail more than 3 times in a row.
+Figure \ref{fig:espflow} demonstrates a high-level program flow of the Camera/Transmitter module. The two sequences operate independently. The module has two primary purposes - capturing footage, and transmitting it. Footage capture is triggered the PIR sensors. Transmission can be triggered manually from the reveiver module, with an input that comes via the RF receiver. The system automatically goes back to sleep if it fails to initialise key peripherals, fails to connect to WiFi, or if the web requests fail more than 3 times in a row.
 
 \subsection{Implementation of configuration file}
 
-To meet the identified soft-configurability requirement, the camera/transmitter module reads a customiseable configuration file to determine a number of key settings. The configuration file is stored in plaintext json at "starling-cam/config/config.json" on the SD card. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid or missing, any missing parameters are loaded as defaults. The configuration can be updated remotely, overwriting the previous configuration.
+As decided in subsection \ref{ss:fwconfig}, the camera/transmitter module reads a customiseable JSON configuration file to determine it's camera and networking configuration. If the configuration file is unavailable or unreadable, or any configuration parameters are invalid, any missing parameters are loaded as defaults. The configuration can be updated remotely, overwriting the previous configuration.
 
 \subsection{HTTP server implementation and API}
 
-The HTTP server was implemented using an asynchronous web server library for the Raspberry Pi Pico W citations\cite{hoang2023async}. This library was based on a similar library for the ESP32 \cite{gochkov2023async}. An asynchronous library was preferred to a synchrnous one, since it allowed the main user interface and control of the receiver module to operate independently of the web server, meaning that web server operations would not cause unexpected delays or lack of responsiveness in the UI. This choice was also made in the interests of future developement; a future application with multiple clients (e.g., broswers on mobile phones) connecting to the server simultaneously could experience significant issues with responsiveness on the UI if the server operated synchronously. ESP32 library is well used and includes extensive code examples, which were a valuable tool in the development process  \cite{hoang2023async}. Although the library for the Raspbery Pi Pico W is not as well documented, it is built on the same principles as the ESP32 library and the examples and documentation from the ESP32 could thus be used instead.
+The HTTP server was implemented using an asynchronous web server library for the Raspberry Pi Pico W citations\cite{hoang2023async}. This library was based on a similar library for the ESP32 \cite{gochkov2023async}. An asynchronous library was preferred to a synchronous one, since it allowed the main user interface and control of the receiver module to operate independently of the web server, meaning that web server operations would not cause unexpected delays or lack of responsiveness in the UI. This choice was also made in the interests of future developement; a future application with multiple clients (e.g., broswers on mobile phones) connecting to the server simultaneously could experience significant issues with responsiveness on the UI if the server operated synchronously. ESP32 library is well used and includes extensive code examples, which were a valuable tool in the development process  \cite{hoang2023async}. Although the library for the Raspbery Pi Pico W is not as well documented, it is built on the same principles as the ESP32 library and the examples and documentation from the ESP32 were thus still relevant.
 
-To meet this functionality of , the server Application Programming Interface (API) detailed in Table \ref{tab:server-api} was developed. No functions utilised URI parameters, though some did require specific request headers, as described in Table \ref{tab:server-api}. Additionally, all requests required a "Device-ID" header, which specified the ID of the incoming device; this would be used by the server to differentiate between different camera/transmitter modules if multiple were deployed.
+To meet this functionality of, the server Application Programming Interface (API) detailed in Table \ref{tab:server-api} was developed. No functions utilised URI parameters, though some did require specific request headers, as described in Table \ref{tab:server-api}. Additionally, all requests required a `Device-ID' header, which specified the ID of the incoming device; this would be used by the server to differentiate between different camera/transmitter modules if multiple were deployed.
 
-Communication from receiver to transmitter was sent via GET requests, since these indicate that the client is fetching a resource from the server. Communication from transmitter to receiver was sent via PUT requests. PUT requests indicate an idempotent transfer from client to server, meaning that a request with the same form as a previous request is sent, the previous resource is overwritten. This was deemed more appropriate than a non-idempotent POST request, since idempotency was in line with the way the images were stored on the receiver. An image received from the same device with the same name was assumed to be a repeat send of a previous image, and would thus overwrite the image stored on the receiver. This meant that the camera/transmitter module could safely resend images in the instance of an unexpected error from the response from the server, without risk of duplicating said images.
+Communication from receiver to transmitter was performed via GET requests, since these indicate that the client is fetching a resource from the server. Communication from transmitter to receiver was sent via PUT requests. PUT requests indicate an idempotent transfer from client to server, meaning that a request with the same form as a previous request is sent, the previous resource is overwritten. This was deemed more appropriate than a non-idempotent POST request, since idempotency was in line with the way the images were stored on the receiver. An image received from the same device with the same name was assumed to be a repeat send of a previous image, and would thus overwrite the image stored on the receiver. This meant that the camera/transmitter module could safely resend images in the instance of an unexpected error from the response from the server, without risk of duplicating said images.
 
 \begin{table}[ht]
     \centering
     \begin{scriptsize}
-    \begin{tabularx}{\textwidth}{|p{0.2\textwidth}|p{0.05\textwidth}|X|}
+    \begin{tabularx}{\textwidth}{|p{0.15\textwidth}|p{0.06\textwidth}|X|}
     \hline
-    \textbf{Endpoint} & \textbf{request type} & \textbf{Description} \\ \hline
+    \textbf{Endpoint} & \textbf{Request type} & \textbf{Description} \\ \hline
     /next\_instruction & GET & Client requests a new instruction on what operation to perform from the server. Instruction is delivered in plaintext in the response body. Instructions are as shown in Figure \ref{fig:espflow}. \\ \hline
-    /metadata & PUT & Client uploads a file of type "application/json" to the server. File contains the number of images currently stored on the camera/transmitter, and the percentage of SD card storage used. Server saves the file as "metadata.json" in the directory corresponding to the device ID. \\ \hline
-    /upload\_image & PUT & Client uploads a file of type "image/jpeg" to the server. File name is specified request header "Photo-Name". Server saves the photo with the given name to the directory corresponding to the device ID. Used multiple times in succession to send all images from client to server. \\ \hline
-    /sample\_image & PUT & Client uploads a file of type "image/jpeg" to the server. Server saves the photo as "sample.jpeg" to the directory corresponding to the device ID. \\ \hline
-    /update\_config & GET & Client requests an updated configuration file. Server responds with file of type "application/json". File sent is "config.json" from the directory corresponding to the device ID on the server. \\ \hline
+    /metadata & PUT & Client uploads a file of type `application/json' to the server. File contains the number of images currently stored on the camera/transmitter, and the percentage of SD card storage used. Server saves the file as `metadata.json' in the directory corresponding to the device ID. \\ \hline
+    /upload\_image & PUT & Client uploads a file of type `image/jpeg' to the server. File name is a specified request header `Photo-Name'. Server saves the photo with the given name to the directory corresponding to the device ID. Used multiple times in succession to send all images from client to server. \\ \hline
+    /sample\_image & PUT & Client uploads a file of type `image/jpeg' to the server. Server saves the photo as `sample.jpeg' to the directory corresponding to the device ID. \\ \hline
+    /update\_config & GET & Client requests an updated configuration file. Server responds with file of type `application/json'. File sent is `config.json' from the directory corresponding to the device ID on the server. \\ \hline
     \end{tabularx}%
     \end{scriptsize}
     \caption{Summary of common coding environments for the available microcontroller}
@@ -171,11 +183,11 @@ Communication from receiver to transmitter was sent via GET requests, since thes
 
 \subsection{Receiver control flow}
 
-The hardware available for the user interface was a 16x2 character Liquid Crystal Display. The core requirement was to give the user control over the instructions sent to the camera/transmitter module, as discussed in subsection \ref{ss:espflow}. An overview of the control flow for the receiver module is shown in Figure \ref{fig:piflow}.
+ The core requirement was to give the user control over the instructions sent to the camera/transmitter module, as discussed in subsection \ref{ss:espflow}. An overview of the control flow for the receiver module is shown in Figure \ref{fig:piflow}.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{"Pi-flow.png"}
+    \includegraphics[width=0.55\textwidth]{"Pi-flow.png"}
     \caption{Flowchart representing the program flow of the Raspberry Pi Pico W reciever module}
     \label{fig:piflow}
 \end{figure}
@@ -185,55 +197,48 @@ Buttons can either be read inside the program control loop, or using hardware in
 \subsection{User Interface (UI) design}
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.4\textwidth]{"ui.jpeg"}
+    \includegraphics[width=0.3\textwidth]{"ui.jpeg"}
     \caption{Sample of the menu display for the receiver module}
     \label{fig:uisample}
 \end{figure}
 
-To meet SS, the user interface must be easy to understand. On a small LCD screen, it is not possible to display a lot of information. Showing information would require shortening or abstracting it to levels that can easily become incomprehensible.  The user interface was developed with a simple menu, giving only the options availble from subsetion \ref{ss:espflow}. If more functions were necessary on the receiver device were needed, it may have been necessary to investigate a user interface with multiple sub-menus (each containing groups of similar functions). However, the small size of the display limits the ability to show the user feedback about their current position in the program; keeping the menu simple is thus important for user comperehensibility. It was thus deemed more appropriate to have a single menu screen. A sample of the dispalyed menue is shown in Figure \ref{fig:uisample}. The menu options are shown below. 
-\begin{itemize}
-    \item GET METADATA
-    \item UPDATE CONFIG
-    \item SEND PHOTOS
-    \item SAMPLE PHOTO
-    \item EXIT
-\end{itemize}
+The hardware available for the user interface was a 16x2 character Liquid Crystal Display. To meet \hyperlink{tab:firmware-requirements}{SS17}, the user interface must be easy to understand. On a small LCD screen, it is not possible to display a lot of information. Showing such information would often require shortening or abstracting it to levels that can easily become incomprehensible.  The user interface was developed with a simple menu, giving only the options availble from subsetion \ref{ss:espflow}. If more functions were necessary on the receiver device, it may have been necessary to investigate a user interface with multiple sub-menus (each containing groups of similar functions). However, the small size of the display limits the ability to show the user feedback about their current position in the program; keeping the menu simple is thus important for user comperehensibility. It was thus deemed more appropriate to have a single menu screen. A sample of the dispalyed menu is shown in Figure \ref{fig:uisample}. The menu options were `Get Metadata', `Update Config', `Send Photos', `Sample Photo', and `Exit'. 
 
-Menu navigation is performed through via the 4 buttons, each of which is assigned a dedicated task - UP, DOWN, CONFIRM, and CANCEL. The user can learn precisely what to expect from these buttons because their functions do not change. The UP and DOWN buttons scroll through the menu. The CONFIRM button confirms the currently selected option. The CANCEL buttons cancels the current operation if it has not yet been sent to the camera/transmitter.
+Menu navigation is performed via the 4 buttons, each of which is assigned a dedicated task - Up, Down, Confirm, and Cancel. The user can learn precisely what to expect from these buttons because their functions do not change. The Up and Down buttons scroll through the menu. The Confirm button confirms the currently selected option. The Cancel buttons cancels the current operation if it has not yet been sent to the camera/transmitter.
 
-To meet SS, the user interface must show constant feedback, to indicate the current state of the device and to show that the device is still operational. To achieve this, the following were integrated into the user design:
+To meet \hyperlink{tab:firmware-requirements}{SS16}, the user interface must show constant feedback, to indicate the current state of the device and to show that the device is still operational. To achieve this, the following were integrated into the user design:
 
 \begin{itemize}
     \item As the user scrolls through the menu, an arrow (>) in the top-right corner indicates that the function displayed on the top line of the menu can be selected.
-    \item While the device is waiting for connection to the camera/transmitter, it displays "connecting", with a constantly moving character. The menu is not visible, making it clear to the user that the menu functions will not operate until the camera/transmitter is connected.
+    \item While the device is waiting for connection to the camera/transmitter, it displays `Connecting' and a constantly moving character. The menu options are not visible, making it clear to the user that the menu functions will not operate until the camera/transmitter is connected.
     \item While the device is waiting to send an instruction or waiting for confirmation from the camera/transmiter that the instruction has been completed, a constantly moving character is displayed to indicate to the user that the reciever device is still operational. The selected option remains visible on the screen so that the user can be confident about what the device is currently doing.
-    \item Once the instruction to the camera/transmitter is sent and can not longer be cancelled, ">SENT>" is displayed on the screen, to make the current status of the function clear to the user.
+    \item Once the instruction to the camera/transmitter is sent and can not longer be cancelled, `'>SENT>' is displayed on the screen, to make the current status of the function clear to the user.
 \end{itemize}
 
 \subsection{Camera sensor settings}
 
-The OV2640 camera has a wide variety of configuration options which can be adjusted to suit the particular needs of the camera. These options were all included in the configuration file, as the best settings for each location would be best determined by the researchers involved upon deployment. However, a select number of configuration options were considered for the purposes of choosing default values, which could provide a workable positon from which thec configuration could be adjusted. 
+The OV2640 camera has a wide variety of configuration options which can be adjusted to suit the particular needs of the deployment. These options were all included in the configuration file, as the settings for each location would best be determined by the researchers involved upon deployment. However, a select number of configuration options were considered for the purposes of choosing default values, which could provide a workable positon from which the configuration could be adjusted. 
 
-The number of captures per trigger ($\mathrm{3}$) and interval between triggers $60 \mathrm{s}$ were implemented based on the suggestions from the project stakeholders \cite{hofmeyer2024private}. Other settings considered were the automatic exposure control, exposure level, brightness, contrast, and saturation. The camera was tested with various settings in fairly well-lit conditions, which most of the nests are likely to have. Dark conditions could not be tested owing the the limitations faced with the infrared filter on the camera discussed in \ref{ch:hardware}. Qualitative assessments of the image quality were performed to determine the optimum settings.
+The number of captures per trigger ($\mathrm{3}$) and interval between triggers ()$60 \mathrm{s}$) were implemented based on the suggestions from the project stakeholders \cite{hofmeyer2024private}. Other settings considered were the automatic exposure control, exposure level, brightness, contrast, and saturation. The camera was tested with various settings in fairly well-lit conditions, which most of the nests are likely to have. Dark conditions could not be tested owing the the limitations faced with the infrared filter on the camera discussed in chapter \ref{ch:hardware}. Qualitative assessments of the image quality were performed to determine the optimum settings.
 
-It quickly became apparent that the automatic exposure control did not function effectively. Even in moderate light, the images taken with automatic expsure control were too dark to make out any detail. Turning off the automatic exposure control and manually setting the exposure to it's maximum value was the only way to yield photos with enough light to make out any detail. At these exposure details, the brightness, contrast, and saturation settings made minimal difference to the image quality, though the qualitative assessment was that the clearest images were produced with higher values. A sample image with the final chosen settings is shown in Figure \ref{fig:sample-image-firmware}.
+It quickly became apparent that the automatic exposure control did not function effectively. Even in moderate light, the images taken with automatic expsure control were too dark to make out any detail. Turning off the automatic exposure control and manually setting the exposure to it's maximum value was the only way to yield photos with enough light to make out any detail. The brightness, contrast, and saturation settings made minimal difference to the image quality, though the qualitative assessment was that the clearest images were produced with higher values. A sample image with the final chosen settings is shown in Figure \ref{fig:sample-image-firmware}.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.4\textwidth]{"sample-image-firmware.jpeg"}
-    \caption{Sample image taken with exposure manually set to maximum}
+    \includegraphics[width=0.3\textwidth]{"sample-image-firmware.jpeg"}
+    \caption{Sample image taken chosen camera settings}
     \label{fig:sample-image-firmware}
 \end{figure}
 
-The file size of the images varied greatly depending on the contents of the image, ranging from $\approx 40 \mathrm{KB}$ to $\approx 250 \mathrm{KB}$ with the default settings. Assuming a poor performance of $200 \mathrm{KB}$ per image, the $\approx 4 \mathrm{GiB}$ of storage available from the FAT32 filesystem could store $\approx 5350$ images. With the default settings of $3$ images per trigger and $60\mathrm{s}$ between triggers, the camera/transmitter module could capture up to $4320$ images per day. The storage on the SD card was thus adequate for daily access to the images. In reality, it is highly unlikely that the camera/transmitter module would be triggered at every possible opportunity, and the trigger frequency and time between triggers could be increased.
+The file size of the images varied greatly depending on the contents of the image, ranging from $\approx 40 \mathrm{KB}$ to $\approx 250 \mathrm{KB}$ with the default settings. Assuming a poor performance of $200 \mathrm{KB}$ per image, the $\approx 4 \mathrm{GiB}$ of storage available from the FAT32 filesystem could store $\approx 5350$ images. With the default settings of $3$ images per trigger and $60\mathrm{s}$ between triggers, the camera/transmitter module could capture up to $4320$ images per day. The storage on the SD card was thus adequate for daily access to the images. In reality, it is highly unlikely that the camera/transmitter module would be triggered at every possible opportunity, and the trigger frequency and time between triggers could comfortably be increased.
 
 \subsection{Simulation and testing practices}
 
 Testing was performed on the system hardware. A number of tools and practices were used to aid in the development process:
 
 \begin{itemize}
-    \item Debug mode: A debug c/c++ macro was defined in the script. When defined, this macro enabled a number of serial outputs to aid in the process of debugging. This was defined using a c/c++ macro so that the code used for debugging was not unnecessarily present in the final code.
-    \item Unit testing procedures: A number of c/c++ macros were used to define unit tests, which could test portions of the firmware individually. These were used to individually validate the functions.
+    \item Debug mode: A debug c/c++ macro was available in the script. When defined, this macro enabled a number of serial outputs to aid in the process of debugging. This was defined using a macro so that the code used for debugging was not unnecessarily present in the final implementation.
+    \item Unit testing procedures: A number of c/c++ macros were used to define unit tests, which could test portions of the firmware individually. These were used to individually validate functions.
     \item Curl commands: HTTP requests were made in testing using Curl \cite{hostetter1997curl}. The tool could easily be used to create well-formatted HTTP requests with the desired information. This allowed testing of the web server on the receiver device in isolation from the transmitter device.
     \item Python webserver: A simple python web server was developed for testing the HTTP requests from the camera/transmitter device.
 \end{itemize}
@@ -241,133 +246,112 @@ Testing was performed on the system hardware. A number of tools and practices we
 
 \section{Acceptance Tests \label{s:firmware-atps}}
 
-The submodule acceptance tests and listed and detailed in Tables \ref{tab:firmware-atps1} and \ref{tab:firmware-atps2}. In all cases, the firmware from the project repository must be flashed to the microcontrollers. In some cases, ATPs use the serial port to display information. The serial port is not used in normal operation as it is not necessary, and conflicts with the switch enable pin for the PIR sensors and RF linker.  In these cases, the ATP specifies to define as specific macro in the code to run the ATP. This, is performed by uncommenting the line in the code titled "\#define ATPx" (where x is the ATP number) prior to flashing the code to the relevant micrcontroller. For ATPs which use the Serial port, the trigger switch (normally connected to GPIO1) be disconnnected from pin 1 and manually pulled high within 5 seconds of triggering the device.
+The submodule acceptance tests are listed and detailed in Tables \ref{tab:firmware-atps1} and \ref{tab:firmware-atps2}. In all cases, the firmware from the project repository must be flashed to the microcontrollers. In some cases, ATPs use the serial port to display information. The serial port is not used in normal operation as it is not necessary, and conflicts with the switch enable pin for the PIR sensors and RF linker.  In these cases, the ATP specifies a specific macro to define in the code. This is performed by uncommenting the line in the code reading `\#define ATPx' (where x is the ATP number) prior to flashing the code to the relevant microcontroller. For ATPs which use the serial port, the trigger disable switch (normally connected to GPIO1) must be disconnnected and manually pulled high within 5 seconds of triggering the device.
 
 The SD card for the camera/transmitter module should be formatted with the FAT32 filesystem; the SD card for the receiver module should be formatted with the exFAT filesystem. Unless otherwise specified, the storage of both SD cards should be empty prior to starting the test.
 
 \begin{table}[!ht]
     \centering
     \begin{scriptsize}
-    \begin{tabularx}{\textwidth}{|p{0.17\textwidth} X|}
+    \begin{tabularx}{\textwidth}{|p{0.15\textwidth} X|}
         
         \hline
         \textbf{UR/FR/SS} & \textbf{Description}\\ \hline
-        \textit{ATP ID} & ATP1\\
-        \textit{Related UR/FR/SS} &\\
-        \textit{Description} & Photo is captured upon trigger from PIR sensor.\\
-        \textit{Procedure} & Standard: Power on the camera/transmitter module. Trigger either PIR sensor once by moving in front of it, or emulate a trigger by manually pulling pins 2 or 4 HIGH. Open the SD card on a computer and observe its contents.\\
-        \textit{Acceptance criteria} & 3 photographs are present in the "photos" directory on the SD card.\\ 
+        \textit{ATP \& related SS} & ATP1 - \hyperlink{tab:firmware-requirements}{SS1, SS8, SS12}\\
+        \textit{Description} & Photo is captured upon trigger from PIR sensor, and transmission mode is triggered from the RF linker.\\
+        \textit{Procedure} & Standard: Power on the camera/transmitter module. Trigger either PIR sensor once by moving in front of it, or emulate a trigger by manually pulling pins 2 or 4 HIGH. Open the SD card on a computer and observe its contents. Enable the ATP4 macro on the camera/transmitter module. Power on the module and monitor the serial port. Power on the receiver module (which will automatically awaken the camera/transmitter module using the RF-linker).\\
+        \textit{Acceptance criteria} & 3 photographs are present in the `photos' directory on the SD card. On qualitative assesment, the photographs are of adequate quality. Serial monitor confirms awoken in transmission mode after using RF-linker.\\ 
         \textit{Pass/fail} & PASS \\ \hline
 
-        \textit{ATP ID} & ATP2 \\
-        \textit{Related UR/FR/SS} & \\
+        \textit{ATP \& related SS} & ATP2 - \hyperlink{tab:firmware-requirements}{SS2}\\
         \textit{Description} & Footage capture is triggered within 1 second.\\
-        \textit{Procedure} & Power on the camera/transmitter module. Prepare a stopwatch and orient the camera to view the stopwatch. Simultaneously start the stopwatch and trigger a photo capture as described in ATP1. Open the SD card on a computer and view the first image.\\
-        \textit{Acceptance criteria} & Repeat procedure 5 times. The time shown on the stopwatch is less than 1 second in all 5 cases.\\ 
+        \textit{Procedure} & Power on the camera/transmitter module. Prepare a stopwatch and orient the camera to view the stopwatch. Simultaneously start the stopwatch and trigger a photo capture as described in ATP1. Open the SD card on a computer and view the first image. Repeat 5 times.\\
+        \textit{Acceptance criteria} & The average time shown on the stopwatch is less than 1 second.\\ 
         \textit{Pass/fail} & PASS\\
-        \textit{Notes} & The human error from the requirement to simultaneously start the stopwatch and trigger the camera may introduce some error in the reading; however, this error should be sufficiently small compared to the pass criteria to still gain a valid idea of the camera trigger time. \\ \hline
+        \textit{Notes} & The human error from the requirement to simultaneously start the stopwatch and trigger the camera may introduce some error in the reading; however, this error should be sufficiently small compared to the pass criteria to still gain a valid sense of the camera trigger time. \\ \hline
 
-        \textit{ATP ID} & ATP3\\
-        \textit{Related UR/FR/SS} &\\
-        \textit{Description} & Receiver menu navigation works.\\
+        \textit{ATP \& related SS} &  ATP3 - \hyperlink{tab:firmware-requirements}{SS15, SS16, SS17}\\
+        \textit{Description} & Menu navigation is present and intuitive.\\
         \textit{Procedure} & Power on the receiver module. Navigate the menu using the up, down, confirm, and cancel buttons.\\
-        \textit{Acceptance criteria} & Up button scrolls the menu upwards. Down button scrolls the menu downwards. Confirm buttton trigger the currently selected action and, after a brief waiting period, indicates that the request has been sent. Up and down buttons do not work after selecting confirm. Cancel button returns display to the menu if the request has not yet been sent.\\ 
+        \textit{Acceptance criteria} & Up button scrolls the menu upwards. Down button scrolls the menu downwards. Confirm buttton triggers the currently selected action and, after a brief waiting period, indicates that the request has been sent. Up and down buttons do not work after selecting confirm. Cancel button returns display to the menu if the request has not yet been sent. On a qualitative assesment, menu navigation is intuitive and provider adequate feedback about the device state.\\ 
         \textit{Pass/fail} & PASS \\ \hline
 
-        \textit{ATP ID} & ATP4 \\
-        \textit{Related UR/FR/SS} & \\
-        \textit{Description} & Camera/transmitter module awakens in transmission mode. \\
-        \textit{Procedure} &  Enable the ATP4 macro prior on the camera/transmitter module. Power on the module and monitor the serial port. Power on the receiver module (which will automatically awaken the camera/transmitter module using the RF-linker).\\
-        \textit{Acceptance criteria} & Serial monitor on the camera/transmitter module confirms awoken in transmission mode.\\ 
-        \textit{Pass/fail} & PASS\\ \hline
-
-        \textit{ATP ID} & ATP5  \\
-        \textit{Related UR/FR/SS} &\\
+        \textit{ATP \& related SS} & ATP4 - \hyperlink{tab:firmware-requirements}{SS3, SS4}\\
         \textit{Description} & Metadata is sent over network.\\
-        \textit{Procedure} & Trigger the footage capture as described in ATP1 at least 5 times. Open the SD card on a computer, and note the number of images present and the percentage of storage currently used. Power on on the receiver module and wait for it to connect to the camera/transmitter module. Navigate the menu and select the "SEND METADATA" option. Open the receiver SD card on a computer and observer the contents of "cam1/metadata.json"\\
+        \textit{Procedure} & Trigger the footage capture as described in ATP1 at least 5 times. Open the SD card on a computer, and note the number of images present and the percentage of storage currently used. Power on on the receiver module and wait for it to connect to the camera/transmitter module. Navigate the menu and select the `SEND METADATA' option. Open the receiver SD card on a computer and observer the contents of `cam1/metadata.json'\\
         \textit{Acceptance criteria} & Number of photographs and percentage of storage used indicated on the reciever are the same as the numbers manually observed on the camera/transmitter SD card. \\ 
         \textit{Pass/fail} & PASS\\ \hline
 
-        \textit{ATP ID} & ATP6\\
-        \textit{Related UR/FR/SS} & \\
+        \textit{ATP \& related SS} & ATP5 - \hyperlink{tab:firmware-requirements}{SS3, SS5} \\
         \textit{Description} & Sample photo is sent over network.\\
-        \textit{Procedure} & Power on both modules. Navigate the menu and select the "WAKE DEVICE" option. Upon confirmation of connection, select the "SEND SAMPLE" option. Wait for confirmation of completion. Open the receiver SD card on a computer and observe its contents.\\
-        \textit{Acceptance criteria} & A sample image is present at the "cam1/sample.jpeg" on the SD card. \\ 
+        \textit{Procedure} & Power on both modules. Wait for the devices to connect to each other. Select the `SEND SAMPLE' option. Wait for confirmation of completion. Open the receiver SD card on a computer and observe its contents.\\
+        \textit{Acceptance criteria} & A sample image is present at the `cam1/sample.jpeg' on the SD card. \\ 
         \textit{Pass/fail} & PASS \\ \hline
 
-        \textit{ATP ID} & ATP7 \\
-        \textit{Related UR/FR/SS} & \\
-        \textit{Description} & All captured photos are sent over network.\\
-        \textit{Procedure} & Power on camera/transmitter module. Trigger the camera/transmitter module as described in ATP1 at least 10 times. Open the camera/transmitter SD card on a computer and observe its contents. Replace the SD card in the camera/transmitter module. Power on the receiver module and wait for it to connect to the camera/transmitter module. Select the "SEND PHOTOS" option. Wait for completion. Open the receiver SD card on a computer and observe its contents.\\
-        \textit{Acceptance criteria} & All images initially present in the "photos" directory of the camera/transmitter module SD card are present in the "cam1" directory of the receiver SD card.\\ 
-        \textit{Pass/fail} & PASS \\ \hline
+
         
 
     \end{tabularx}
     \end{scriptsize}
-    \caption{ATPs 1-7 for the firmware subsystem}
+    \caption{ATPs 1-5 for the firmware subsystem}
     \label{tab:firmware-atps1}
 \end{table}
 
 \begin{table}[!ht]
     \centering
     \begin{scriptsize}
-    \begin{tabularx}{\textwidth}{|p{0.17\textwidth} X|}
+    \begin{tabularx}{\textwidth}{|p{0.15\textwidth} X|}
         
         \hline
         \textbf{UR/FR/SS} & \textbf{Description}\\ \hline
 
-        \textit{ATP ID} & ATP8\\
-        \textit{Related UR/FR/SS} & \\
+
+
+        \textit{ATP \& related SS} & ATP6 - \hyperlink{tab:firmware-requirements}{SS3, SS6}\\
+        \textit{Description} & All captured photos are sent over network. \\
+        \textit{Procedure} & Power on camera/transmitter module. Trigger the camera/transmitter module as described in ATP1 at least 10 times. Open the camera/transmitter SD card on a computer and observe its contents. Replace the SD card in the camera/transmitter module. Power on the receiver module and wait for it to connect to the camera/transmitter module. Select the `SEND PHOTOS' option. Wait for completion. Open the receiver SD card on a computer and observe its contents.\\
+        \textit{Acceptance criteria} & All images initially present in the `photos' directory of the camera/transmitter module SD card are present in the `cam1' directory of the receiver SD card.\\ 
+        \textit{Pass/fail} & PASS \\ \hline
+
+        \textit{ATP \& related SS} & ATP7 - \hyperlink{tab:firmware-requirements}{SS10} \\
         \textit{Description} & Configuration options are loaded from SD card.\\
-        \textit{Procedure} & Enable the ATP8 macro on the camera/transmitter module. Copy the contents of "config-ATP8-1.json" into "config/config.json" on the SD card. Power on the module trigger it in capture mode following the procedure from ATP1. Observe the outputted exposure level, number of captures per trigger, and time between triggers on the serial monitor. Repeat with "config-ATP8-2.json" \\
+        \textit{Procedure} & Enable the ATP7 macro on the camera/transmitter module. Copy the contents of \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP8-1.json}{`config-ATP7-1.json'} into `config/config.json' on the SD card. Power on the module trigger and it in capture mode following the procedure from ATP1. Observe the outputted exposure level, number of captures per trigger, and time between triggers on the serial monitor. Repeat with \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP7-2.json}{`config-ATP7-2.json'}. \\
         \textit{Acceptance criteria} & First run: outputted values are as specified in the config file. Second run: outputted values are the defaults (1200, 3, 60), since the values from the config file are invalid.\\ 
         \textit{Pass/fail} & PASS\\ \hline
 
-        \textit{ATP ID} & ATP9\\
-        \textit{Related UR/FR/SS} & \\
-        \textit{Description} & Update config remotely.\\
-        \textit{Procedure} & Power on both modules. Load the contents of "config-ATP9.json" into "cam1/config.json" on the SD card. Navigate the menu and select the "WAKE DEVICE" option. Upon confirmation, select the "UPDATE CONFIG" option. Wait for confirmation. Open the camera/transmitter SD card on a computer and observe its contents.\\
-        \textit{Acceptance criteria} & The content of "config/config.json" from the SD card is the same as "config-ATP9.json".\\ 
+        \textit{ATP \& related SS} & ATP8 - \hyperlink{tab:firmware-requirements}{SS11}\\
+        \textit{Description} & Update configuration options remotely.\\
+        \textit{Procedure} & Power on both modules. Load the contents of \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP8.json}{`config-ATP8.json'} into `cam1/config.json' on the SD card. Wait for the modules to connect, then navigate the menu and select the `UPDATE CONFIG' option. Wait for confirmation. Open the camera/transmitter SD card on a computer and observe its contents.\\
+        \textit{Acceptance criteria} & The content of `config/config.json' from the SD card is the same as `config-ATP9.json'.\\ 
         \textit{Pass/fail} & PASS \\ \hline
 
-        \textit{ATP ID} & ATP10\\
-        \textit{Related UR/FR/SS} & \\
+        \textit{ATP \& related SS} & ATP9 - \hyperlink{tab:firmware-requirements}{SS9}\\
         \textit{Description} & Receiver/transmitter utilises deep sleep when not in use.\\
-        \textit{Procedure} & Power on the camera/transmitter module. Connect an ammeter to the power line of the ESP32 and monitor the current draw. \\
-        \textit{Acceptance criteria} & ESP32 current draw is $ < 200 \mu A $ (when not triggered by PIR or RF linker).\\ 
+        \textit{Procedure} & Verify by observing source code that the ESP32 module utilises deep sleep functions after capture/transmission modes are complete. \\
+        \textit{Acceptance criteria} & Functionality is present.\\ 
         \textit{Pass/fail} & PASS\\ \hline
 
-        \textit{ATP ID} & ATP10\\
-        \textit{Related UR/FR/SS} & \\
-        \textit{Description} & Receiver/transmitter utilises deep sleep when idle.\\
-        \textit{Procedure} & Power on the camera/transmitter module. Connect an ammeter to the power line of the ESP32 and monitor the current draw. \\
-        \textit{Acceptance criteria} & ESP32 current draw is $ < 200 \mu A $ (when not triggered by PIR or RF linker).\\ 
-        \textit{Pass/fail} & PASS\\ \hline
-
-        \textit{ATP ID} & ATP11\\
-        \textit{Related UR/FR/SS} & \\
+        \textit{ATP \& related SS} & ATP10 - \hyperlink{tab:firmware-requirements}{SS13, SS14}\\
         \textit{Description} & Receiver module can integrate with multiple devices.\\
-        \textit{Procedure} & Copy the conents of "config-ATP11.json" to "config/config.json" on the receiver/transmitter SD card. Repeat the procedure described for ATP7. \\
-        \textit{Acceptance criteria} & Images are saved to the "cam2" directory rather than the "cam1" directory on the receiver SD card.\\ 
+        \textit{Procedure} & Copy the conents of \href{https://github.com/rothdu/EEE4113F-Group13-2024/blob/main/firmware/json-samples/config-ATP10.json}{`config-ATP10.json'} to `config/config.json' on the receiver/transmitter SD card. Repeat the procedure described for ATP6. \\
+        \textit{Acceptance criteria} & Images are saved to the `cam2' directory rather than the `cam1' directory on the receiver SD card.\\ 
         \textit{Pass/fail} & PASS\\ \hline
-        
 
     \end{tabularx}
     \end{scriptsize}
-    \caption{ATPs 8-11 for the firmware subsystem}
+    \caption{ATPs 6-10 for the firmware subsystem}
     \label{tab:firmware-atps2}
 \end{table}
 
-\section{Future developments}
+% \section{Future developments}
 
-All the user requirements for the subsystem have been met. However, there is scope for future development of many features that could add to the functionality of the system or improve the user experience.
+% All the user requirements for the subsystem have been met. However, there is scope for future development of many features that could add to the functionality of the system or improve the user experience.
 
-Although still image photography is sufficient to satisfy the user requirements in this iteration of the project, implementation of video footage capture would make a good addition to the project. With sufficient time to invest in adapting existing implementations using the ESP32-cam device, it may be possible to capture video footage at a sufficiently high resolution and framerate that it would still be useful in research.
+% Although still image photography is sufficient to satisfy the user requirements in this iteration of the project, implementation of video footage capture would make a good addition to the project. With sufficient time to invest in adapting existing implementations using the ESP32-cam device, it may be possible to capture video footage at a sufficiently high resolution and framerate that it would still be useful in research.
 
-The current implementation of the receiver device is capable of sending and receiving files from the SD card. However, these files must be loaded and viewed by removing the SD card and reading it from a computer or mobile phone. While this is definitely within the capabilities of the users for the system, their experience could be improved through the development of a web app that can be accessed from a mobile phone. The web app could be used to load new configuration options onto the receiver device (for future transmission to a camera/transmitter module). The web app could also display the stored images on the receiver device while the researchers are using the device in the field.
+% The current implementation of the receiver device is capable of sending and receiving files from the SD card. However, these files must be loaded and viewed by removing the SD card and reading it from a computer or mobile phone. While this is definitely within the capabilities of the users for the system, their experience could be improved through the development of a web app that can be accessed from a mobile phone. The web app could be used to load new configuration options onto the receiver device (for future transmission to a camera/transmitter module). The web app could also display the stored images on the receiver device while the researchers are using the device in the field.
 
-Finally, in some cases, it may be possible to operate the modules autonomously by allowing them to connect to the University's WiFi network, and developing a separate web server which could be hosted externally. Given enough time, it would be useful to investigate the viability of this model by checking the available wireless connectivity at the actual nest sites. If the connectivity is deemed to be sufficient, a separate version of the server developed for the receiver device could be implemented on a personal computer for permanent operation.
+% Finally, in some cases, it may be possible to operate the modules autonomously by allowing them to connect to the University's WiFi network, and developing a separate web server which could be hosted externally. Given enough time, it would be useful to investigate the viability of this model by checking the available wireless connectivity at the actual nest sites. If the connectivity is deemed to be sufficient, a separate version of the server developed for the receiver device could be implemented on a personal computer for permanent operation.
 
 \section{Conclusions}
 
